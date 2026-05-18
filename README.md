@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# lumzen
 
-## Getting Started
+Next.js 16 (App Router, TypeScript, Tailwind v4) + Supabase, deployed on Vercel.
 
-First, run the development server:
+## Folder layout
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+```
+app/                 Next.js App Router pages, layouts, route handlers
+components/          Shared React components
+lib/
+  supabase/
+    client.ts        Browser Supabase client (use in Client Components)
+    server.ts        Server Supabase client (use in Server Components / Route Handlers)
+public/              Static assets served from /
+.env.example         Template of required env vars
+.env.local           Local secrets (gitignored)
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Local dev
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+npm install
+cp .env.example .env.local   # fill in real values (already done locally)
+npm run dev                  # http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Environment variables
 
-## Learn More
+| Name | Where used | Notes |
+| --- | --- | --- |
+| `NEXT_PUBLIC_SUPABASE_URL` | client + server | Safe to expose. |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | client + server | Safe to expose. RLS enforces access. |
+| `SUPABASE_SERVICE_ROLE_KEY` | server only | **Never** expose to the client. |
+| `RESEND_API_KEY` | server only | Transactional email. |
 
-To learn more about Next.js, take a look at the following resources:
+## Deploying to Vercel
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Go to https://vercel.com/new and import `DemianMoor/lumzen`.
+2. Framework preset: **Next.js** (auto-detected).
+3. Under **Environment Variables**, add every var from `.env.example` (use real values from `.env.local`).
+4. Click **Deploy**. Subsequent pushes to `main` auto-deploy.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+CLI alternative: `vercel` from this folder, then `vercel --prod`.
