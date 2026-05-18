@@ -1,12 +1,18 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 /**
  * Star field — 150 stars, three tiers, randomized positions and timing.
  * From BRAND.md §9.1.
+ *
+ * Stars are generated client-side only to avoid hydration mismatch from
+ * Math.random producing different values on server vs client.
  */
 export function StarField() {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   const stars = useMemo(
     () =>
       Array.from({ length: 150 }, (_, i) => ({
@@ -20,6 +26,10 @@ export function StarField() {
       })),
     [],
   );
+
+  if (!mounted) {
+    return <div className="fixed inset-0 overflow-hidden pointer-events-none z-0" />;
+  }
 
   return (
     <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">

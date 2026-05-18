@@ -33,3 +33,5 @@ yarn-error.log*
 # Claude / scaffold scratch
 .claude/
 /_v0_extracted/
+/.playwright-mcp/
+/stage1-dashboard.png
