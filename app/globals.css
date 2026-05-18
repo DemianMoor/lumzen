@@ -1,26 +1,206 @@
-@import "tailwindcss";
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* LumZen Dark Cosmic Theme */
+  --background: #06060f;
+  --foreground: #f0eff8;
+  
+  --card: #0c0c1e;
+  --card-foreground: #f0eff8;
+  
+  --popover: #12122a;
+  --popover-foreground: #f0eff8;
+  
+  --primary: #c4a35a;
+  --primary-foreground: #06060f;
+  
+  --secondary: #1a1a35;
+  --secondary-foreground: #f0eff8;
+  
+  --muted: #12122a;
+  --muted-foreground: #8f8daa;
+  
+  --accent: #8b6fc9;
+  --accent-foreground: #f0eff8;
+  
+  --destructive: #ef4444;
+  --destructive-foreground: #f0eff8;
+  
+  --border: rgba(196, 163, 90, 0.15);
+  --input: rgba(255, 255, 255, 0.04);
+  --ring: #c4a35a;
+  
+  /* LumZen Brand Colors */
+  --lum-gold: #c4a35a;
+  --lum-blue: #6b9fd4;
+  --lum-glow: #8b6fc9;
+  --lum-mist: #4db8a8;
+  --lum-rose: #d4758a;
+  --lum-mint: #6bcc9e;
+  
+  /* Surface layers */
+  --surface-1: #0c0c1e;
+  --surface-2: #12122a;
+  --surface-3: #1a1a35;
+  
+  /* Text colors */
+  --text-primary: #f0eff8;
+  --text-secondary: #8f8daa;
+  --text-muted: #4a4866;
+  
+  --radius: 0.625rem;
+  
+  --sidebar: rgba(6, 6, 15, 0.92);
+  --sidebar-foreground: #f0eff8;
+  --sidebar-primary: #c4a35a;
+  --sidebar-primary-foreground: #06060f;
+  --sidebar-accent: rgba(196, 163, 90, 0.08);
+  --sidebar-accent-foreground: #f0eff8;
+  --sidebar-border: rgba(196, 163, 90, 0.12);
+  --sidebar-ring: #c4a35a;
 }
 
 @theme inline {
+  --font-sans: var(--font-jost), system-ui, sans-serif;
+  --font-serif: var(--font-cormorant), Georgia, serif;
+  --font-mono: var(--font-jetbrains), 'JetBrains Mono', monospace;
+  --font-display: var(--font-cinzel), serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Star Twinkling Animation */
+@keyframes twinkle {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.9;
+    transform: scale(1.2);
+  }
+}
+
+/* Nebula Drift Animation */
+@keyframes nebulaDrift {
+  0% {
+    transform: translate(-15px, -20px);
+  }
+  100% {
+    transform: translate(15px, 20px);
+  }
+}
+
+/* Lum Glow Orbit Animation */
+@keyframes lumOrbit {
+  0% {
+    transform: translate(-50%, -50%) rotate(0deg) translateX(100px) rotate(0deg);
+  }
+  100% {
+    transform: translate(-50%, -50%) rotate(360deg) translateX(100px) rotate(-360deg);
+  }
+}
+
+/* Gold Shimmer Sweep */
+@keyframes shimmerSweep {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Pulse Animation */
+@keyframes pulse-soft {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+}
+
+/* Tarot Card Flip */
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  100% {
+    transform: rotateY(180deg);
+  }
+}
+
+/* Fade Up Animation */
+@keyframes fadeUp {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(6, 6, 15, 0.5);
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(196, 163, 90, 0.3);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(196, 163, 90, 0.5);
 }
