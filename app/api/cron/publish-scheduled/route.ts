@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
+import { createSupabaseAdmin } from "@/lib/supabase";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -8,10 +10,38 @@ export async function GET(request: Request) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
-  // Stage 2: Query articles where status='scheduled' AND scheduled_for <= now()
-  // and update them to status='published', set published_at=now().
+  const supabase = createSupabaseAdmin();
+  const now = new Date().toISOString();
+
+  const { data: due, error: selectError } = await supabase
+    .from("articles")
+    .select("id, slug, scheduled_for")
+    .eq("status", "scheduled")
+    .lte("scheduled_for", now);
+
+  if (selectError) {
+    console.error("Cron select error:", selectError);
+    return NextResponse.json({ error: selectError.message }, { status: 500 });
+  }
+
+  if (!due || due.length === 0) {
+    return NextResponse.json({ ok: true, published: 0 });
+  }
+
+  const ids = due.map((d) => d.id);
+  const { error: updateError } = await supabase
+    .from("articles")
+    .update({ status: "published", published_at: now })
+    .in("id", ids);
+
+  if (updateError) {
+    console.error("Cron update error:", updateError);
+    return NextResponse.json({ error: updateError.message }, { status: 500 });
+  }
+
   return NextResponse.json({
     ok: true,
-    message: "Stub — implementation in Stage 2",
+    published: ids.length,
+    slugs: due.map((d) => d.slug),
   });
 }

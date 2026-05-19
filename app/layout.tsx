@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Cormorant_Garamond, Cinzel, Jost, JetBrains_Mono } from "next/font/google";
 import { Analytics } from "@vercel/analytics/next";
+import { PopupProvider } from "@/lib/popup-context";
+import { SubscribePopup } from "@/components/subscribe-popup";
 import "./globals.css";
 
 const cormorant = Cormorant_Garamond({
@@ -67,7 +69,10 @@ export default function RootLayout({
       className={`${cormorant.variable} ${cinzel.variable} ${jost.variable} ${jetbrainsMono.variable} bg-[#06060f]`}
     >
       <body className="font-sans antialiased min-h-screen bg-[#06060f] text-[#f0eff8]">
-        {children}
+        <PopupProvider>
+          {children}
+          <SubscribePopup />
+        </PopupProvider>
         {process.env.NODE_ENV === "production" && <Analytics />}
       </body>
     </html>

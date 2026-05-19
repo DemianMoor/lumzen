@@ -323,6 +323,7 @@ export type Database = {
       landing_pages: {
         Row: {
           created_at: string
+          entry_file: string
           gtm_id: string | null
           id: string
           is_active: boolean
@@ -332,6 +333,7 @@ export type Database = {
         }
         Insert: {
           created_at?: string
+          entry_file?: string
           gtm_id?: string | null
           id?: string
           is_active?: boolean
@@ -341,6 +343,7 @@ export type Database = {
         }
         Update: {
           created_at?: string
+          entry_file?: string
           gtm_id?: string | null
           id?: string
           is_active?: boolean

@@ -49,6 +49,7 @@
     "@supabase/supabase-js": "^2.105.3",
     "@vercel/analytics": "1.6.1",
     "autoprefixer": "^10.4.20",
+    "circular-natal-horoscope-js": "^1.1.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "1.1.1",
@@ -70,6 +71,7 @@
     "sharp": "^0.34.5",
     "sonner": "^1.7.1",
     "tailwind-merge": "^3.3.1",
+    "tz-lookup": "^6.1.25",
     "vaul": "^1.1.2",
     "zod": "^3.24.1"
   },
@@ -80,6 +82,7 @@
     "@types/papaparse": "^5.5.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/tz-lookup": "^6.1.2",
     "eslint": "^9",
     "eslint-config-next": "16.2.6",
     "postcss": "^8.5",
