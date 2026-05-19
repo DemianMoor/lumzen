@@ -83,39 +83,41 @@ export default async function DashboardPage() {
   );
   const practiceLine = PRACTICE_LINES[dayOfYear % PRACTICE_LINES.length];
 
+  // Dashboard placeholder cards: each links to its pillar's top-level page,
+  // where the real list is rendered against live data.
   const guideItems: ContentRowItem[] = [
-    { href: "/guides/the-seven-chakras", title: "The Seven Chakras", category: "Energy", meta: "12 min read", iconKey: "chakra-spiral" },
-    { href: "/guides/reading-the-moon", title: "Reading the Moon", category: "Lunar", meta: "8 min read", iconKey: "moon-phases" },
-    { href: "/guides/sacred-geometry", title: "Sacred Geometry", category: "Foundations", meta: "15 min read", iconKey: "flower-of-life" },
-    { href: "/guides/shadow-work", title: "Shadow Work, Gently", category: "Inner Work", meta: "10 min read", iconKey: "sacred-book" },
+    { href: "/guides", title: "The Seven Chakras", category: "Energy", meta: "12 min read", iconKey: "chakra-spiral" },
+    { href: "/guides", title: "Reading the Moon", category: "Lunar", meta: "8 min read", iconKey: "moon-phases" },
+    { href: "/guides", title: "Sacred Geometry", category: "Foundations", meta: "15 min read", iconKey: "flower-of-life" },
+    { href: "/guides", title: "Shadow Work, Gently", category: "Inner Work", meta: "10 min read", iconKey: "sacred-book" },
   ];
 
   const audiobookItems: ContentRowItem[] = [
-    { href: "/audiobooks/the-prophet", title: "The Prophet", category: "Kahlil Gibran", meta: "2h 14m", iconKey: "prophet" },
-    { href: "/audiobooks/tao-te-ching", title: "Tao Te Ching", category: "Lao Tzu", meta: "1h 48m", iconKey: "yin-yang" },
-    { href: "/audiobooks/kybalion", title: "The Kybalion", category: "Hermetic", meta: "3h 02m", iconKey: "hermetic" },
-    { href: "/audiobooks/meditations", title: "Meditations", category: "Marcus Aurelius", meta: "5h 36m", iconKey: "ancient-scroll" },
+    { href: "/audiobooks", title: "The Prophet", category: "Kahlil Gibran", meta: "2h 14m", iconKey: "prophet" },
+    { href: "/audiobooks", title: "Tao Te Ching", category: "Lao Tzu", meta: "1h 48m", iconKey: "yin-yang" },
+    { href: "/audiobooks", title: "The Kybalion", category: "Hermetic", meta: "3h 02m", iconKey: "hermetic" },
+    { href: "/audiobooks", title: "Meditations", category: "Marcus Aurelius", meta: "5h 36m", iconKey: "ancient-scroll" },
   ];
 
   const affirmationItems: ContentRowItem[] = [
-    { href: "/affirmations/morning-abundance", title: "Morning Abundance Flow", category: "Daily", meta: "7 min", iconKey: "morning-rise" },
-    { href: "/affirmations/mirror-work", title: "Mirror Work", category: "Self", meta: "10 min", iconKey: "mirror-self" },
-    { href: "/affirmations/chakra-sequence", title: "Chakra Sequence", category: "Energy", meta: "12 min", iconKey: "lotus-chakra" },
-    { href: "/affirmations/breathe-affirm", title: "Breathe & Affirm", category: "Breathwork", meta: "5 min", iconKey: "breath-waves" },
+    { href: "/affirmations", title: "Morning Abundance Flow", category: "Daily", meta: "7 min", iconKey: "morning-rise" },
+    { href: "/affirmations", title: "Mirror Work", category: "Self", meta: "10 min", iconKey: "mirror-self" },
+    { href: "/affirmations", title: "Chakra Sequence", category: "Energy", meta: "12 min", iconKey: "lotus-chakra" },
+    { href: "/affirmations", title: "Breathe & Affirm", category: "Breathwork", meta: "5 min", iconKey: "breath-waves" },
   ];
 
   const soundItems: ContentRowItem[] = [
-    { href: "/sound/528-hz", title: "528 Hz · Love", category: "Solfeggio", meta: "30 min", iconKey: "frequency-waves" },
-    { href: "/sound/singing-bowls", title: "Tibetan Singing Bowls", category: "Resonance", meta: "45 min", iconKey: "singing-bowl" },
-    { href: "/sound/theta-binaural", title: "Theta Binaural", category: "Brainwave", meta: "60 min", iconKey: "theta-wave" },
-    { href: "/sound/lunar-sleep", title: "Lunar Sleep", category: "Rest", meta: "90 min", iconKey: "lunar-sleep" },
+    { href: "/sound", title: "528 Hz · Love", category: "Solfeggio", meta: "30 min", iconKey: "frequency-waves" },
+    { href: "/sound", title: "Tibetan Singing Bowls", category: "Resonance", meta: "45 min", iconKey: "singing-bowl" },
+    { href: "/sound", title: "Theta Binaural", category: "Brainwave", meta: "60 min", iconKey: "theta-wave" },
+    { href: "/sound", title: "Lunar Sleep", category: "Rest", meta: "90 min", iconKey: "lunar-sleep" },
   ];
 
   const celestialItems: ContentRowItem[] = [
-    { href: "/celestial/daily-tarot", title: "Daily Tarot Pull", category: "Tarot", meta: "Today", iconKey: "tarot-card" },
-    { href: "/celestial/oracle", title: "Oracle of the Day", category: "Oracle", meta: "Today", iconKey: "oracle-crystal" },
-    { href: "/celestial/zodiac", title: "Your Sign Today", category: "Astrology", meta: "2 min read", iconKey: "zodiac-wheel" },
-    { href: "/celestial/natal-chart", title: "Your Natal Chart", category: "Astrology", meta: "Saved", iconKey: "natal-chart" },
+    { href: "/tarot", title: "Daily Tarot Pull", category: "Tarot", meta: "Today", iconKey: "tarot-card" },
+    { href: "/tarot", title: "Oracle of the Day", category: "Oracle", meta: "Today", iconKey: "oracle-crystal" },
+    { href: "/natal", title: "Your Sign Today", category: "Astrology", meta: "2 min read", iconKey: "zodiac-wheel" },
+    { href: "/natal", title: "Your Natal Chart", category: "Astrology", meta: "Saved", iconKey: "natal-chart" },
   ];
 
   return (

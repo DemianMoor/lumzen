@@ -9,7 +9,25 @@ const SESSION_SHOWN_KEY = "lz_popup_shown_this_session";
 const SUBSCRIBED_KEY = "lz_subscribed";
 const TIMER_DELAY_MS = 5000;
 
-const EXCLUDED_PATH_PREFIXES = ["/admin", "/auth", "/api", "/dashboard"];
+// Authenticated surfaces never see the popup — members already joined.
+// The (dashboard) route group puts pillar pages at top-level paths, so we
+// have to list each prefix explicitly.
+const EXCLUDED_PATH_PREFIXES = [
+  "/admin",
+  "/auth",
+  "/api",
+  "/dashboard",
+  "/tarot",
+  "/natal",
+  "/affirmations",
+  "/audiobooks",
+  "/sound",
+  "/guides",
+  "/celestial",
+  "/profile",
+  "/settings",
+  "/lp",
+];
 const EXCLUDED_EXACT_PATHS = ["/subscribe"];
 
 function isExcludedPath(pathname: string): boolean {
