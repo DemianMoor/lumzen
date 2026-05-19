@@ -46,9 +46,9 @@ export default async function ReadingPage({
       <div className="mx-auto max-w-3xl">
         <Link
           href="/tarot"
-          className="font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
         >
-          ← Back to tarot
+          <span aria-hidden="true">←</span> Back to tarot
         </Link>
 
         <header className="text-center my-8">

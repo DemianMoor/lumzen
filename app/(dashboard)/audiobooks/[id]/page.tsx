@@ -38,9 +38,9 @@ export default async function AudiobookDetailPage({
       <div className="mx-auto max-w-4xl">
         <Link
           href="/audiobooks"
-          className="font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
+          className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
         >
-          ← Back to library
+          <span aria-hidden="true">←</span> Back to library
         </Link>
 
         <header className="grid md:grid-cols-[200px,1fr] gap-6 my-8 items-start">

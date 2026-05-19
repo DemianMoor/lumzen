@@ -155,7 +155,7 @@ export function MirrorWork({
       <button
         type="button"
         onClick={finish}
-        className="block mx-auto font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a]"
+        className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
       >
         End early
       </button>
