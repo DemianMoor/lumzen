@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import { Sidebar } from "@/components/sidebar";
+import { MobileDashboardNav } from "@/components/mobile-dashboard-nav";
 import {
   StarField,
   NebulaBackground,
@@ -33,8 +34,11 @@ export default async function DashboardGroupLayout({
         <LumGlowOrb />
 
         <Sidebar />
+        <MobileDashboardNav />
 
-        <div className="relative z-10 md:pl-[68px] pb-[120px]">{children}</div>
+        <div className="relative z-10 pt-14 md:pt-0 md:pl-[68px] pb-[120px]">
+          {children}
+        </div>
 
         <AudioPlayer />
       </div>

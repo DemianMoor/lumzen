@@ -37,7 +37,7 @@ export function SiteHeader({
 
   return (
     <header
-      className="sticky top-0 z-20 px-6 py-4 flex items-center justify-between gap-4"
+      className="md:sticky md:top-0 z-20 px-6 py-4 flex items-center justify-between gap-4"
       style={{
         background: "rgba(6, 6, 15, 0.80)",
         backdropFilter: "blur(20px)",

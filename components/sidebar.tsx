@@ -3,32 +3,13 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
-  LayoutDashboard,
-  BookOpen,
-  Headphones,
-  Sparkles,
-  Music2,
-  Stars,
-  User,
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-} from "lucide-react";
-
-const NAV_PRIMARY = [
-  { href: "/dashboard", label: "Home", icon: LayoutDashboard },
-  { href: "/guides", label: "Spiritual Guides", icon: BookOpen },
-  { href: "/audiobooks", label: "Audiobooks", icon: Headphones },
-  { href: "/affirmations", label: "Affirmations", icon: Sparkles },
-  { href: "/sound", label: "Sound Temple", icon: Music2 },
-  { href: "/celestial", label: "Celestial Tools", icon: Stars },
-] as const;
-
-const NAV_SECONDARY = [
-  { href: "/profile", label: "My Profile", icon: User },
-  { href: "/settings", label: "Settings", icon: Settings },
-] as const;
+  NAV_PRIMARY,
+  NAV_SECONDARY,
+  type DashboardNavItem,
+  isNavActive,
+} from "@/lib/dashboard-nav";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -69,7 +50,7 @@ export function Sidebar() {
             key={item.href}
             item={item}
             expanded={expanded}
-            active={isActive(pathname, item.href)}
+            active={isNavActive(pathname, item.href)}
           />
         ))}
       </nav>
@@ -80,7 +61,7 @@ export function Sidebar() {
             key={item.href}
             item={item}
             expanded={expanded}
-            active={isActive(pathname, item.href)}
+            active={isNavActive(pathname, item.href)}
           />
         ))}
       </div>
@@ -101,18 +82,12 @@ export function Sidebar() {
   );
 }
 
-function isActive(pathname: string | null, href: string) {
-  if (!pathname) return false;
-  if (href === "/dashboard") return pathname === "/dashboard";
-  return pathname.startsWith(href);
-}
-
 function SidebarLink({
   item,
   expanded,
   active,
 }: {
-  item: { href: string; label: string; icon: React.ComponentType<{ size?: number }> };
+  item: DashboardNavItem;
   expanded: boolean;
   active: boolean;
 }) {
