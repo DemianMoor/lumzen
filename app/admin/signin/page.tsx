@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
@@ -98,6 +99,16 @@ export default function AdminSignInPage() {
           >
             {loading ? "Signing in…" : "Sign In"}
           </button>
+
+          <p className="text-center font-sans text-xs text-[#8f8daa] pt-2">
+            Need access?{" "}
+            <Link
+              href="/admin/signup"
+              className="text-[#c4a35a] hover:underline"
+            >
+              Register an editor account
+            </Link>
+          </p>
         </form>
       </div>
     </main>
