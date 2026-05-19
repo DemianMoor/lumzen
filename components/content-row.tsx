@@ -6,10 +6,8 @@ import { ContentCard, type ContentCardProps } from "@/components/content-card";
 
 export type ContentRowItem = Omit<
   ContentCardProps,
-  "dimmed" | "onHoverChange" | "accentColor" | "Icon"
-> & {
-  Icon: ContentCardProps["Icon"];
-};
+  "dimmed" | "onHoverChange" | "accentColor"
+>;
 
 export type ContentRowProps = {
   eyebrow: string;

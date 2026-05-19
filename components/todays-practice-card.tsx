@@ -1,3 +1,5 @@
+"use client";
+
 import Link from "next/link";
 
 type TodaysPracticeCardProps = {
@@ -42,7 +44,7 @@ export function TodaysPracticeCard({
         {affirmationLine}
       </h2>
       <p className="font-sans text-sm text-[#8f8daa] mb-8">
-        Day {dayStreak} of your journey. You&rsquo;re building something real.
+        Day {dayStreak}{" "}of your journey. You&rsquo;re building something real.
       </p>
 
       <div className="flex flex-wrap gap-3">

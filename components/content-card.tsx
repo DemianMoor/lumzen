@@ -2,6 +2,63 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import {
+  IconSacredBook,
+  IconChakraSpiral,
+  IconMoonPhases,
+  IconFlowerOfLife,
+  IconAkashicRecords,
+  IconProphet,
+  IconAncientScroll,
+  IconHermetic,
+  IconYinYang,
+  IconInfiniteWisdom,
+  IconMorningRise,
+  IconTransformation,
+  IconMirrorSelf,
+  IconLotusChakra,
+  IconBreathWaves,
+  IconFrequencyWaves,
+  IconSingingBowl,
+  IconThetaWave,
+  IconLunarSleep,
+  IconOmSymbol,
+  IconTarotCard,
+  IconOracleCrystal,
+  IconCelticKnot,
+  IconZodiacWheel,
+  IconNatalChart,
+} from "@/components/mystical-icons";
+
+const ICONS = {
+  "sacred-book": IconSacredBook,
+  "chakra-spiral": IconChakraSpiral,
+  "moon-phases": IconMoonPhases,
+  "flower-of-life": IconFlowerOfLife,
+  "akashic-records": IconAkashicRecords,
+  prophet: IconProphet,
+  "ancient-scroll": IconAncientScroll,
+  hermetic: IconHermetic,
+  "yin-yang": IconYinYang,
+  "infinite-wisdom": IconInfiniteWisdom,
+  "morning-rise": IconMorningRise,
+  transformation: IconTransformation,
+  "mirror-self": IconMirrorSelf,
+  "lotus-chakra": IconLotusChakra,
+  "breath-waves": IconBreathWaves,
+  "frequency-waves": IconFrequencyWaves,
+  "singing-bowl": IconSingingBowl,
+  "theta-wave": IconThetaWave,
+  "lunar-sleep": IconLunarSleep,
+  "om-symbol": IconOmSymbol,
+  "tarot-card": IconTarotCard,
+  "oracle-crystal": IconOracleCrystal,
+  "celtic-knot": IconCelticKnot,
+  "zodiac-wheel": IconZodiacWheel,
+  "natal-chart": IconNatalChart,
+} as const;
+
+export type IconKey = keyof typeof ICONS;
 
 export type ContentCardProps = {
   href: string;
@@ -9,7 +66,7 @@ export type ContentCardProps = {
   category: string;
   meta: string;
   accentColor: string;
-  Icon: React.ComponentType<{ color?: string; size?: number; className?: string }>;
+  iconKey: IconKey;
   dimmed?: boolean;
   onHoverChange?: (hovered: boolean) => void;
 };
@@ -20,11 +77,12 @@ export function ContentCard({
   category,
   meta,
   accentColor,
-  Icon,
+  iconKey,
   dimmed,
   onHoverChange,
 }: ContentCardProps) {
   const [hovered, setHovered] = useState(false);
+  const Icon = ICONS[iconKey];
 
   const isDimmed = dimmed && !hovered;
 
