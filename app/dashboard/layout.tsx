@@ -7,6 +7,7 @@ import {
   LumGlowOrb,
 } from "@/components/cosmic-background";
 import { AudioPlayer } from "@/components/audio-player";
+import { AudioPlayerProvider } from "@/lib/audio-player-context";
 
 export const dynamic = "force-dynamic";
 
@@ -25,18 +26,20 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="relative min-h-screen text-[#f0eff8]">
-      <StarField />
-      <NebulaBackground />
-      <LumGlowOrb />
+    <AudioPlayerProvider>
+      <div className="relative min-h-screen text-[#f0eff8]">
+        <StarField />
+        <NebulaBackground />
+        <LumGlowOrb />
 
-      <Sidebar />
+        <Sidebar />
 
-      <div className="relative z-10 md:pl-[68px] pb-[120px]">
-        {children}
+        <div className="relative z-10 md:pl-[68px] pb-[120px]">
+          {children}
+        </div>
+
+        <AudioPlayer />
       </div>
-
-      <AudioPlayer />
-    </div>
+    </AudioPlayerProvider>
   );
 }

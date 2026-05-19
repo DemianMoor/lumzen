@@ -1,7 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { playFrequency, stopAll } from "@/lib/audio/solfeggio";
+import { useAudioPlayer, type AudioSource } from "@/lib/audio-player-context";
 
 type Track = {
   id: string;
@@ -25,53 +24,42 @@ const CATEGORY_LABELS: Record<string, string> = {
   chanting: "Chanting and mantra",
 };
 
+function trackSource(track: Track): AudioSource | null {
+  if (track.stream_url.startsWith("lumzen://solfeggio/")) {
+    const hz = parseInt(track.stream_url.replace("lumzen://solfeggio/", ""), 10);
+    return Number.isFinite(hz) ? { kind: "frequency", hz } : null;
+  }
+  if (track.stream_url.startsWith("lumzen://")) {
+    return null;
+  }
+  return { kind: "url", url: track.stream_url };
+}
+
 export function SoundClient({ tracks }: { tracks: Track[] }) {
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const [active, setActive] = useState<Track | null>(null);
+  const { track: active, play, stop } = useAudioPlayer();
 
-  useEffect(() => () => stopAll(), []);
-
-  function play(track: Track) {
+  function handleSelect(track: Track) {
     if (active?.id === track.id) {
       stop();
       return;
     }
-    stop();
-    if (track.stream_url.startsWith("lumzen://solfeggio/")) {
-      const hz = parseInt(track.stream_url.replace("lumzen://solfeggio/", ""), 10);
-      if (Number.isFinite(hz)) {
-        void playFrequency(hz, (track.duration_seconds ?? 600) * 1000);
-        setActive(track);
-        markPracticeMeditation();
-      }
-    } else if (track.stream_url.startsWith("lumzen://")) {
-      // Other sentinel kinds (binaural, breath) — not synthesized in this stub.
-      setActive(track);
-    } else {
-      const el = new Audio(track.stream_url);
-      el.crossOrigin = "anonymous";
-      void el.play().catch(() => undefined);
-      audioRef.current = el;
-      setActive(track);
-      markPracticeMeditation();
-    }
-  }
-
-  function stop() {
-    stopAll();
-    if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-      audioRef.current = null;
-    }
-    setActive(null);
-  }
-
-  async function markPracticeMeditation() {
-    await fetch("/api/practices/complete", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ kind: "meditation" }),
+    const source = trackSource(track);
+    if (!source) return;
+    play({
+      id: track.id,
+      title: track.title,
+      subtitle: track.frequency_hz
+        ? `${track.frequency_hz} Hz · ${CATEGORY_LABELS[track.category] ?? track.category}`
+        : CATEGORY_LABELS[track.category] ?? track.category,
+      durationSeconds: track.duration_seconds ?? 600,
+      source,
+      onFirstPlay: () => {
+        void fetch("/api/practices/complete", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ kind: "meditation" }),
+        });
+      },
     });
   }
 
@@ -90,32 +78,6 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
 
   return (
     <div className="space-y-10">
-      {active && (
-        <div
-          className="sticky top-[68px] z-20 rounded-2xl p-4 border flex items-center justify-between gap-4"
-          style={{
-            background: "rgba(6,6,15,0.92)",
-            borderColor: "rgba(77,184,168,0.4)",
-            backdropFilter: "blur(8px)",
-          }}
-        >
-          <div>
-            <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#4db8a8] mb-1">
-              Now playing
-            </p>
-            <p className="font-serif italic text-[#f0eff8]">{active.title}</p>
-          </div>
-          <button
-            type="button"
-            onClick={stop}
-            className="rounded-full border px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(255,255,255,0.05)]"
-            style={{ borderColor: "rgba(255,255,255,0.1)" }}
-          >
-            Stop
-          </button>
-        </div>
-      )}
-
       {Object.entries(grouped).map(([category, list]) => (
         <section key={category}>
           <h2 className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
@@ -124,15 +86,17 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {list.map((track) => {
               const isActive = active?.id === track.id;
+              const unsupported = trackSource(track) === null;
               return (
                 <li key={track.id}>
                   <button
                     type="button"
-                    onClick={() => play(track)}
-                    className="w-full text-left rounded-xl border p-4 transition-all hover:-translate-y-0.5"
+                    onClick={() => handleSelect(track)}
+                    disabled={unsupported}
+                    className="w-full text-left rounded-xl border p-4 transition-all hover:-translate-y-0.5 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0"
                     style={{
                       background: isActive
-                        ? "rgba(77,184,168,0.08)"
+                        ? "rgba(77,184,168,0.10)"
                         : "rgba(26,26,53,0.5)",
                       borderColor: isActive
                         ? "rgba(77,184,168,0.5)"
@@ -149,6 +113,7 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
                       {track.duration_seconds
                         ? ` · ${Math.round(track.duration_seconds / 60)} min`
                         : ""}
+                      {unsupported ? " · coming soon" : ""}
                     </p>
                   </button>
                 </li>
