@@ -49,14 +49,16 @@ export function TarotClient() {
   const [daily, setDaily] = useState<DailyResponse | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [loadingDaily, setLoadingDaily] = useState(true);
-  const [interpreting, setInterpreting] = useState(false);
-  const [interpretation, setInterpretation] = useState<string | null>(null);
+  const [interpretingDaily, setInterpretingDaily] = useState(false);
+  const [dailyInterpretation, setDailyInterpretation] = useState<string | null>(null);
   const [dailyError, setDailyError] = useState<string | null>(null);
 
   const [spread, setSpread] = useState<SpreadKind>("three");
   const [question, setQuestion] = useState("");
   const [spreadResult, setSpreadResult] = useState<SpreadResponse | null>(null);
   const [drawingSpread, setDrawingSpread] = useState(false);
+  const [interpretingSpread, setInterpretingSpread] = useState(false);
+  const [spreadInterpretation, setSpreadInterpretation] = useState<string | null>(null);
   const [spreadError, setSpreadError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -70,7 +72,7 @@ export function TarotClient() {
         const data = (await res.json()) as DailyResponse;
         if (cancelled) return;
         setDaily(data);
-        setInterpretation(data.aiInterpretation);
+        setDailyInterpretation(data.aiInterpretation);
       } catch (err) {
         if (cancelled) return;
         setDailyError(err instanceof Error ? err.message : "Unable to load today's card.");
@@ -86,7 +88,7 @@ export function TarotClient() {
 
   async function readInterpretation() {
     if (!daily) return;
-    setInterpreting(true);
+    setInterpretingDaily(true);
     try {
       const res = await fetch("/api/tarot/interpret", {
         method: "POST",
@@ -95,17 +97,17 @@ export function TarotClient() {
       });
       const data = (await res.json()) as { interpretation?: string; error?: string };
       if (data.interpretation) {
-        setInterpretation(data.interpretation);
+        setDailyInterpretation(data.interpretation);
         await fetch("/api/practices/complete", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ kind: "tarot" }),
         });
       } else {
-        setInterpretation(data.error ?? "The interpretation could not be composed.");
+        setDailyInterpretation(data.error ?? "The interpretation could not be composed.");
       }
     } finally {
-      setInterpreting(false);
+      setInterpretingDaily(false);
     }
   }
 
@@ -113,6 +115,7 @@ export function TarotClient() {
     setDrawingSpread(true);
     setSpreadError(null);
     setSpreadResult(null);
+    setSpreadInterpretation(null);
     try {
       const res = await fetch("/api/tarot/spread", {
         method: "POST",
@@ -133,7 +136,7 @@ export function TarotClient() {
 
   async function interpretSpread() {
     if (!spreadResult) return;
-    setInterpreting(true);
+    setInterpretingSpread(true);
     try {
       const res = await fetch("/api/tarot/interpret", {
         method: "POST",
@@ -141,7 +144,7 @@ export function TarotClient() {
         body: JSON.stringify({ readingId: spreadResult.readingId }),
       });
       const data = (await res.json()) as { interpretation?: string; error?: string };
-      setInterpretation(data.interpretation ?? data.error ?? "");
+      setSpreadInterpretation(data.interpretation ?? data.error ?? "");
       if (data.interpretation) {
         await fetch("/api/practices/complete", {
           method: "POST",
@@ -150,7 +153,7 @@ export function TarotClient() {
         });
       }
     } finally {
-      setInterpreting(false);
+      setInterpretingSpread(false);
     }
   }
 
@@ -203,23 +206,23 @@ export function TarotClient() {
                 {daily.card.description}
               </p>
             )}
-            {interpretation ? (
+            {dailyInterpretation ? (
               <div className="mt-6 text-left">
                 <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
                   Full reading
                 </p>
                 <div className="font-serif text-[#f0eff8] leading-relaxed whitespace-pre-wrap">
-                  {interpretation}
+                  {dailyInterpretation}
                 </div>
               </div>
             ) : (
               <button
                 type="button"
                 onClick={readInterpretation}
-                disabled={interpreting}
+                disabled={interpretingDaily}
                 className="mt-4 px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60"
               >
-                {interpreting ? "Composing..." : "Read full interpretation ✦"}
+                {interpretingDaily ? "Composing..." : "Read full interpretation ✦"}
               </button>
             )}
           </div>
@@ -305,13 +308,13 @@ export function TarotClient() {
                 />
               ))}
             </div>
-            {interpretation ? (
+            {spreadInterpretation ? (
               <div className="text-left max-w-2xl mx-auto">
                 <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
                   Reading
                 </p>
                 <div className="font-serif text-[#f0eff8] leading-relaxed whitespace-pre-wrap">
-                  {interpretation}
+                  {spreadInterpretation}
                 </div>
               </div>
             ) : (
@@ -319,11 +322,11 @@ export function TarotClient() {
                 <button
                   type="button"
                   onClick={interpretSpread}
-                  disabled={interpreting}
+                  disabled={interpretingSpread}
                   className="px-6 py-3 rounded-full border font-sans text-sm text-[#f0eff8] hover:bg-[rgba(196,163,90,0.08)] transition-all disabled:opacity-60"
                   style={{ borderColor: "rgba(196,163,90,0.4)" }}
                 >
-                  {interpreting ? "Composing..." : "Read this spread ✦"}
+                  {interpretingSpread ? "Composing..." : "Read this spread ✦"}
                 </button>
               </div>
             )}
