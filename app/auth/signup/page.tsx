@@ -50,7 +50,13 @@ export default function SignUpPage() {
       return;
     }
 
-    setInfo("Check your inbox to confirm your email, then sign in.");
+    // Email confirmation is required — hand off to /auth/verify-email so the
+    // user can resend the verification link (up to 5 total) if it gets lost.
+    const params = new URLSearchParams({
+      email: email.trim().toLowerCase(),
+      sent: "1",
+    });
+    router.push(`/auth/verify-email?${params}`);
   }
 
   return (
