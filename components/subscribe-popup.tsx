@@ -10,8 +10,8 @@ const SUBSCRIBED_KEY = "lz_subscribed";
 const TIMER_DELAY_MS = 5000;
 
 // Authenticated surfaces never see the popup — members already joined.
-// The (dashboard) route group puts pillar pages at top-level paths, so we
-// have to list each prefix explicitly.
+// Legal/compliance pages don't either; users reading those should not be
+// interrupted by a marketing modal.
 const EXCLUDED_PATH_PREFIXES = [
   "/admin",
   "/auth",
@@ -28,7 +28,13 @@ const EXCLUDED_PATH_PREFIXES = [
   "/settings",
   "/lp",
 ];
-const EXCLUDED_EXACT_PATHS = ["/subscribe"];
+const EXCLUDED_EXACT_PATHS = [
+  "/subscribe",
+  "/privacy",
+  "/terms",
+  "/sms-terms",
+  "/do-not-sell",
+];
 
 function isExcludedPath(pathname: string): boolean {
   if (EXCLUDED_EXACT_PATHS.includes(pathname)) return true;
@@ -42,11 +48,7 @@ export function SubscribePopup() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
-
   const [email, setEmail] = useState("");
-  const [phone, setPhone] = useState("");
-  const [consentEmail, setConsentEmail] = useState(false);
-  const [consentSms, setConsentSms] = useState(false);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -115,16 +117,7 @@ export function SubscribePopup() {
     setError(null);
 
     if (!email.trim()) {
-      setError("Email is required.");
-      return;
-    }
-    if (!consentEmail && !consentSms) {
-      setError("Please consent to email or SMS so we know how to reach you.");
-      return;
-    }
-    const trimmedPhone = phone.trim();
-    if (consentSms && !trimmedPhone) {
-      setError("Please add your phone number to receive the SMS digest.");
+      setError("We need a valid email address to send you the practice.");
       return;
     }
 
@@ -135,15 +128,22 @@ export function SubscribePopup() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: email.trim(),
-          phone: trimmedPhone || undefined,
-          consent_email: consentEmail,
-          consent_sms: consentSms,
+          // The popup is email-only by design — TCPA prohibits bundling
+          // SMS consent with another opt-in, so we never collect a phone
+          // here. The full /subscribe form is the only SMS surface.
+          consent_email: true,
+          consent_sms: false,
           source: "popup",
         }),
       });
 
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
+        if (res.status === 409) {
+          throw new Error(
+            "This email is already on the list. You're already here ✦",
+          );
+        }
         throw new Error(data.error || `Subscribe failed (${res.status})`);
       }
 
@@ -194,109 +194,73 @@ export function SubscribePopup() {
 
           {success ? (
             <div className="py-6 text-center">
-              <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-3">
-                ✦ YOU ARE WITHIN
-              </p>
+              <p className="text-[#c4a35a] text-3xl leading-none mb-4">✦</p>
               <h2
                 id="subscribe-popup-title"
                 className="font-serif italic text-3xl text-[#f0eff8]"
               >
-                Welcome, traveler{" "}
-                <span className="text-[#c4a35a]">✦</span>
+                Welcome.
               </h2>
               <p className="font-sans text-sm text-[#8f8daa] mt-4 leading-relaxed">
-                A quiet email finds you each Sunday morning.
+                A welcome message has been sent to{" "}
+                <span className="text-[#f0eff8]">{email}</span>. Check your
+                inbox.
               </p>
             </div>
           ) : (
-            <>
-              <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-3">
-                ✦ THE WEEKLY
-              </p>
+            <div className="text-center">
+              <p className="text-[#c4a35a] text-3xl leading-none mb-4">✦</p>
               <h2
                 id="subscribe-popup-title"
                 className="font-serif italic text-2xl md:text-3xl text-[#f0eff8] leading-tight"
               >
-                One quiet email a week, written for the community.
+                Before you wander further…
               </h2>
               <p className="font-sans text-sm text-[#8f8daa] mt-3 leading-relaxed">
-                A short, useful read every Sunday morning. Free, always.
-                Unsubscribe in one tap.
+                Receive the daily card, weekly reflections, and quiet
+                announcements from us.
               </p>
 
-              <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+              <form
+                onSubmit={handleSubmit}
+                className="mt-6 space-y-4 text-left"
+                noValidate
+              >
                 <div>
-                  <label
-                    htmlFor="popup-email"
-                    className="block font-sans text-xs text-[#8f8daa] mb-2"
-                  >
-                    Email
+                  <label htmlFor="popup-email" className="sr-only">
+                    Your email
                   </label>
                   <input
                     ref={firstInputRef}
                     id="popup-email"
                     type="email"
                     required
+                    autoComplete="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    placeholder="you@example.com"
+                    placeholder="Your email"
                     className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
                   />
                 </div>
 
-                <div>
-                  <label
-                    htmlFor="popup-phone"
-                    className="block font-sans text-xs text-[#8f8daa] mb-2"
+                <p className="font-sans text-[11px] text-[#8f8daa] leading-relaxed">
+                  By subscribing, you agree to receive marketing emails from
+                  LumZen. You can unsubscribe at any time using the link in
+                  any email. See our{" "}
+                  <Link
+                    href="/privacy"
+                    className="text-[#c4a35a] hover:underline"
                   >
-                    Phone{" "}
-                    <span className="text-[#4a4866] normal-case">
-                      (optional)
-                    </span>
-                  </label>
-                  <input
-                    id="popup-phone"
-                    type="tel"
-                    value={phone}
-                    onChange={(e) => setPhone(e.target.value)}
-                    placeholder="+1 555 123 4567"
-                    className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
-                  />
-                </div>
-
-                <div className="space-y-3 pt-1">
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={consentEmail}
-                      onChange={(e) => setConsentEmail(e.target.checked)}
-                      className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
-                    />
-                    <span className="font-sans text-xs text-[#8f8daa] leading-relaxed">
-                      I consent to receive editorial emails from LumZen.
-                      Frequency varies, typically one email per week.
-                      Unsubscribe any time.
-                    </span>
-                  </label>
-
-                  <label className="flex items-start gap-3 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={consentSms}
-                      onChange={(e) => setConsentSms(e.target.checked)}
-                      className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
-                    />
-                    <span className="font-sans text-xs text-[#8f8daa] leading-relaxed">
-                      By providing my phone number and checking this box, I
-                      consent to receive marketing text messages from LumZen.
-                      Message frequency varies. Message and data rates may
-                      apply. Text HELP for help. Text STOP to unsubscribe.
-                    </span>
-                  </label>
-                </div>
+                    Privacy Policy
+                  </Link>
+                  .
+                </p>
 
                 {error && (
-                  <p className="font-sans text-sm text-[#ef4444]" role="alert">
+                  <p
+                    className="font-sans text-sm text-[#ef4444]"
+                    role="alert"
+                  >
                     {error}
                   </p>
                 )}
@@ -309,25 +273,17 @@ export function SubscribePopup() {
                   {isSubmitting ? "Joining…" : "Join the Community ✦"}
                 </button>
 
-                <p className="font-sans text-[11px] text-[#4a4866] text-center leading-relaxed">
-                  By signing up you agree to our{" "}
-                  <Link
-                    href="/terms"
-                    className="text-[#c4a35a] hover:underline"
+                <div className="text-center pt-1">
+                  <button
+                    type="button"
+                    onClick={() => setIsOpen(false)}
+                    className="font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
                   >
-                    Terms
-                  </Link>{" "}
-                  and{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-[#c4a35a] hover:underline"
-                  >
-                    Privacy Policy
-                  </Link>
-                  . We will not sell your data.
-                </p>
+                    No, thank you
+                  </button>
+                </div>
               </form>
-            </>
+            </div>
           )}
         </div>
       </div>

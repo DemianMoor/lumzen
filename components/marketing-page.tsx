@@ -8,16 +8,23 @@ export function MarketingPage({
   eyebrow,
   title,
   intro,
+  quiet,
   children,
 }: {
   eyebrow: string;
   title: string;
   intro?: string;
+  /**
+   * Legal/compliance pages set `quiet` so the animated star field
+   * doesn't draw attention away from dense body copy. The nebula
+   * backdrop stays for brand continuity.
+   */
+  quiet?: boolean;
   children: React.ReactNode;
 }) {
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
-      <StarField />
+      {!quiet && <StarField />}
       <NebulaBackground />
 
       <SiteHeader />

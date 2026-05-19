@@ -8,9 +8,9 @@ import { NoSubscribePopup } from "@/lib/popup-context";
 import { SubscribeForm } from "./subscribe-form";
 
 export const metadata: Metadata = {
-  title: "Subscribe — LumZen",
+  title: "Subscribe · LumZen",
   description:
-    "One quiet email a week, written for the community. Free, always. Unsubscribe in one tap.",
+    "Receive the daily card, weekly reflections, and quiet announcements from LumZen. Free, always. Unsubscribe at any time.",
 };
 
 export default function SubscribePage() {
@@ -26,15 +26,14 @@ export default function SubscribePage() {
         <div className="mx-auto max-w-2xl">
           <header className="mb-10 text-center">
             <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-3 text-[#c4a35a]">
-              ✦ THE WEEKLY
+              ✦ JOIN THE COMMUNITY
             </p>
             <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] leading-tight">
-              One quiet email a week.
+              Receive the practice in your inbox.
             </h1>
             <p className="font-sans text-base text-[#8f8daa] mt-6 leading-relaxed">
-              A short, useful dispatch every Sunday morning. Tarot, the
-              cosmos, sound, and the practice of presence. Free, always.
-              Unsubscribe in one tap.
+              Daily card, weekly reflections, and quiet announcements. No
+              noise, no urgency, no marketing tricks.
             </p>
           </header>
 
@@ -48,14 +47,6 @@ export default function SubscribePage() {
           >
             <SubscribeForm />
           </div>
-
-          <p className="font-sans text-xs text-[#8f8daa] text-center mt-6 leading-relaxed">
-            We will never sell your data. Read our{" "}
-            <a href="/privacy" className="text-[#c4a35a] hover:underline">
-              privacy policy
-            </a>
-            .
-          </p>
         </div>
       </main>
 
