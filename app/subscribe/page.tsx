@@ -6,14 +6,18 @@ import {
 import { SiteHeader, SiteFooter } from "@/components/site-nav";
 import { NoSubscribePopup } from "@/lib/popup-context";
 import { SubscribeForm } from "./subscribe-form";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Subscribe · LumZen",
-  description:
-    "Receive the daily card, weekly reflections, and quiet announcements from LumZen. Free, always. Unsubscribe at any time.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getCurrentMessages();
+  return {
+    title: t(messages, "marketing.subscribe.meta.title"),
+    description: t(messages, "marketing.subscribe.meta.description"),
+  };
+}
 
-export default function SubscribePage() {
+export default async function SubscribePage() {
+  const { messages } = await getCurrentMessages();
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
       <StarField />
@@ -26,14 +30,13 @@ export default function SubscribePage() {
         <div className="mx-auto max-w-2xl">
           <header className="mb-10 text-center">
             <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-3 text-[#c4a35a]">
-              ✦ JOIN THE COMMUNITY
+              {t(messages, "marketing.subscribe.eyebrow")}
             </p>
             <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] leading-tight">
-              Receive the practice in your inbox.
+              {t(messages, "marketing.subscribe.title")}
             </h1>
             <p className="font-sans text-base text-[#8f8daa] mt-6 leading-relaxed">
-              Daily card, weekly reflections, and quiet announcements. No
-              noise, no urgency, no marketing tricks.
+              {t(messages, "marketing.subscribe.intro")}
             </p>
           </header>
 

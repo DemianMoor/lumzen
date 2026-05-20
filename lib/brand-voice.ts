@@ -8,6 +8,8 @@
  * Mirrors the rules in docs/BRAND.md §2.
  */
 
+import type { Locale } from "@/lib/i18n/config";
+
 export const PILLARS = {
   guides: {
     name: "Spiritual Guides",
@@ -132,14 +134,22 @@ const ROLE_INSTRUCTIONS: Record<
   guide: `Role: editorial writer for a spiritual practice publication. Plainspoken yet poetic. Mechanism over miracle — cite the why behind a practice. Magazine prose, never landing-page hype.`,
 };
 
+const LOCALE_OUTPUT_INSTRUCTION: Record<Locale, string> = {
+  en: "",
+  uk: `LANGUAGE: Write the response in formal Ukrainian (Ви / Ваш). Use the same calm editorial voice in Ukrainian. Translate spiritual terminology with standard Ukrainian equivalents (e.g. tarot card names like "Дурень / Маг / Жриця"). Keep the brand name "LumZen" in Latin characters. The ✦ glyph stays as-is. No exclamation marks. Numbers, dates, and proper names follow Ukrainian conventions.`,
+  ru: `LANGUAGE: Write the response in formal Russian (вы / ваш). Use the same calm editorial voice in Russian. Translate spiritual terminology with standard Russian equivalents (e.g. tarot card names like "Дурак / Маг / Жрица"). Keep the brand name "LumZen" in Latin characters. The ✦ glyph stays as-is. No exclamation marks. Numbers, dates, and proper names follow Russian conventions.`,
+};
+
 /**
- * Build the Claude system prompt for a given AI role. The voice rules are
- * always prepended so generated copy never drifts from brand.
+ * Build the Claude system prompt for a given AI role + output locale.
+ * The voice rules are always prepended so generated copy never drifts
+ * from brand. The locale instruction is appended last so the model writes
+ * in the right language with the right register.
  */
 export function buildClaudeSystemPrompt(
   role: "tarot" | "natal" | "affirmation" | "guide",
+  locale: Locale = "en",
 ): string {
-  return `${LUMZEN_VOICE_RULES}
-
-${ROLE_INSTRUCTIONS[role]}`;
+  const localeBlock = LOCALE_OUTPUT_INSTRUCTION[locale];
+  return [LUMZEN_VOICE_RULES, ROLE_INSTRUCTIONS[role], localeBlock].filter(Boolean).join("\n\n");
 }

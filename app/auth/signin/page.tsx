@@ -6,9 +6,11 @@ import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { StarField } from "@/components/cosmic-background";
 import { NebulaBackground } from "@/components/cosmic-background";
+import { useT } from "@/lib/i18n/client";
 
 export default function SignInPage() {
   const router = useRouter();
+  const t = useT();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -51,17 +53,17 @@ export default function SignInPage() {
       >
         <div className="text-center mb-8">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-2 text-[#c4a35a]">
-            ✦ LUMZEN
+            {t("auth.common.brand_eyebrow")}
           </p>
           <h1 className="font-serif italic text-3xl text-[#f0eff8]">
-            Welcome back, traveler <span className="text-[#c4a35a]">✦</span>
+            {t("auth.signin.title")}
           </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block font-sans text-xs text-[#8f8daa] mb-2">
-              Email
+              {t("auth.signin.email_label")}
             </label>
             <input
               id="email"
@@ -76,7 +78,7 @@ export default function SignInPage() {
 
           <div>
             <label htmlFor="password" className="block font-sans text-xs text-[#8f8daa] mb-2">
-              Password
+              {t("auth.signin.password_label")}
             </label>
             <input
               id="password"
@@ -100,16 +102,16 @@ export default function SignInPage() {
             disabled={loading}
             className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? "Signing in…" : "Sign In ✦"}
+            {loading ? t("auth.signin.submit_loading") : t("auth.signin.submit")}
           </button>
         </form>
 
         <div className="mt-6 flex items-center justify-between font-sans text-xs text-[#8f8daa]">
           <Link href="/auth/forgot-password" className="hover:text-[#c4a35a] transition-colors">
-            Forgot password?
+            {t("auth.signin.forgot_password_link")}
           </Link>
           <Link href="/auth/signup" className="hover:text-[#c4a35a] transition-colors">
-            Create an account
+            {t("auth.signin.create_account_link")}
           </Link>
         </div>
       </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/lib/i18n/client";
 
 type Affirmation = {
   id: string;
@@ -16,6 +17,7 @@ export function MirrorWork({
   affirmations: Affirmation[];
   onComplete: () => void;
 }) {
+  const t = useT();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const [started, setStarted] = useState(false);
@@ -68,9 +70,7 @@ export function MirrorWork({
         });
       }, 1000);
     } catch {
-      setError(
-        "Camera permission was not granted. The mirror practice works without the camera too — read each affirmation aloud.",
-      );
+      setError(t("affirmations.activity.mirror_work.camera_denied_message"));
       setStarted(true);
       setIndex(0);
       setRemaining(SECONDS_PER);
@@ -104,8 +104,7 @@ export function MirrorWork({
     return (
       <div className="text-center space-y-6">
         <p className="font-serif italic text-[#8f8daa] max-w-xl mx-auto">
-          Five affirmations, thirty seconds each, eyes on your own eyes. The camera
-          stays on your device — nothing is recorded or sent.
+          {t("affirmations.activity.mirror_work.intro")}
         </p>
         {error && (
           <p className="font-sans text-sm text-[#ef4444]" role="alert">
@@ -117,7 +116,7 @@ export function MirrorWork({
           onClick={start}
           className="px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all"
         >
-          Begin mirror practice ✦
+          {t("affirmations.activity.mirror_work.begin_cta")}
         </button>
       </div>
     );
@@ -157,7 +156,7 @@ export function MirrorWork({
         onClick={finish}
         className="mx-auto inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
       >
-        End early
+        {t("affirmations.activity.mirror_work.end_early")}
       </button>
     </div>
   );

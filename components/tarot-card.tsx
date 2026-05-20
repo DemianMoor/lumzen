@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import { useT } from "@/lib/i18n/client";
 
 export type TarotCardProps = {
   name: string;
@@ -24,6 +25,7 @@ export function TarotCard({
   faceDown = false,
   onFlip,
 }: TarotCardProps) {
+  const t = useT();
   const [flipping, setFlipping] = useState(false);
 
   function handleClick() {
@@ -88,7 +90,7 @@ export function TarotCard({
         {name}
         {reversed && (
           <span className="block font-sans text-[10px] not-italic uppercase tracking-[0.2em] text-[#8f8daa] mt-1">
-            Reversed
+            {t("tarot.card.reversed_label")}
           </span>
         )}
       </p>

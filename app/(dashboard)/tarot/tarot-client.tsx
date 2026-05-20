@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { TarotCard } from "@/components/tarot-card";
+import { useT } from "@/lib/i18n/client";
 import type { SpreadKind } from "@/lib/tarot/client";
 
 type DailyResponse = {
@@ -37,15 +38,16 @@ type SpreadResponse = {
   cards: SpreadCard[];
 };
 
-const SPREAD_OPTIONS: { value: SpreadKind; label: string; description: string }[] = [
-  { value: "three", label: "Three cards", description: "Past · Present · Future" },
-  { value: "yes_no", label: "Yes or no", description: "A single card pulled to focus the question" },
-  { value: "love", label: "Love", description: "You · The other · Between you" },
-  { value: "career", label: "Career", description: "Where you stand · The opening · What it asks" },
-  { value: "celtic_cross", label: "Celtic Cross", description: "Ten positions, the long mirror" },
+const SPREAD_OPTIONS: { value: SpreadKind; labelKey: string; descriptionKey: string }[] = [
+  { value: "three", labelKey: "tarot.spread.three.label", descriptionKey: "tarot.spread.three.description" },
+  { value: "yes_no", labelKey: "tarot.spread.yes_no.label", descriptionKey: "tarot.spread.yes_no.description" },
+  { value: "love", labelKey: "tarot.spread.love.label", descriptionKey: "tarot.spread.love.description" },
+  { value: "career", labelKey: "tarot.spread.career.label", descriptionKey: "tarot.spread.career.description" },
+  { value: "celtic_cross", labelKey: "tarot.spread.celtic_cross.label", descriptionKey: "tarot.spread.celtic_cross.description" },
 ];
 
 export function TarotClient() {
+  const t = useT();
   const [daily, setDaily] = useState<DailyResponse | null>(null);
   const [revealed, setRevealed] = useState(false);
   const [loadingDaily, setLoadingDaily] = useState(true);
@@ -75,7 +77,7 @@ export function TarotClient() {
         setDailyInterpretation(data.aiInterpretation);
       } catch (err) {
         if (cancelled) return;
-        setDailyError(err instanceof Error ? err.message : "Unable to load today's card.");
+        setDailyError(err instanceof Error ? err.message : t("tarot.daily.default_error"));
       } finally {
         if (!cancelled) setLoadingDaily(false);
       }
@@ -84,7 +86,7 @@ export function TarotClient() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [t]);
 
   async function readInterpretation() {
     if (!daily) return;
@@ -104,7 +106,7 @@ export function TarotClient() {
           body: JSON.stringify({ kind: "tarot" }),
         });
       } else {
-        setDailyInterpretation(data.error ?? "The interpretation could not be composed.");
+        setDailyInterpretation(data.error ?? t("tarot.daily.interpretation_unavailable"));
       }
     } finally {
       setInterpretingDaily(false);
@@ -128,7 +130,7 @@ export function TarotClient() {
       const data = (await res.json()) as SpreadResponse;
       setSpreadResult(data);
     } catch (err) {
-      setSpreadError(err instanceof Error ? err.message : "The draw could not be made.");
+      setSpreadError(err instanceof Error ? err.message : t("tarot.spread.draw_failed"));
     } finally {
       setDrawingSpread(false);
     }
@@ -169,17 +171,17 @@ export function TarotClient() {
       >
         <header className="text-center mb-6">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
-            Today's card
+            {t("tarot.daily.eyebrow")}
           </p>
           <p className="font-serif italic text-[#8f8daa]">
-            {revealed ? "What the day is asking of you" : "Tap to reveal"}
+            {revealed ? t("tarot.daily.revealed_subtitle") : t("tarot.daily.tap_to_reveal")}
           </p>
         </header>
 
         <div className="flex justify-center mb-6">
           {loadingDaily ? (
             <div className="w-[160px] h-[260px] rounded-lg flex items-center justify-center font-serif italic text-[#8f8daa]">
-              Drawing...
+              {t("tarot.daily.drawing")}
             </div>
           ) : daily ? (
             <TarotCard
@@ -191,7 +193,7 @@ export function TarotClient() {
             />
           ) : (
             <p className="font-serif italic text-[#8f8daa]">
-              {dailyError ?? "The deck is not yet seeded."}
+              {dailyError ?? t("tarot.daily.deck_not_seeded")}
             </p>
           )}
         </div>
@@ -209,7 +211,7 @@ export function TarotClient() {
             {dailyInterpretation ? (
               <div className="mt-6 text-left">
                 <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
-                  Full reading
+                  {t("tarot.daily.full_reading_label")}
                 </p>
                 <div className="font-serif text-[#f0eff8] leading-relaxed whitespace-pre-wrap">
                   {dailyInterpretation}
@@ -222,7 +224,7 @@ export function TarotClient() {
                 disabled={interpretingDaily}
                 className="mt-4 px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60"
               >
-                {interpretingDaily ? "Composing..." : "Read full interpretation ✦"}
+                {interpretingDaily ? t("tarot.daily.composing") : t("tarot.daily.read_full_interpretation_cta")}
               </button>
             )}
           </div>
@@ -239,10 +241,10 @@ export function TarotClient() {
       >
         <header className="mb-6">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
-            A wider draw
+            {t("tarot.spread.section_eyebrow")}
           </p>
           <p className="font-serif italic text-[#8f8daa]">
-            Bring a question, or none. The cards will meet you at the threshold.
+            {t("tarot.spread.section_intro")}
           </p>
         </header>
 
@@ -262,21 +264,21 @@ export function TarotClient() {
                     : "rgba(255,255,255,0.08)",
               }}
             >
-              <p className="font-serif italic text-[#f0eff8]">{opt.label}</p>
-              <p className="font-sans text-xs text-[#8f8daa] mt-1">{opt.description}</p>
+              <p className="font-serif italic text-[#f0eff8]">{t(opt.labelKey)}</p>
+              <p className="font-sans text-xs text-[#8f8daa] mt-1">{t(opt.descriptionKey)}</p>
             </button>
           ))}
         </div>
 
         <label htmlFor="tarot-question" className="block font-sans text-xs text-[#8f8daa] mb-2">
-          Your question (optional)
+          {t("tarot.spread.question_label")}
         </label>
         <input
           id="tarot-question"
           type="text"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
-          placeholder="What is asking to be looked at?"
+          placeholder={t("tarot.spread.question_placeholder")}
           className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] transition-all mb-4"
         />
 
@@ -286,7 +288,7 @@ export function TarotClient() {
           disabled={drawingSpread}
           className="px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60"
         >
-          {drawingSpread ? "Drawing..." : "Draw the spread ✦"}
+          {drawingSpread ? t("tarot.spread.drawing") : t("tarot.spread.draw_cta")}
         </button>
 
         {spreadError && (
@@ -311,7 +313,7 @@ export function TarotClient() {
             {spreadInterpretation ? (
               <div className="text-left max-w-2xl mx-auto">
                 <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
-                  Reading
+                  {t("tarot.spread.reading_label")}
                 </p>
                 <div className="font-serif text-[#f0eff8] leading-relaxed whitespace-pre-wrap">
                   {spreadInterpretation}
@@ -326,7 +328,7 @@ export function TarotClient() {
                   className="px-6 py-3 rounded-full border font-sans text-sm text-[#f0eff8] hover:bg-[rgba(196,163,90,0.08)] transition-all disabled:opacity-60"
                   style={{ borderColor: "rgba(196,163,90,0.4)" }}
                 >
-                  {interpretingSpread ? "Composing..." : "Read this spread ✦"}
+                  {interpretingSpread ? t("tarot.spread.composing") : t("tarot.spread.read_spread_cta")}
                 </button>
               </div>
             )}

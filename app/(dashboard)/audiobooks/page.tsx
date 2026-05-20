@@ -1,11 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
 export default async function AudiobooksPage() {
   const supabase = await createSupabaseServerClient();
+  const { messages } = await getCurrentMessages();
   const { data: books } = await supabase
     .from("audiobooks")
     .select("id, title, author, description, cover_image_url, is_featured")
@@ -17,20 +19,19 @@ export default async function AudiobooksPage() {
       <div className="mx-auto max-w-5xl">
         <header className="text-center mb-12">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#d4758a] mb-3">
-            ✦ SACRED AUDIOBOOKS
+            {t(messages, "audiobooks.page.eyebrow")}
           </p>
           <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] mb-3">
-            Voices across time
+            {t(messages, "audiobooks.page.title")}
           </h1>
           <p className="font-serif italic text-lg text-[#8f8daa]">
-            Public-domain spiritual texts read aloud. The books that shaped seekers
-            before you.
+            {t(messages, "audiobooks.page.subtitle")}
           </p>
         </header>
 
         {!books || books.length === 0 ? (
           <p className="text-center font-serif italic text-[#8f8daa]">
-            The wisdom is waiting. Begin with what calls to you.
+            {t(messages, "audiobooks.page.empty_state")}
           </p>
         ) : (
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">

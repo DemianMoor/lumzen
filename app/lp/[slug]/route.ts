@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
+import { getLocaleFromRequest } from "@/lib/i18n/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,7 +17,7 @@ const DEFAULT_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || null;
  * those landing pages must use absolute paths or render-time helpers.
  */
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   context: { params: Promise<{ slug: string }> },
 ) {
   const { slug } = await context.params;
@@ -25,11 +26,13 @@ export async function GET(
     return new NextResponse("Not Found", { status: 404 });
   }
 
+  const locale = getLocaleFromRequest(req);
   const supabase = createSupabaseAdmin();
   const { data: page } = await supabase
     .from("landing_pages")
     .select("slug, entry_file, is_active, gtm_id")
     .eq("slug", slug)
+    .eq("locale", locale)
     .eq("is_active", true)
     .maybeSingle();
 

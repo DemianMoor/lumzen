@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { useT } from "@/lib/i18n/client";
 
 const MAX_TOTAL_EMAILS = 5;
 const COOLDOWN_SECONDS = 60;
@@ -39,6 +40,7 @@ function writeState(email: string, state: StoredState) {
 }
 
 export function VerifyEmailClient() {
+  const t = useT();
   const searchParams = useSearchParams();
   const initialEmail = (searchParams.get("email") ?? "").toLowerCase();
   const expired = searchParams.get("expired") === "1";
@@ -113,14 +115,14 @@ export function VerifyEmailClient() {
     writeState(email, { count: nextCount, cooldownEnds: nextCooldown });
     setCount(nextCount);
     setCooldownEnds(nextCooldown);
-    setInfo(`Sent. Check your inbox.`);
+    setInfo(t("auth.verify_email.info_sent"));
   }
 
   const heading = exhausted
-    ? "Let us set you up directly"
+    ? t("auth.verify_email.heading_exhausted")
     : expired
-      ? "Your verification link expired"
-      : "Check your inbox ✦";
+      ? t("auth.verify_email.heading_expired")
+      : t("auth.verify_email.heading_check_inbox");
 
   return (
     <div
@@ -133,7 +135,7 @@ export function VerifyEmailClient() {
     >
       <div className="text-center mb-6">
         <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-2 text-[#c4a35a]">
-          ✦ LUMZEN
+          {t("auth.common.brand_eyebrow")}
         </p>
         <h1 className="font-serif italic text-3xl text-[#f0eff8] leading-tight">
           {heading}
@@ -143,32 +145,31 @@ export function VerifyEmailClient() {
       {exhausted ? (
         <div className="space-y-4">
           <p className="font-sans text-sm text-[#f0eff8] leading-relaxed">
-            We have sent you {MAX_TOTAL_EMAILS} verification emails. If none
-            reached you, the path forward is a direct one.
+            {t("auth.verify_email.exhausted_intro", { max: MAX_TOTAL_EMAILS })}
           </p>
           <p className="font-sans text-sm text-[#8f8daa] leading-relaxed">
-            Write to{" "}
+            {t("auth.verify_email.exhausted_contact_prefix")}{" "}
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
               className="text-[#c4a35a] hover:underline"
             >
               {SUPPORT_EMAIL}
             </a>{" "}
-            and we will set up your account by hand.
+            {t("auth.verify_email.exhausted_contact_suffix")}
           </p>
           <Link
             href="/auth/signin"
             className="block w-full text-center py-3 rounded-full border border-[#c4a35a] text-[#c4a35a] font-sans text-sm hover:bg-[rgba(196,163,90,0.10)] transition-all"
           >
-            Back to sign in
+            {t("auth.verify_email.exhausted_back_link")}
           </Link>
         </div>
       ) : (
         <>
           <p className="font-sans text-sm text-[#8f8daa] leading-relaxed mb-6">
             {expired
-              ? "Send yourself a fresh verification link below."
-              : "We sent a verification link to your email. Click it to begin your practice. If it never arrived, you can resend below."}
+              ? t("auth.verify_email.body_expired")
+              : t("auth.verify_email.body_default")}
           </p>
 
           <form onSubmit={handleResend} className="space-y-4">
@@ -177,7 +178,7 @@ export function VerifyEmailClient() {
                 htmlFor="email"
                 className="block font-sans text-xs text-[#8f8daa] mb-2"
               >
-                Email
+                {t("auth.verify_email.email_label")}
               </label>
               <input
                 id="email"
@@ -186,7 +187,7 @@ export function VerifyEmailClient() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                placeholder={t("auth.verify_email.email_placeholder")}
                 className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
               />
             </div>
@@ -208,23 +209,27 @@ export function VerifyEmailClient() {
               className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {sending
-                ? "Sending…"
+                ? t("auth.verify_email.submit_loading")
                 : cooldownLeft > 0
-                  ? `Resend available in ${cooldownLeft}s`
-                  : "Resend verification email ✦"}
+                  ? t("auth.verify_email.submit_cooldown", { seconds: cooldownLeft })
+                  : t("auth.verify_email.submit")}
             </button>
 
             <p className="font-sans text-xs text-[#8f8daa] text-center">
               {count === 0
-                ? `Up to ${MAX_TOTAL_EMAILS} emails per address.`
-                : `${count} of ${MAX_TOTAL_EMAILS} sent · ${remaining} remaining.`}
+                ? t("auth.verify_email.counter_initial", { max: MAX_TOTAL_EMAILS })
+                : t("auth.verify_email.counter_progress", {
+                    count,
+                    max: MAX_TOTAL_EMAILS,
+                    remaining,
+                  })}
             </p>
           </form>
 
           <div className="mt-6 text-center font-sans text-xs text-[#8f8daa]">
-            Already verified?{" "}
+            {t("auth.verify_email.already_verified_prefix")}{" "}
             <Link href="/auth/signin" className="text-[#c4a35a] hover:underline">
-              Sign in
+              {t("auth.verify_email.sign_in_link")}
             </Link>
           </div>
         </>

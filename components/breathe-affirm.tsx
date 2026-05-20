@@ -1,13 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/lib/i18n/client";
 
 type Affirmation = { id: string; text: string };
 
 const PHASES = [
-  { label: "Inhale", duration: 4000 },
-  { label: "Hold", duration: 4000 },
-  { label: "Exhale", duration: 6000 },
+  { labelKey: "affirmations.activity.breathing.phase.inhale", duration: 4000 },
+  { labelKey: "affirmations.activity.breathing.phase.hold", duration: 4000 },
+  { labelKey: "affirmations.activity.breathing.phase.exhale", duration: 6000 },
 ];
 
 const TOTAL_CYCLES = 6;
@@ -19,6 +20,7 @@ export function BreatheAffirm({
   affirmations: Affirmation[];
   onComplete: () => void;
 }) {
+  const t = useT();
   const [running, setRunning] = useState(false);
   const [cycle, setCycle] = useState(0);
   const [phaseIdx, setPhaseIdx] = useState(0);
@@ -68,15 +70,14 @@ export function BreatheAffirm({
     return (
       <div className="text-center space-y-6">
         <p className="font-serif italic text-[#8f8daa] max-w-xl mx-auto">
-          Six breaths — inhale for four, hold for four, exhale for six. An
-          affirmation rises with each inhale.
+          {t("affirmations.activity.breathing.intro")}
         </p>
         <button
           type="button"
           onClick={start}
           className="px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all"
         >
-          Begin breathwork ✦
+          {t("affirmations.activity.breathing.begin_cta")}
         </button>
       </div>
     );
@@ -103,16 +104,16 @@ export function BreatheAffirm({
           }}
         />
         <p className="font-display text-[12px] tracking-[0.3em] uppercase text-[#c4a35a]">
-          {phase.label}
+          {t(phase.labelKey)}
         </p>
       </div>
 
       <p className="font-serif italic text-xl md:text-2xl text-[#f0eff8] text-center max-w-xl leading-relaxed">
-        {affirmation?.text ?? "Breathing."}
+        {affirmation?.text ?? t("affirmations.activity.breathing.default_phrase")}
       </p>
 
       <p className="font-mono text-xs text-[#8f8daa]">
-        Cycle {cycle + 1} of {TOTAL_CYCLES}
+        {t("affirmations.activity.breathing.cycle_progress", { current: cycle + 1, total: TOTAL_CYCLES })}
       </p>
 
       <button
@@ -120,7 +121,7 @@ export function BreatheAffirm({
         onClick={stop}
         className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
       >
-        End early
+        {t("affirmations.activity.breathing.end_early")}
       </button>
     </div>
   );

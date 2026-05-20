@@ -7,6 +7,7 @@ import {
   getAllCards,
   saveReading,
 } from "@/lib/tarot/client";
+import { getLocaleFromRequest } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -30,8 +31,9 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "unknown spread" }, { status: 400 });
   }
 
+  const locale = getLocaleFromRequest(request);
   const config = SPREADS[spread];
-  const deck = await getAllCards();
+  const deck = await getAllCards(locale);
   if (deck.length === 0) {
     return NextResponse.json({ error: "deck not seeded" }, { status: 503 });
   }
@@ -48,6 +50,7 @@ export async function POST(request: Request) {
     cards: placed,
     question: body.question?.trim() || null,
     aiInterpretation: null,
+    locale,
   });
 
   return NextResponse.json({

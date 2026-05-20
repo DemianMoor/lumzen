@@ -1,0 +1,322 @@
+{
+  "tarot": {
+    "page": {
+      "eyebrow": "✦ CELESTIAL TOOLS",
+      "title": "The cards reflect, never decide",
+      "subtitle": "Choose a question. Draw cards. Read them as a mirror.",
+      "recent_readings_heading": "Recent readings"
+    },
+    "daily": {
+      "eyebrow": "Today's card",
+      "tap_to_reveal": "Tap to reveal",
+      "revealed_subtitle": "What the day is asking of you",
+      "drawing": "Drawing...",
+      "deck_not_seeded": "The deck is not yet seeded.",
+      "default_error": "Unable to load today's card.",
+      "full_reading_label": "Full reading",
+      "read_full_interpretation_cta": "Read full interpretation ✦",
+      "composing": "Composing...",
+      "interpretation_unavailable": "The interpretation could not be composed."
+    },
+    "spread": {
+      "section_eyebrow": "A wider draw",
+      "section_intro": "Bring a question, or none. The cards will meet you at the threshold.",
+      "question_label": "Your question (optional)",
+      "question_placeholder": "What is asking to be looked at?",
+      "draw_cta": "Draw the spread ✦",
+      "drawing": "Drawing...",
+      "draw_failed": "The draw could not be made.",
+      "reading_label": "Reading",
+      "read_spread_cta": "Read this spread ✦",
+      "composing": "Composing...",
+      "three": {
+        "label": "Three cards",
+        "description": "Past · Present · Future"
+      },
+      "yes_no": {
+        "label": "Yes or no",
+        "description": "A single card pulled to focus the question"
+      },
+      "love": {
+        "label": "Love",
+        "description": "You · The other · Between you"
+      },
+      "career": {
+        "label": "Career",
+        "description": "Where you stand · The opening · What it asks"
+      },
+      "celtic_cross": {
+        "label": "Celtic Cross",
+        "description": "Ten positions, the long mirror"
+      }
+    },
+    "reading_detail": {
+      "back_to_tarot": "← Back to tarot",
+      "reading_label": "Reading"
+    },
+    "card": {
+      "reversed_label": "Reversed"
+    }
+  },
+  "natal": {
+    "page": {
+      "eyebrow": "✦ CELESTIAL TOOLS",
+      "title": "The cosmos has always been speaking",
+      "subtitle": "Bring your birth data. Receive your chart — patterns, not predictions."
+    },
+    "form": {
+      "section_eyebrow": "Birth data",
+      "section_intro": "Your time of birth gives the Rising. Without it the chart still draws, but the ascendant uses noon as a best-guess.",
+      "name_label": "Name (optional)",
+      "birth_date_label": "Birth date",
+      "birth_time_label": "Birth time (24h)",
+      "birth_city_label": "Birth city",
+      "birth_city_placeholder": "e.g. Kesswil, Switzerland",
+      "submit_cta": "Generate my chart ✦",
+      "submitting": "Drawing the chart...",
+      "cancel": "Cancel",
+      "generic_error": "Something went wrong.",
+      "generate_failed": "chart could not be generated"
+    },
+    "result": {
+      "sun_label": "Sun",
+      "moon_label": "Moon",
+      "rising_label": "Rising",
+      "birth_place_prefix": "Birth place:",
+      "regenerate": "Regenerate",
+      "unknown_sign_placeholder": "—"
+    },
+    "interpretation": {
+      "eyebrow": "What the chart asks",
+      "intro": "Read your chart with the LumZen guide — Sun, Moon, Rising, and the placements that stand out.",
+      "read_cta": "Read my chart ✦",
+      "composing": "Composing..."
+    },
+    "wheel": {
+      "aria_label": "Natal chart wheel"
+    }
+  },
+  "affirmations": {
+    "page": {
+      "eyebrow": "✦ AFFIRMATION PRACTICE",
+      "title": "Rewire your inner world",
+      "subtitle": "Choose a category. Choose a practice. The change is the repetition."
+    },
+    "category": {
+      "abundance": {
+        "label": "Receivership",
+        "description": "Open to what is being offered."
+      },
+      "love": {
+        "label": "Love",
+        "description": "For relationship with self and others."
+      },
+      "health": {
+        "label": "Body and rest",
+        "description": "For tending what carries you."
+      },
+      "identity": {
+        "label": "Identity",
+        "description": "For coming home to yourself."
+      },
+      "manifestation": {
+        "label": "Aligned action",
+        "description": "For moving toward what calls you."
+      },
+      "morning": {
+        "label": "Morning",
+        "description": "For setting the tone of the day."
+      },
+      "sleep": {
+        "label": "Sleep",
+        "description": "For releasing the day."
+      },
+      "shadow_work": {
+        "label": "Shadow",
+        "description": "For meeting what you have been avoiding."
+      }
+    },
+    "chakra": {
+      "chakra_root": {
+        "label": "Root",
+        "description": "Ground, safety, body."
+      },
+      "chakra_sacral": {
+        "label": "Sacral",
+        "description": "Feeling, creativity, flow."
+      },
+      "chakra_solar": {
+        "label": "Solar plexus",
+        "description": "Will, power, agency."
+      },
+      "chakra_heart": {
+        "label": "Heart",
+        "description": "Love, connection, compassion."
+      },
+      "chakra_throat": {
+        "label": "Throat",
+        "description": "Voice, truth, expression."
+      },
+      "chakra_third_eye": {
+        "label": "Third eye",
+        "description": "Insight, intuition."
+      },
+      "chakra_crown": {
+        "label": "Crown",
+        "description": "Connection to the larger."
+      }
+    },
+    "activity": {
+      "eyebrow": "Activity",
+      "back": "← Back",
+      "complete_message": "Practice complete. Your day on the wheel keeps turning.",
+      "chakra_sequence": {
+        "title": "Chakra sequence",
+        "description": "Seven affirmations, seven Solfeggio tones.",
+        "intro": "Seven chakras, seven affirmations, seven Solfeggio tones. About two and a half minutes. Sit comfortably. Stop whenever you want to.",
+        "begin_cta": "Begin the sequence ✦",
+        "end_early": "End early",
+        "default_phrase": "Breathe."
+      },
+      "mirror_work": {
+        "title": "Mirror work",
+        "description": "Five affirmations, eyes on your own eyes.",
+        "intro": "Five affirmations, thirty seconds each, eyes on your own eyes. The camera stays on your device — nothing is recorded or sent.",
+        "begin_cta": "Begin mirror practice ✦",
+        "end_early": "End early",
+        "camera_denied_message": "Camera permission was not granted. The mirror practice works without the camera too — read each affirmation aloud."
+      },
+      "breathing": {
+        "title": "Breathe and affirm",
+        "description": "Six breaths, six affirmations, paced together.",
+        "intro": "Six breaths — inhale for four, hold for four, exhale for six. An affirmation rises with each inhale.",
+        "begin_cta": "Begin breathwork ✦",
+        "end_early": "End early",
+        "default_phrase": "Breathing.",
+        "cycle_progress": "Cycle {current} of {total}",
+        "phase": {
+          "inhale": "Inhale",
+          "hold": "Hold",
+          "exhale": "Exhale"
+        }
+      }
+    },
+    "browse": {
+      "heading": "Browse by category",
+      "empty_state": "The wisdom is waiting. Begin with what calls to you."
+    },
+    "generator": {
+      "eyebrow": "Personal affirmations",
+      "intro": "Bring an intention. Receive five affirmations written for it.",
+      "placeholder": "e.g. trust myself in unfamiliar rooms",
+      "submit_cta": "Generate ✦",
+      "composing": "Composing...",
+      "generation_failed": "Generation failed."
+    }
+  },
+  "guides": {
+    "page": {
+      "eyebrow": "✦ SPIRITUAL GUIDES",
+      "title": "Wisdom you can actually use",
+      "subtitle": "Long-form guides on chakras, shadow, moon phases, sacred geometry, the foundations of practice."
+    },
+    "list": {
+      "featured_badge": "Featured",
+      "read_label": "Read",
+      "minutes_read_suffix": "min read",
+      "empty_state": "The wisdom is waiting. Begin with what calls to you."
+    },
+    "difficulty": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    },
+    "detail": {
+      "back_to_guides": "← Back to guides"
+    }
+  },
+  "audiobooks": {
+    "page": {
+      "eyebrow": "✦ SACRED AUDIOBOOKS",
+      "title": "Voices across time",
+      "subtitle": "Public-domain spiritual texts read aloud. The books that shaped seekers before you.",
+      "empty_state": "The wisdom is waiting. Begin with what calls to you."
+    },
+    "detail": {
+      "back_to_library": "← Back to library",
+      "eyebrow": "Sacred audiobook"
+    },
+    "player": {
+      "now_playing": "Now playing",
+      "chapter_prefix": "Chapter",
+      "loading_chapters": "Loading chapters...",
+      "no_chapter_selected": "No chapter selected.",
+      "chapters_unavailable": "Chapters could not be reached right now. Try again in a moment.",
+      "chapters_load_error": "chapters could not load",
+      "untitled_placeholder": "—"
+    }
+  },
+  "sound": {
+    "page": {
+      "eyebrow": "✦ MEDITATION & SOUND",
+      "title": "The sound temple",
+      "subtitle": "Frequencies, bowls, water, silence that speaks. Listen with intention.",
+      "empty_state": "The wisdom is waiting. Begin with what calls to you."
+    },
+    "category": {
+      "solfeggio": "Healing frequencies",
+      "tibetan_bowls": "Tibetan bowls",
+      "nature": "Nature and earth",
+      "deep_space": "Deep space",
+      "breathwork": "Breath",
+      "sleep_delta": "Sleep and delta",
+      "chanting": "Chanting and mantra"
+    },
+    "track": {
+      "coming_soon_suffix": "coming soon",
+      "minutes_suffix": "min"
+    },
+    "frequency": {
+      "174hz": { "label": "Foundation", "description": "Ground your energy" },
+      "285hz": { "label": "Restoration", "description": "Recharge what's depleted" },
+      "396hz": { "label": "Liberation", "description": "Release what no longer serves" },
+      "417hz": { "label": "Transformation", "description": "Break old patterns" },
+      "528hz": { "label": "Love", "description": "Open the heart. Heal." },
+      "639hz": { "label": "Connection", "description": "Harmonize relationships" },
+      "741hz": { "label": "Intuition", "description": "Sharpen your inner voice" },
+      "852hz": { "label": "Return", "description": "Come back to spiritual order" },
+      "963hz": { "label": "Oneness", "description": "Dissolve into the infinite" }
+    }
+  },
+  "celestial": {
+    "page": {
+      "eyebrow": "✦ CELESTIAL TOOLS",
+      "title": "The cosmos awaits",
+      "subtitle": "Ancient intelligence for your modern life. Choose your doorway.",
+      "begin_link": "Begin →"
+    },
+    "tool": {
+      "tarot": {
+        "eyebrow": "Tarot",
+        "title": "Draw today's card",
+        "body": "A single card for the day, or a full spread when there is a question. The cards reflect, never decide."
+      },
+      "natal": {
+        "eyebrow": "Astrology",
+        "title": "Read your natal chart",
+        "body": "Bring your birth data once. Receive your chart and a careful reading of the patterns it holds."
+      }
+    }
+  },
+  "audio_player": {
+    "aria_label": "Audio player",
+    "loading": "Loading…",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "seek": "Seek",
+    "volume_level": "Volume level"
+  }
+}

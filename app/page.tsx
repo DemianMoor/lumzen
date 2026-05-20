@@ -6,50 +6,52 @@ import {
 } from "@/components/cosmic-background";
 import { SiteHeader, SiteFooter } from "@/components/site-nav";
 import { PILLARS, type PillarSlug } from "@/lib/brand-voice";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-type PillarCard = {
+type PillarCardKeys = {
   slug: PillarSlug;
-  label: string;
-  title: string;
-  body: string;
+  labelKey: string;
+  titleKey: string;
+  bodyKey: string;
 };
 
-const PILLAR_CARDS: PillarCard[] = [
+const PILLAR_CARDS: PillarCardKeys[] = [
   {
     slug: "guides",
-    label: "✦ SPIRITUAL GUIDES",
-    title: "Deepen Your Understanding",
-    body: "Long-form essays on chakras, shadow work, moon phases, and the foundations of practice. Wisdom you can actually use.",
+    labelKey: "marketing.landing.pillar_card.guides.label",
+    titleKey: "marketing.landing.pillar_card.guides.title",
+    bodyKey: "marketing.landing.pillar_card.guides.body",
   },
   {
     slug: "audiobooks",
-    label: "✦ SACRED AUDIOBOOKS",
-    title: "Voices Across Time",
-    body: "Public-domain spiritual texts, read aloud. The books that shaped seekers before you.",
+    labelKey: "marketing.landing.pillar_card.audiobooks.label",
+    titleKey: "marketing.landing.pillar_card.audiobooks.title",
+    bodyKey: "marketing.landing.pillar_card.audiobooks.body",
   },
   {
     slug: "affirmations",
-    label: "✦ AFFIRMATION PRACTICE",
-    title: "Rewire Your Inner World",
-    body: "Mirror work, journaling, breathwork, daily challenges. Activities that move from idea to embodied change.",
+    labelKey: "marketing.landing.pillar_card.affirmations.label",
+    titleKey: "marketing.landing.pillar_card.affirmations.title",
+    bodyKey: "marketing.landing.pillar_card.affirmations.body",
   },
   {
     slug: "sound",
-    label: "✦ MEDITATION & SOUND",
-    title: "The Sound Temple",
-    body: "Nine Solfeggio frequencies, binaural tones, and silence that speaks. Choose your key.",
+    labelKey: "marketing.landing.pillar_card.sound.label",
+    titleKey: "marketing.landing.pillar_card.sound.title",
+    bodyKey: "marketing.landing.pillar_card.sound.body",
   },
   {
     slug: "celestial",
-    label: "✦ CELESTIAL TOOLS",
-    title: "The Cosmos Awaits",
-    body: "A daily tarot pull, your natal chart, and the sky as it actually is. Ancient intelligence for modern life.",
+    labelKey: "marketing.landing.pillar_card.celestial.label",
+    titleKey: "marketing.landing.pillar_card.celestial.title",
+    bodyKey: "marketing.landing.pillar_card.celestial.body",
   },
 ];
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { messages } = await getCurrentMessages();
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
       <StarField />
@@ -71,29 +73,27 @@ export default function LandingPage() {
               LumZen
             </p>
             <h1 className="font-serif italic text-4xl md:text-6xl text-[#f0eff8] mb-6 leading-tight">
-              Where Light Meets Stillness.
+              {t(messages, "marketing.landing.hero.title")}
             </h1>
             <p className="font-sans text-base md:text-lg text-[#8f8daa] mb-10 leading-relaxed max-w-2xl mx-auto">
-              Ancient wisdom. Celestial guidance. Daily practice. One luminous
-              space for tarot, natal charts, affirmations, meditation, sound
-              healing, and sacred audiobooks.
+              {t(messages, "marketing.landing.hero.subtitle")}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
               <Link
                 href="/auth/signup"
                 className="inline-block py-3 px-8 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all"
               >
-                Begin Your Journey ✦
+                {t(messages, "marketing.landing.hero.cta_primary")}
               </Link>
               <Link
                 href="#pillars"
                 className="inline-block py-3 px-8 rounded-full border border-[#c4a35a] text-[#c4a35a] font-sans text-sm hover:bg-[rgba(196,163,90,0.10)] transition-all"
               >
-                See What is Inside →
+                {t(messages, "marketing.landing.hero.cta_secondary")}
               </Link>
             </div>
             <p className="font-sans text-xs text-[#8f8daa] mt-8">
-              Free forever. No payment. Just practice.
+              {t(messages, "marketing.landing.hero.fine_print")}
             </p>
           </div>
         </section>
@@ -103,14 +103,13 @@ export default function LandingPage() {
           <div className="mx-auto max-w-6xl">
             <div className="text-center mb-12">
               <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-2 text-[#c4a35a]">
-                ✦ THE FIVE PILLARS
+                {t(messages, "marketing.landing.pillars.eyebrow")}
               </p>
               <h2 className="font-serif text-3xl md:text-4xl text-[#f0eff8] mb-3">
-                One sanctuary. Five doorways.
+                {t(messages, "marketing.landing.pillars.title")}
               </h2>
               <p className="font-sans text-sm text-[#8f8daa] max-w-2xl mx-auto leading-relaxed">
-                Each pillar is a complete practice in itself. Together they
-                form one continuous path of presence.
+                {t(messages, "marketing.landing.pillars.intro")}
               </p>
             </div>
 
@@ -132,13 +131,13 @@ export default function LandingPage() {
                       className="font-display text-[11px] tracking-[0.2em] uppercase mb-3"
                       style={{ color: accent }}
                     >
-                      {card.label}
+                      {t(messages, card.labelKey)}
                     </p>
                     <h3 className="font-serif italic text-2xl text-[#f0eff8] mb-3 leading-tight">
-                      {card.title}
+                      {t(messages, card.titleKey)}
                     </h3>
                     <p className="font-sans text-sm text-[#8f8daa] leading-relaxed">
-                      {card.body}
+                      {t(messages, card.bodyKey)}
                     </p>
                   </div>
                 );
@@ -151,19 +150,16 @@ export default function LandingPage() {
         <section className="px-6 py-16 md:py-24">
           <div className="mx-auto max-w-3xl text-center">
             <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-3 text-[#c4a35a]">
-              ✦ A QUIET PROMISE
+              {t(messages, "marketing.landing.why.eyebrow")}
             </p>
             <h2 className="font-serif italic text-3xl md:text-4xl text-[#f0eff8] mb-6 leading-tight">
-              The light is already within you.
+              {t(messages, "marketing.landing.why.title")}
             </h2>
             <p className="font-sans text-base text-[#8f8daa] leading-relaxed mb-4">
-              LumZen exists because spiritual practice deserves a home that is
-              calm, beautiful, and honest. No urgency, no upsell, no &ldquo;raise
-              your vibration&rdquo; jargon — just the tools.
+              {t(messages, "marketing.landing.why.body_1")}
             </p>
             <p className="font-sans text-base text-[#8f8daa] leading-relaxed">
-              The community is free. It is supported by quiet, on-brand
-              sponsorships. Your practice belongs to you.
+              {t(messages, "marketing.landing.why.body_2")}
             </p>
           </div>
         </section>
@@ -179,19 +175,19 @@ export default function LandingPage() {
             }}
           >
             <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-3 text-[#c4a35a]">
-              ✦ THE DOOR IS OPEN
+              {t(messages, "marketing.landing.cta.eyebrow")}
             </p>
             <h2 className="font-serif italic text-3xl md:text-4xl text-[#f0eff8] mb-6 leading-tight">
-              Step into the sanctuary.
+              {t(messages, "marketing.landing.cta.title")}
             </h2>
             <Link
               href="/auth/signup"
               className="inline-block py-3 px-10 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all"
             >
-              Begin Your Journey ✦
+              {t(messages, "marketing.landing.cta.button")}
             </Link>
             <p className="font-sans text-xs text-[#8f8daa] mt-6">
-              Free forever. No payment, ever.
+              {t(messages, "marketing.landing.cta.fine_print")}
             </p>
           </div>
         </section>

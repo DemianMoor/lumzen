@@ -8,6 +8,7 @@ import {
   X,
 } from "lucide-react";
 import { useAudioPlayer } from "@/lib/audio-player-context";
+import { useT } from "@/lib/i18n/client";
 
 function formatTime(seconds: number): string {
   if (!Number.isFinite(seconds) || seconds < 0) return "0:00";
@@ -17,6 +18,7 @@ function formatTime(seconds: number): string {
 }
 
 export function AudioPlayer() {
+  const t = useT();
   const {
     track,
     playing,
@@ -43,7 +45,7 @@ export function AudioPlayer() {
         backdropFilter: "blur(20px)",
         borderTop: "1px solid rgba(196, 163, 90, 0.18)",
       }}
-      aria-label="Audio player"
+      aria-label={t("audio_player.aria_label")}
     >
       <div className="h-[72px] px-4 md:px-6 flex items-center gap-4">
         <div className="flex items-center gap-3 min-w-0 md:w-64">
@@ -63,7 +65,7 @@ export function AudioPlayer() {
               {track.title}
             </p>
             <p className="font-sans text-[11px] text-[#8f8daa] truncate">
-              {loading ? "Loading…" : track.subtitle ?? ""}
+              {loading ? t("audio_player.loading") : track.subtitle ?? ""}
             </p>
           </div>
         </div>
@@ -72,7 +74,7 @@ export function AudioPlayer() {
           <div className="flex items-center gap-2">
             <button
               type="button"
-              aria-label={playing ? "Pause" : "Play"}
+              aria-label={playing ? t("audio_player.pause") : t("audio_player.play")}
               onClick={toggle}
               disabled={loading}
               className="size-10 rounded-full flex items-center justify-center text-[#06060f] transition-transform hover:scale-105 disabled:opacity-60"
@@ -82,7 +84,7 @@ export function AudioPlayer() {
             </button>
             <button
               type="button"
-              aria-label="Stop"
+              aria-label={t("audio_player.stop")}
               onClick={stop}
               className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
             >
@@ -100,7 +102,7 @@ export function AudioPlayer() {
               step={1}
               value={Math.min(position, duration)}
               onChange={(e) => seek(parseFloat(e.target.value))}
-              aria-label="Seek"
+              aria-label={t("audio_player.seek")}
               className="flex-1 accent-[#c4a35a]"
               style={{ background: "transparent" }}
             />
@@ -130,7 +132,7 @@ export function AudioPlayer() {
         <div className="hidden md:flex items-center gap-1">
           <button
             type="button"
-            aria-label={volume === 0 ? "Unmute" : "Mute"}
+            aria-label={volume === 0 ? t("audio_player.unmute") : t("audio_player.mute")}
             onClick={() => setVolume(volume === 0 ? 0.7 : 0)}
             className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
           >
@@ -143,7 +145,7 @@ export function AudioPlayer() {
             step={0.01}
             value={volume}
             onChange={(e) => setVolume(parseFloat(e.target.value))}
-            aria-label="Volume level"
+            aria-label={t("audio_player.volume_level")}
             className="w-20 accent-[#c4a35a]"
           />
         </div>

@@ -1,6 +1,7 @@
 "use client";
 
 import { useAudioPlayer, type AudioSource } from "@/lib/audio-player-context";
+import { useT } from "@/lib/i18n/client";
 
 type Track = {
   id: string;
@@ -14,14 +15,14 @@ type Track = {
   tags: string[];
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  solfeggio: "Healing frequencies",
-  tibetan_bowls: "Tibetan bowls",
-  nature: "Nature and earth",
-  deep_space: "Deep space",
-  breathwork: "Breath",
-  sleep_delta: "Sleep and delta",
-  chanting: "Chanting and mantra",
+const CATEGORY_LABEL_KEYS: Record<string, string> = {
+  solfeggio: "sound.category.solfeggio",
+  tibetan_bowls: "sound.category.tibetan_bowls",
+  nature: "sound.category.nature",
+  deep_space: "sound.category.deep_space",
+  breathwork: "sound.category.breathwork",
+  sleep_delta: "sound.category.sleep_delta",
+  chanting: "sound.category.chanting",
 };
 
 function trackSource(track: Track): AudioSource | null {
@@ -36,7 +37,13 @@ function trackSource(track: Track): AudioSource | null {
 }
 
 export function SoundClient({ tracks }: { tracks: Track[] }) {
+  const t = useT();
   const { track: active, play, stop } = useAudioPlayer();
+
+  function categoryLabel(category: string): string {
+    const key = CATEGORY_LABEL_KEYS[category];
+    return key ? t(key) : category;
+  }
 
   function handleSelect(track: Track) {
     if (active?.id === track.id) {
@@ -49,8 +56,8 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
       id: track.id,
       title: track.title,
       subtitle: track.frequency_hz
-        ? `${track.frequency_hz} Hz · ${CATEGORY_LABELS[track.category] ?? track.category}`
-        : CATEGORY_LABELS[track.category] ?? track.category,
+        ? `${track.frequency_hz} Hz · ${categoryLabel(track.category)}`
+        : categoryLabel(track.category),
       durationSeconds: track.duration_seconds ?? 600,
       source,
       onFirstPlay: () => {
@@ -71,7 +78,7 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
   if (tracks.length === 0) {
     return (
       <p className="text-center font-serif italic text-[#8f8daa]">
-        The wisdom is waiting. Begin with what calls to you.
+        {t("sound.page.empty_state")}
       </p>
     );
   }
@@ -81,7 +88,7 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
       {Object.entries(grouped).map(([category, list]) => (
         <section key={category}>
           <h2 className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
-            {CATEGORY_LABELS[category] ?? category}
+            {categoryLabel(category)}
           </h2>
           <ul className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
             {list.map((track) => {
@@ -111,9 +118,9 @@ export function SoundClient({ tracks }: { tracks: Track[] }) {
                         ? `${track.frequency_hz} Hz`
                         : track.subcategory ?? ""}
                       {track.duration_seconds
-                        ? ` · ${Math.round(track.duration_seconds / 60)} min`
+                        ? ` · ${Math.round(track.duration_seconds / 60)} ${t("sound.track.minutes_suffix")}`
                         : ""}
-                      {unsupported ? " · coming soon" : ""}
+                      {unsupported ? ` · ${t("sound.track.coming_soon_suffix")}` : ""}
                     </p>
                   </button>
                 </li>

@@ -3,11 +3,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServerClient, createSupabaseAdmin } from "@/lib/supabase";
 import { buildClaudeSystemPrompt } from "@/lib/brand-voice";
 import { rateLimit } from "@/lib/rate-limit";
+import { getLocaleFromRequest } from "@/lib/i18n/server";
 import type { ComputedChart } from "@/lib/astrology/ephemeris";
 
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(request: Request) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -25,7 +26,9 @@ export async function POST() {
     );
   }
 
+  const locale = getLocaleFromRequest(request);
   const admin = createSupabaseAdmin();
+
   const { data: chart } = await admin
     .from("natal_charts")
     .select("*")
@@ -36,7 +39,29 @@ export async function POST() {
     return NextResponse.json({ error: "no chart on file" }, { status: 404 });
   }
 
-  if (chart.ai_interpretation) {
+  // Look for an existing interpretation in this locale.
+  const { data: existing } = await admin
+    .from("natal_chart_interpretations")
+    .select("ai_interpretation")
+    .eq("chart_id", chart.id)
+    .eq("locale", locale)
+    .maybeSingle();
+
+  if (existing?.ai_interpretation) {
+    return NextResponse.json({ interpretation: existing.ai_interpretation });
+  }
+
+  // Fall back to legacy single-column English interpretation if relevant.
+  if (locale === "en" && chart.ai_interpretation) {
+    // Backfill into the new child table for consistency.
+    await admin.from("natal_chart_interpretations").upsert(
+      {
+        chart_id: chart.id,
+        locale: "en",
+        ai_interpretation: chart.ai_interpretation,
+      },
+      { onConflict: "chart_id,locale" },
+    );
     return NextResponse.json({ interpretation: chart.ai_interpretation });
   }
 
@@ -55,7 +80,7 @@ export async function POST() {
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 1100,
-    system: buildClaudeSystemPrompt("natal"),
+    system: buildClaudeSystemPrompt("natal", locale),
     messages: [{ role: "user", content: prompt }],
   });
 
@@ -64,10 +89,22 @@ export async function POST() {
     .join("")
     .trim();
 
-  await admin
-    .from("natal_charts")
-    .update({ ai_interpretation: interpretation })
-    .eq("user_id", user.id);
+  await admin.from("natal_chart_interpretations").upsert(
+    {
+      chart_id: chart.id,
+      locale,
+      ai_interpretation: interpretation,
+    },
+    { onConflict: "chart_id,locale" },
+  );
+
+  // Mirror to legacy column when locale is English so old reads keep working.
+  if (locale === "en") {
+    await admin
+      .from("natal_charts")
+      .update({ ai_interpretation: interpretation })
+      .eq("user_id", user.id);
+  }
 
   return NextResponse.json({ interpretation });
 }

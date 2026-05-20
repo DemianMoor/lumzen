@@ -3,6 +3,7 @@ import {
   IconTarotCard,
   IconNatalChart,
 } from "@/components/mystical-icons";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,33 +12,34 @@ const PILLAR_ACCENT = "#8b6fc9"; // lum-glow per BRAND.md §3.3
 const TOOLS = [
   {
     href: "/tarot",
-    eyebrow: "Tarot",
-    title: "Draw today's card",
-    body: "A single card for the day, or a full spread when there is a question. The cards reflect, never decide.",
+    eyebrowKey: "celestial.tool.tarot.eyebrow",
+    titleKey: "celestial.tool.tarot.title",
+    bodyKey: "celestial.tool.tarot.body",
     Icon: IconTarotCard,
   },
   {
     href: "/natal",
-    eyebrow: "Astrology",
-    title: "Read your natal chart",
-    body: "Bring your birth data once. Receive your chart and a careful reading of the patterns it holds.",
+    eyebrowKey: "celestial.tool.natal.eyebrow",
+    titleKey: "celestial.tool.natal.title",
+    bodyKey: "celestial.tool.natal.body",
     Icon: IconNatalChart,
   },
 ];
 
-export default function CelestialPage() {
+export default async function CelestialPage() {
+  const { messages } = await getCurrentMessages();
   return (
     <main className="relative min-h-[calc(100vh-60px)] px-6 py-12">
       <div className="mx-auto max-w-5xl">
         <header className="text-center mb-12">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-3">
-            ✦ CELESTIAL TOOLS
+            {t(messages, "celestial.page.eyebrow")}
           </p>
           <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] mb-3">
-            The cosmos awaits
+            {t(messages, "celestial.page.title")}
           </h1>
           <p className="font-serif italic text-lg text-[#8f8daa] max-w-2xl mx-auto">
-            Ancient intelligence for your modern life. Choose your doorway.
+            {t(messages, "celestial.page.subtitle")}
           </p>
         </header>
 
@@ -68,16 +70,16 @@ export default function CelestialPage() {
                   className="font-display text-[11px] tracking-[0.2em] uppercase mb-3"
                   style={{ color: PILLAR_ACCENT }}
                 >
-                  {tool.eyebrow}
+                  {t(messages, tool.eyebrowKey)}
                 </p>
                 <h2 className="font-serif italic text-2xl text-[#f0eff8] mb-3 leading-tight">
-                  {tool.title}
+                  {t(messages, tool.titleKey)}
                 </h2>
                 <p className="font-sans text-sm text-[#8f8daa] leading-relaxed mb-6">
-                  {tool.body}
+                  {t(messages, tool.bodyKey)}
                 </p>
                 <span className="font-sans text-sm text-[#c4a35a] group-hover:underline">
-                  Begin →
+                  {t(messages, "celestial.page.begin_link")}
                 </span>
               </Link>
             );

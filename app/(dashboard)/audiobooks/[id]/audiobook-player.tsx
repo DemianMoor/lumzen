@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useT } from "@/lib/i18n/client";
 
 type Chapter = {
   id: string;
@@ -19,6 +20,7 @@ export function AudiobookPlayer({
   initialChapterId: string | null;
   initialPosition: number;
 }) {
+  const t = useT();
   const [chapters, setChapters] = useState<Chapter[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -42,7 +44,7 @@ export function AudiobookPlayer({
         if (data.error) setError(data.error);
       } catch (err) {
         if (!cancelled)
-          setError(err instanceof Error ? err.message : "chapters could not load");
+          setError(err instanceof Error ? err.message : t("audiobooks.player.chapters_load_error"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -51,7 +53,7 @@ export function AudiobookPlayer({
     return () => {
       cancelled = true;
     };
-  }, [bookId, activeId]);
+  }, [bookId, activeId, t]);
 
   const active = chapters.find((c) => c.id === activeId);
 
@@ -94,10 +96,10 @@ export function AudiobookPlayer({
         {active ? (
           <>
             <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#d4758a] mb-2">
-              Now playing
+              {t("audiobooks.player.now_playing")}
             </p>
             <p className="font-serif italic text-lg text-[#f0eff8] mb-3">
-              {active.title || `Chapter ${active.chapter_number}`}
+              {active.title || `${t("audiobooks.player.chapter_prefix")} ${active.chapter_number}`}
             </p>
             <audio
               ref={audioRef}
@@ -109,10 +111,10 @@ export function AudiobookPlayer({
             />
           </>
         ) : loading ? (
-          <p className="font-serif italic text-[#8f8daa]">Loading chapters...</p>
+          <p className="font-serif italic text-[#8f8daa]">{t("audiobooks.player.loading_chapters")}</p>
         ) : (
           <p className="font-serif italic text-[#8f8daa]">
-            No chapter selected.
+            {t("audiobooks.player.no_chapter_selected")}
           </p>
         )}
       </div>
@@ -140,20 +142,20 @@ export function AudiobookPlayer({
               }}
             >
               <p className="font-mono text-xs text-[#8f8daa] mb-1">
-                Chapter {chapter.chapter_number}
+                {t("audiobooks.player.chapter_prefix")} {chapter.chapter_number}
                 {chapter.duration_seconds
                   ? ` · ${formatDuration(chapter.duration_seconds)}`
                   : ""}
               </p>
               <p className="font-serif italic text-[#f0eff8]">
-                {chapter.title || "—"}
+                {chapter.title || t("audiobooks.player.untitled_placeholder")}
               </p>
             </button>
           </li>
         ))}
         {!loading && chapters.length === 0 && (
           <li className="font-serif italic text-[#8f8daa]">
-            Chapters could not be reached right now. Try again in a moment.
+            {t("audiobooks.player.chapters_unavailable")}
           </li>
         )}
       </ul>

@@ -10,23 +10,25 @@ import {
   SheetTrigger,
   SheetClose,
 } from "@/components/ui/sheet";
+import { useT } from "@/lib/i18n/client";
 
-type NavLink = { href: string; label: string };
+type NavLink = { href: string; labelKey: string };
 
 const NAV_LINKS: NavLink[] = [
-  { href: "/about", label: "About" },
-  { href: "/subscribe", label: "Subscribe" },
-  { href: "/contact", label: "Contact" },
+  { href: "/about", labelKey: "nav.header.link.about" },
+  { href: "/subscribe", labelKey: "nav.header.link.subscribe" },
+  { href: "/contact", labelKey: "nav.header.link.contact" },
 ];
 
 const MOBILE_SECONDARY: NavLink[] = [
-  { href: "/privacy", label: "Privacy" },
-  { href: "/terms", label: "Terms" },
+  { href: "/privacy", labelKey: "nav.header.link.privacy" },
+  { href: "/terms", labelKey: "nav.header.link.terms" },
 ];
 
 export function SiteHeader() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const t = useT();
 
   return (
     <header
@@ -62,7 +64,7 @@ export function SiteHeader() {
                     : "text-[#8f8daa] hover:text-[#f0eff8]"
                 }`}
               >
-                {link.label}
+                {t(link.labelKey)}
               </Link>
             );
           })}
@@ -70,13 +72,13 @@ export function SiteHeader() {
             href="/auth/signin"
             className="font-sans text-[15px] text-[#8f8daa] hover:text-[#f0eff8] transition-colors"
           >
-            Sign in
+            {t("nav.header.signin")}
           </Link>
           <Link
             href="/auth/signup"
             className="font-sans text-[15px] py-2.5 px-5 rounded-full bg-[#c4a35a] text-[#06060f] font-medium hover:brightness-110 transition-all"
           >
-            Begin ✦
+            {t("nav.header.signup")}
           </Link>
         </nav>
 
@@ -85,7 +87,7 @@ export function SiteHeader() {
           <SheetTrigger asChild>
             <button
               type="button"
-              aria-label="Open menu"
+              aria-label={t("nav.header.aria.open_menu")}
               className="md:hidden size-10 rounded-full flex items-center justify-center text-[#f0eff8] hover:text-[#c4a35a] hover:bg-[rgba(196,163,90,0.08)] transition-colors"
             >
               <Menu size={22} />
@@ -110,7 +112,7 @@ export function SiteHeader() {
               <SheetClose asChild>
                 <button
                   type="button"
-                  aria-label="Close menu"
+                  aria-label={t("nav.header.aria.close_menu")}
                   className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
                 >
                   <X size={20} />
@@ -130,7 +132,7 @@ export function SiteHeader() {
                       active ? "text-[#c4a35a]" : "text-[#f0eff8] hover:text-[#c4a35a]"
                     }`}
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 );
               })}
@@ -146,7 +148,7 @@ export function SiteHeader() {
                     onClick={() => setOpen(false)}
                     className="font-sans text-sm text-[#8f8daa] hover:text-[#f0eff8] py-2 transition-colors"
                   >
-                    {link.label}
+                    {t(link.labelKey)}
                   </Link>
                 ))}
               </div>
@@ -161,14 +163,14 @@ export function SiteHeader() {
                   className="font-sans text-[15px] py-3 px-5 rounded-full border text-center text-[#f0eff8] hover:bg-[rgba(196,163,90,0.08)] transition-all"
                   style={{ borderColor: "rgba(196,163,90,0.35)" }}
                 >
-                  Sign in
+                  {t("nav.header.signin")}
                 </Link>
                 <Link
                   href="/auth/signup"
                   onClick={() => setOpen(false)}
                   className="font-sans text-[15px] py-3 px-5 rounded-full bg-[#c4a35a] text-[#06060f] font-medium text-center hover:brightness-110 transition-all"
                 >
-                  Begin ✦
+                  {t("nav.header.signup")}
                 </Link>
               </div>
             </nav>
@@ -180,6 +182,7 @@ export function SiteHeader() {
 }
 
 export function SiteFooter() {
+  const t = useT();
   return (
     <footer
       className="relative z-10 mt-auto border-t"
@@ -194,36 +197,36 @@ export function SiteFooter() {
             </span>
           </div>
           <p className="font-serif italic text-base text-[#8f8daa] leading-relaxed">
-            Where light meets stillness.
+            {t("footer.tagline")}
           </p>
           <p className="font-sans text-xs text-[#8f8daa] mt-4 leading-relaxed max-w-xs">
-            A free, ad-supported community for daily spiritual practice.
+            {t("footer.description")}
           </p>
         </div>
 
         <div>
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
-            ✦ THE SANCTUARY
+            {t("footer.sanctuary_heading")}
           </p>
           <ul className="space-y-3 font-sans text-sm text-[#8f8daa]">
             <li>
               <Link href="/about" className="hover:text-[#f0eff8] transition-colors">
-                About
+                {t("footer.sanctuary.about")}
               </Link>
             </li>
             <li>
               <Link href="/subscribe" className="hover:text-[#f0eff8] transition-colors">
-                Subscribe
+                {t("footer.sanctuary.subscribe")}
               </Link>
             </li>
             <li>
               <Link href="/contact" className="hover:text-[#f0eff8] transition-colors">
-                Contact
+                {t("footer.sanctuary.contact")}
               </Link>
             </li>
             <li>
               <Link href="/auth/signin" className="hover:text-[#f0eff8] transition-colors">
-                Sign in
+                {t("footer.sanctuary.signin")}
               </Link>
             </li>
           </ul>
@@ -231,17 +234,17 @@ export function SiteFooter() {
 
         <div>
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
-            ✦ THE FINE PRINT
+            {t("footer.fine_print_heading")}
           </p>
           <ul className="space-y-3 font-sans text-sm text-[#8f8daa]">
             <li>
               <Link href="/privacy" className="hover:text-[#f0eff8] transition-colors">
-                Privacy Policy
+                {t("footer.fine_print.privacy")}
               </Link>
             </li>
             <li>
               <Link href="/terms" className="hover:text-[#f0eff8] transition-colors">
-                Terms and Conditions
+                {t("footer.fine_print.terms")}
               </Link>
             </li>
             <li>
@@ -264,10 +267,10 @@ export function SiteFooter() {
       >
         <div className="mx-auto max-w-6xl px-6 py-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
           <p className="font-mono text-[11px] text-[#4a4866]">
-            © {new Date().getFullYear()} LumZen · A free, ad-supported community.
+            {t("footer.copyright", { year: new Date().getFullYear() })}
           </p>
           <p className="font-mono text-[11px] text-[#4a4866]">
-            Practice may support change, not guarantee outcomes.
+            {t("footer.disclaimer")}
           </p>
         </div>
       </div>

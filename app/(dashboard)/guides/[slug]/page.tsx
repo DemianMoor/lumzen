@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { getCurrentLocale, getCurrentMessages, t } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -11,10 +12,13 @@ export default async function GuideDetailPage({
 }) {
   const { slug } = await params;
   const supabase = await createSupabaseServerClient();
+  const { messages } = await getCurrentMessages();
+  const locale = await getCurrentLocale();
   const { data: guide } = await supabase
     .from("spiritual_guides")
     .select("*")
     .eq("slug", slug)
+    .eq("locale", locale)
     .eq("is_active", true)
     .maybeSingle();
 
@@ -27,7 +31,7 @@ export default async function GuideDetailPage({
           href="/guides"
           className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
         >
-          <span aria-hidden="true">←</span> Back to guides
+          {t(messages, "guides.detail.back_to_guides")}
         </Link>
 
         <header className="my-10 text-center">
@@ -42,7 +46,7 @@ export default async function GuideDetailPage({
           </p>
           <p className="font-sans text-xs text-[#8f8daa]">
             {guide.read_time_minutes
-              ? `${guide.read_time_minutes} min read`
+              ? `${guide.read_time_minutes} ${t(messages, "guides.list.minutes_read_suffix")}`
               : ""}
             {guide.author ? ` · ${guide.author}` : ""}
           </p>

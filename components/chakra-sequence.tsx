@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CHAKRA_FREQUENCIES, playFrequency, stopAll } from "@/lib/audio/solfeggio";
+import { useT } from "@/lib/i18n/client";
 
 type Affirmation = {
   id: string;
@@ -11,13 +12,13 @@ type Affirmation = {
 };
 
 const CHAKRA_ORDER = [
-  { key: "root", label: "Root", color: "#d4758a", category: "chakra_root" },
-  { key: "sacral", label: "Sacral", color: "#c4a35a", category: "chakra_sacral" },
-  { key: "solar_plexus", label: "Solar plexus", color: "#6bcc9e", category: "chakra_solar" },
-  { key: "heart", label: "Heart", color: "#4db8a8", category: "chakra_heart" },
-  { key: "throat", label: "Throat", color: "#6b9fd4", category: "chakra_throat" },
-  { key: "third_eye", label: "Third eye", color: "#8b6fc9", category: "chakra_third_eye" },
-  { key: "crown", label: "Crown", color: "#f0eff8", category: "chakra_crown" },
+  { key: "root", labelKey: "affirmations.chakra.chakra_root.label", color: "#d4758a", category: "chakra_root" },
+  { key: "sacral", labelKey: "affirmations.chakra.chakra_sacral.label", color: "#c4a35a", category: "chakra_sacral" },
+  { key: "solar_plexus", labelKey: "affirmations.chakra.chakra_solar.label", color: "#6bcc9e", category: "chakra_solar" },
+  { key: "heart", labelKey: "affirmations.chakra.chakra_heart.label", color: "#4db8a8", category: "chakra_heart" },
+  { key: "throat", labelKey: "affirmations.chakra.chakra_throat.label", color: "#6b9fd4", category: "chakra_throat" },
+  { key: "third_eye", labelKey: "affirmations.chakra.chakra_third_eye.label", color: "#8b6fc9", category: "chakra_third_eye" },
+  { key: "crown", labelKey: "affirmations.chakra.chakra_crown.label", color: "#f0eff8", category: "chakra_crown" },
 ];
 
 const STEP_DURATION_MS = 18000;
@@ -29,6 +30,7 @@ export function ChakraSequence({
   affirmations: Affirmation[];
   onComplete: () => void;
 }) {
+  const t = useT();
   const [running, setRunning] = useState(false);
   const [step, setStep] = useState(0);
   const timerRef = useRef<number | null>(null);
@@ -84,15 +86,14 @@ export function ChakraSequence({
     return (
       <div className="text-center space-y-6">
         <p className="font-serif italic text-[#8f8daa] max-w-xl mx-auto">
-          Seven chakras, seven affirmations, seven Solfeggio tones. About two
-          and a half minutes. Sit comfortably. Stop whenever you want to.
+          {t("affirmations.activity.chakra_sequence.intro")}
         </p>
         <button
           type="button"
           onClick={start}
           className="px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all"
         >
-          Begin the sequence ✦
+          {t("affirmations.activity.chakra_sequence.begin_cta")}
         </button>
       </div>
     );
@@ -118,10 +119,10 @@ export function ChakraSequence({
           className="font-display text-[11px] tracking-[0.2em] uppercase mb-2"
           style={{ color: current?.color ?? "#c4a35a" }}
         >
-          {current?.label}
+          {current ? t(current.labelKey) : ""}
         </p>
         <p className="font-serif italic text-2xl md:text-3xl text-[#f0eff8] max-w-2xl mx-auto leading-relaxed">
-          {affirmation?.text ?? "Breathe."}
+          {affirmation?.text ?? t("affirmations.activity.chakra_sequence.default_phrase")}
         </p>
         <p className="mt-4 font-mono text-xs text-[#8f8daa]">
           {CHAKRA_FREQUENCIES[current?.key ?? "root"]} Hz
@@ -133,7 +134,7 @@ export function ChakraSequence({
         onClick={stop}
         className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
       >
-        End early
+        {t("affirmations.activity.chakra_sequence.end_early")}
       </button>
     </div>
   );

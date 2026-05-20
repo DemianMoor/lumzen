@@ -1,0 +1,186 @@
+{
+  "meta": {
+    "root": {
+      "title": "LumZen — Where Light Meets Stillness",
+      "description": "LumZen is your daily spiritual practice platform — tarot, natal charts, affirmations, meditation, sound healing and sacred audiobooks in one place.",
+      "keywords": {
+        "spiritual_practice": "spiritual practice",
+        "meditation": "meditation",
+        "tarot": "tarot",
+        "natal_chart": "natal chart",
+        "affirmations": "affirmations",
+        "sound_healing": "sound healing",
+        "mindfulness": "mindfulness"
+      }
+    }
+  },
+  "auth": {
+    "common": {
+      "brand_eyebrow": "✦ LUMZEN",
+      "email_label": "Email",
+      "password_label": "Password"
+    },
+    "signin": {
+      "title": "Welcome back, traveler ✦",
+      "email_label": "Email",
+      "password_label": "Password",
+      "submit": "Sign In ✦",
+      "submit_loading": "Signing in…",
+      "forgot_password_link": "Forgot password?",
+      "create_account_link": "Create an account"
+    },
+    "signup": {
+      "title": "Begin your journey ✦",
+      "name_label": "Name",
+      "email_label": "Email",
+      "password_label": "Password",
+      "submit": "Create Account ✦",
+      "submit_loading": "Creating account…",
+      "disclaimer": "By creating an account, you join a free, ad-supported community. No payment, ever.",
+      "already_here_prefix": "Already here?",
+      "sign_in_link": "Sign in"
+    },
+    "forgot_password": {
+      "title": "Find your way back",
+      "email_label": "Email",
+      "submit": "Send Reset Link",
+      "submit_loading": "Sending…",
+      "sent_prefix": "Check your inbox. If an account exists for",
+      "sent_suffix": ", a reset link is on its way.",
+      "back_to_signin": "← Back to sign in"
+    },
+    "reset_password": {
+      "title": "Set your new key",
+      "new_password_label": "New password",
+      "submit": "Save New Password ✦",
+      "submit_loading": "Saving…"
+    },
+    "verify_email": {
+      "heading_check_inbox": "Check your inbox ✦",
+      "heading_expired": "Your verification link expired",
+      "heading_exhausted": "Let us set you up directly",
+      "body_default": "We sent a verification link to your email. Click it to begin your practice. If it never arrived, you can resend below.",
+      "body_expired": "Send yourself a fresh verification link below.",
+      "exhausted_intro": "We have sent you {max} verification emails. If none reached you, the path forward is a direct one.",
+      "exhausted_contact_prefix": "Write to",
+      "exhausted_contact_suffix": "and we will set up your account by hand.",
+      "exhausted_back_link": "Back to sign in",
+      "email_label": "Email",
+      "email_placeholder": "you@example.com",
+      "submit": "Resend verification email ✦",
+      "submit_loading": "Sending…",
+      "submit_cooldown": "Resend available in {seconds}s",
+      "info_sent": "Sent. Check your inbox.",
+      "counter_initial": "Up to {max} emails per address.",
+      "counter_progress": "{count} of {max} sent · {remaining} remaining.",
+      "already_verified_prefix": "Already verified?",
+      "sign_in_link": "Sign in"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good morning, {name}",
+      "afternoon": "Good afternoon, {name}",
+      "evening": "Good evening, {name}",
+      "night": "Rest well, {name}"
+    },
+    "subtitle": {
+      "morning": "The light is already within you.",
+      "afternoon": "Stillness is available right now.",
+      "evening": "The stars are beginning to listen.",
+      "night": "Your practice continues in your dreams."
+    },
+    "default_name": "traveler",
+    "practice_lines": {
+      "line_1": "The light is already within you.",
+      "line_2": "The cosmos has always been speaking.",
+      "line_3": "Stillness is a practice, not a destination.",
+      "line_4": "What you tend to grows quiet, then strong.",
+      "line_5": "The day was never the noise. The day was the listening.",
+      "line_6": "Begin again. The beginning is always available.",
+      "line_7": "Your breath is a doorway. Walk through."
+    },
+    "rows": {
+      "celestial": {
+        "eyebrow": "Celestial Tools",
+        "title": "The Cosmos Awaits",
+        "subtitle": "Ancient intelligence for your modern life"
+      },
+      "affirmations": {
+        "eyebrow": "Affirmation Practice",
+        "title": "Rewire Your Inner World",
+        "subtitle": "Daily activities for lasting change"
+      },
+      "sound": {
+        "eyebrow": "Meditation & Sound",
+        "title": "The Sound Temple",
+        "subtitle": "Frequencies that restore. Silence that speaks."
+      },
+      "audiobooks": {
+        "eyebrow": "Sacred Audiobooks",
+        "title": "Voices Across Time",
+        "subtitle": "The texts that shaped seekers before you"
+      },
+      "guides": {
+        "eyebrow": "Spiritual Guides",
+        "title": "Deepen Your Understanding",
+        "subtitle": "Wisdom you can actually use"
+      }
+    }
+  },
+  "header": {
+    "day_streak": "Day {count} of your practice",
+    "search_aria": "Search",
+    "notifications_aria": "Notifications",
+    "profile_aria": "Profile",
+    "sign_out_aria": "Sign out"
+  },
+  "nav": {
+    "sidebar": {
+      "aria_label": "Primary",
+      "dashboard": "Home",
+      "guides": "Spiritual Guides",
+      "audiobooks": "Audiobooks",
+      "affirmations": "Affirmations",
+      "sound": "Sound Temple",
+      "celestial": "Celestial Tools",
+      "tarot": "Tarot",
+      "natal": "Natal Chart",
+      "profile": "My Profile",
+      "settings": "Settings",
+      "expand_aria": "Expand sidebar",
+      "collapse_aria": "Collapse sidebar"
+    },
+    "mobile": {
+      "brand_link_aria": "LumZen — go to dashboard",
+      "open_menu_aria": "Open menu",
+      "close_menu_aria": "Close menu",
+      "footer_section_title": "The fine print",
+      "sign_out": "Sign out",
+      "sign_out_loading": "Signing out…"
+    }
+  },
+  "ad_slot": {
+    "sponsored_label": "✦ Sponsored ✦",
+    "reserved_caption": "ad slot reserved · {width}×{height}",
+    "enabled_aria": "Sponsored content",
+    "placeholder_aria": "Sponsored placeholder"
+  },
+  "content_card": {
+    "cta": "Begin →"
+  },
+  "content_row": {
+    "see_all": "See all →"
+  },
+  "practice": {
+    "card": {
+      "eyebrow": "✦ Your Practice Today",
+      "streak_label": "Day {count} of your journey. You’re building something real.",
+      "quick_start": {
+        "draw_card": "Draw Today's Card",
+        "morning_affirmation": "Morning Affirmation",
+        "enter_sound_temple": "Enter Sound Temple"
+      }
+    }
+  }
+}

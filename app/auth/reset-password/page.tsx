@@ -4,9 +4,11 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { StarField, NebulaBackground } from "@/components/cosmic-background";
+import { useT } from "@/lib/i18n/client";
 
 export default function ResetPasswordPage() {
   const router = useRouter();
+  const t = useT();
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -45,17 +47,17 @@ export default function ResetPasswordPage() {
       >
         <div className="text-center mb-8">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-2 text-[#c4a35a]">
-            ✦ LUMZEN
+            {t("auth.common.brand_eyebrow")}
           </p>
           <h1 className="font-serif italic text-3xl text-[#f0eff8]">
-            Set your new key
+            {t("auth.reset_password.title")}
           </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="password" className="block font-sans text-xs text-[#8f8daa] mb-2">
-              New password
+              {t("auth.reset_password.new_password_label")}
             </label>
             <input
               id="password"
@@ -80,7 +82,7 @@ export default function ResetPasswordPage() {
             disabled={loading}
             className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? "Saving…" : "Save New Password ✦"}
+            {loading ? t("auth.reset_password.submit_loading") : t("auth.reset_password.submit")}
           </button>
         </form>
       </div>

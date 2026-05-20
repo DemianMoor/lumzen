@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { usePathname } from "next/navigation";
 import { usePopupContext } from "@/lib/popup-context";
 import { SubscribeFormFields } from "@/components/subscribe-form-fields";
+import { useT } from "@/lib/i18n/client";
 
 const SESSION_SHOWN_KEY = "lz_popup_shown_this_session";
 const SUBSCRIBED_KEY = "lz_subscribed";
@@ -42,6 +43,7 @@ function isExcludedPath(pathname: string): boolean {
 }
 
 export function SubscribePopup() {
+  const t = useT();
   const pathname = usePathname();
   const { isSuppressed } = usePopupContext();
   const [isOpen, setIsOpen] = useState(false);
@@ -139,7 +141,7 @@ export function SubscribePopup() {
           <button
             type="button"
             onClick={() => setIsOpen(false)}
-            aria-label="Close"
+            aria-label={t("subscribe.popup.aria.close")}
             className="absolute right-4 top-4 text-2xl leading-none text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
           >
             ×
@@ -152,17 +154,14 @@ export function SubscribePopup() {
                 id="subscribe-popup-title"
                 className="font-serif italic text-3xl text-[#f0eff8]"
               >
-                Welcome.
+                {t("subscribe.popup.success.title")}
               </h2>
               <p className="font-sans text-sm text-[#8f8daa] mt-4 leading-relaxed">
-                A welcome message has been sent to{" "}
-                <span className="text-[#f0eff8]">{success.email}</span>. Check
-                your inbox.
+                {t("subscribe.popup.success.body", { email: success.email })}
                 {success.consentSms && (
                   <>
                     <br />
-                    You will also receive an SMS confirmation shortly — reply{" "}
-                    <span className="font-mono">Y</span> to confirm.
+                    {t("subscribe.popup.success.sms_note")}
                   </>
                 )}
               </p>
@@ -175,11 +174,10 @@ export function SubscribePopup() {
                   id="subscribe-popup-title"
                   className="font-serif italic text-2xl md:text-3xl text-[#f0eff8] leading-tight"
                 >
-                  Before you wander further…
+                  {t("subscribe.popup.title")}
                 </h2>
                 <p className="font-sans text-sm text-[#8f8daa] mt-3 leading-relaxed">
-                  Receive the daily card, weekly reflections, and quiet
-                  announcements from us.
+                  {t("subscribe.popup.intro")}
                 </p>
               </div>
 
@@ -200,7 +198,7 @@ export function SubscribePopup() {
                   onClick={() => setIsOpen(false)}
                   className="font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
                 >
-                  No, thank you
+                  {t("subscribe.popup.decline")}
                 </button>
               </div>
             </div>

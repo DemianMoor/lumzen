@@ -4,8 +4,10 @@ import { useState } from "react";
 import Link from "next/link";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { StarField, NebulaBackground } from "@/components/cosmic-background";
+import { useT } from "@/lib/i18n/client";
 
 export default function ForgotPasswordPage() {
+  const t = useT();
   const [email, setEmail] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
@@ -51,24 +53,24 @@ export default function ForgotPasswordPage() {
       >
         <div className="text-center mb-8">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-2 text-[#c4a35a]">
-            ✦ LUMZEN
+            {t("auth.common.brand_eyebrow")}
           </p>
           <h1 className="font-serif italic text-3xl text-[#f0eff8]">
-            Find your way back
+            {t("auth.forgot_password.title")}
           </h1>
         </div>
 
         {sent ? (
           <p className="font-sans text-sm text-[#f0eff8] text-center">
-            Check your inbox. If an account exists for{" "}
-            <span className="text-[#c4a35a]">{email}</span>, a reset link is on
-            its way.
+            {t("auth.forgot_password.sent_prefix")}{" "}
+            <span className="text-[#c4a35a]">{email}</span>
+            {t("auth.forgot_password.sent_suffix")}
           </p>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <label htmlFor="email" className="block font-sans text-xs text-[#8f8daa] mb-2">
-                Email
+                {t("auth.forgot_password.email_label")}
               </label>
               <input
                 id="email"
@@ -92,14 +94,14 @@ export default function ForgotPasswordPage() {
               disabled={loading}
               className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
             >
-              {loading ? "Sending…" : "Send Reset Link"}
+              {loading ? t("auth.forgot_password.submit_loading") : t("auth.forgot_password.submit")}
             </button>
           </form>
         )}
 
         <div className="mt-6 text-center font-sans text-xs text-[#8f8daa]">
           <Link href="/auth/signin" className="hover:text-[#c4a35a] transition-colors">
-            ← Back to sign in
+            {t("auth.forgot_password.back_to_signin")}
           </Link>
         </div>
       </div>

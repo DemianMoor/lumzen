@@ -1,10 +1,11 @@
 import { NextResponse } from "next/server";
 import { createSupabaseServerClient, createSupabaseAdmin } from "@/lib/supabase";
 import { getAllCards, pickDailyCardId, todayISO } from "@/lib/tarot/client";
+import { getLocaleFromRequest } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-export async function GET() {
+export async function GET(request: Request) {
   const supabase = await createSupabaseServerClient();
   const {
     data: { user },
@@ -14,7 +15,8 @@ export async function GET() {
     return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   }
 
-  const deck = await getAllCards();
+  const locale = getLocaleFromRequest(request);
+  const deck = await getAllCards(locale);
   if (deck.length === 0) {
     return NextResponse.json(
       { error: "deck not seeded" },
@@ -32,6 +34,7 @@ export async function GET() {
     .select("id, ai_interpretation, cards")
     .eq("user_id", user.id)
     .eq("spread_type", "daily")
+    .eq("locale", locale)
     .gte("created_at", `${date}T00:00:00Z`)
     .lt("created_at", `${date}T23:59:59Z`)
     .maybeSingle();
@@ -52,6 +55,7 @@ export async function GET() {
         cards: cardsPayload,
         question: null,
         ai_interpretation: null,
+        locale,
       })
       .select("id")
       .single();

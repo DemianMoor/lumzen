@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useT } from "@/lib/i18n/client";
 
 type TodaysPracticeCardProps = {
   dayStreak: number;
@@ -8,15 +9,16 @@ type TodaysPracticeCardProps = {
 };
 
 const QUICK_STARTS = [
-  { href: "/celestial", glyph: "✦", label: "Draw Today's Card" },
-  { href: "/affirmations", glyph: "✨", label: "Morning Affirmation" },
-  { href: "/sound", glyph: "🔮", label: "Enter Sound Temple" },
+  { href: "/celestial", glyph: "✦", labelKey: "practice.card.quick_start.draw_card" },
+  { href: "/affirmations", glyph: "✨", labelKey: "practice.card.quick_start.morning_affirmation" },
+  { href: "/sound", glyph: "🔮", labelKey: "practice.card.quick_start.enter_sound_temple" },
 ] as const;
 
 export function TodaysPracticeCard({
   dayStreak,
   affirmationLine,
 }: TodaysPracticeCardProps) {
+  const t = useT();
   return (
     <section
       className="relative overflow-hidden rounded-[20px] p-6 md:p-10"
@@ -38,13 +40,13 @@ export function TodaysPracticeCard({
       />
 
       <p className="font-display text-[11px] tracking-[0.20em] uppercase text-[#c4a35a] mb-3">
-        ✦ Your Practice Today
+        {t("practice.card.eyebrow")}
       </p>
       <h2 className="font-serif italic text-3xl md:text-4xl text-[#f0eff8] leading-tight max-w-2xl mb-4">
         {affirmationLine}
       </h2>
       <p className="font-sans text-sm text-[#8f8daa] mb-8">
-        Day {dayStreak}{" "}of your journey. You&rsquo;re building something real.
+        {t("practice.card.streak_label", { count: dayStreak })}
       </p>
 
       <div className="flex flex-wrap gap-3">
@@ -67,7 +69,7 @@ export function TodaysPracticeCard({
             }}
           >
             <span aria-hidden="true">{qs.glyph}</span>
-            <span>{qs.label}</span>
+            <span>{t(qs.labelKey)}</span>
           </Link>
         ))}
       </div>

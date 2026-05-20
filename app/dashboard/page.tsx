@@ -6,42 +6,43 @@ import { ContentRow, type ContentRowItem } from "@/components/content-row";
 import { AdSlot } from "@/components/ad-slot";
 import { PILLARS } from "@/lib/brand-voice";
 import { moonPhaseFor } from "@/lib/moon-phase";
+import { getCurrentMessages, t, type Messages } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-function timeBasedGreeting(hour: number, name: string) {
+function timeBasedGreeting(hour: number, name: string, messages: Messages) {
   if (hour >= 5 && hour < 12) {
     return {
-      greeting: `Good morning, ${name}`,
-      subtitle: "The light is already within you.",
+      greeting: t(messages, "dashboard.greeting.morning", { name }),
+      subtitle: t(messages, "dashboard.subtitle.morning"),
     };
   }
   if (hour >= 12 && hour < 17) {
     return {
-      greeting: `Good afternoon, ${name}`,
-      subtitle: "Stillness is available right now.",
+      greeting: t(messages, "dashboard.greeting.afternoon", { name }),
+      subtitle: t(messages, "dashboard.subtitle.afternoon"),
     };
   }
   if (hour >= 17 && hour < 21) {
     return {
-      greeting: `Good evening, ${name}`,
-      subtitle: "The stars are beginning to listen.",
+      greeting: t(messages, "dashboard.greeting.evening", { name }),
+      subtitle: t(messages, "dashboard.subtitle.evening"),
     };
   }
   return {
-    greeting: `Rest well, ${name}`,
-    subtitle: "Your practice continues in your dreams.",
+    greeting: t(messages, "dashboard.greeting.night", { name }),
+    subtitle: t(messages, "dashboard.subtitle.night"),
   };
 }
 
-const PRACTICE_LINES = [
-  "The light is already within you.",
-  "The cosmos has always been speaking.",
-  "Stillness is a practice, not a destination.",
-  "What you tend to grows quiet, then strong.",
-  "The day was never the noise. The day was the listening.",
-  "Begin again. The beginning is always available.",
-  "Your breath is a doorway. Walk through.",
+const PRACTICE_LINE_KEYS = [
+  "dashboard.practice_lines.line_1",
+  "dashboard.practice_lines.line_2",
+  "dashboard.practice_lines.line_3",
+  "dashboard.practice_lines.line_4",
+  "dashboard.practice_lines.line_5",
+  "dashboard.practice_lines.line_6",
+  "dashboard.practice_lines.line_7",
 ] as const;
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("en-US", {
@@ -67,21 +68,26 @@ export default async function DashboardPage() {
     .eq("id", user.id)
     .maybeSingle();
 
+  const { messages } = await getCurrentMessages();
+
   const displayName =
     profile?.display_name ||
-    (user.email ? user.email.split("@")[0] : "traveler");
+    (user.email ? user.email.split("@")[0] : t(messages, "dashboard.default_name"));
   const dayStreak = profile?.day_streak ?? 1;
 
   const now = new Date();
   const hour = now.getHours();
-  const { greeting, subtitle } = timeBasedGreeting(hour, displayName);
+  const { greeting, subtitle } = timeBasedGreeting(hour, displayName, messages);
   const moon = moonPhaseFor(now);
   const todayLabel = DATE_FORMATTER.format(now);
 
   const dayOfYear = Math.floor(
     (now.getTime() - new Date(now.getFullYear(), 0, 0).getTime()) / 86_400_000,
   );
-  const practiceLine = PRACTICE_LINES[dayOfYear % PRACTICE_LINES.length];
+  const practiceLine = t(
+    messages,
+    PRACTICE_LINE_KEYS[dayOfYear % PRACTICE_LINE_KEYS.length],
+  );
 
   // Dashboard placeholder cards: each links to its pillar's top-level page,
   // where the real list is rendered against live data.
@@ -148,9 +154,9 @@ export default async function DashboardPage() {
 
         <div style={{ animation: "fadeUp 0.6s ease-out 0.16s forwards", opacity: 0 }}>
           <ContentRow
-            eyebrow="Celestial Tools"
-            title="The Cosmos Awaits"
-            subtitle="Ancient intelligence for your modern life"
+            eyebrow={t(messages, "dashboard.rows.celestial.eyebrow")}
+            title={t(messages, "dashboard.rows.celestial.title")}
+            subtitle={t(messages, "dashboard.rows.celestial.subtitle")}
             accentColor={PILLARS.celestial.accent}
             seeAllHref="/celestial"
             items={celestialItems}
@@ -159,9 +165,9 @@ export default async function DashboardPage() {
 
         <div style={{ animation: "fadeUp 0.6s ease-out 0.24s forwards", opacity: 0 }}>
           <ContentRow
-            eyebrow="Affirmation Practice"
-            title="Rewire Your Inner World"
-            subtitle="Daily activities for lasting change"
+            eyebrow={t(messages, "dashboard.rows.affirmations.eyebrow")}
+            title={t(messages, "dashboard.rows.affirmations.title")}
+            subtitle={t(messages, "dashboard.rows.affirmations.subtitle")}
             accentColor={PILLARS.affirmations.accent}
             seeAllHref="/affirmations"
             items={affirmationItems}
@@ -177,9 +183,9 @@ export default async function DashboardPage() {
 
         <div style={{ animation: "fadeUp 0.6s ease-out 0.40s forwards", opacity: 0 }}>
           <ContentRow
-            eyebrow="Meditation & Sound"
-            title="The Sound Temple"
-            subtitle="Frequencies that restore. Silence that speaks."
+            eyebrow={t(messages, "dashboard.rows.sound.eyebrow")}
+            title={t(messages, "dashboard.rows.sound.title")}
+            subtitle={t(messages, "dashboard.rows.sound.subtitle")}
             accentColor={PILLARS.sound.accent}
             seeAllHref="/sound"
             items={soundItems}
@@ -188,9 +194,9 @@ export default async function DashboardPage() {
 
         <div style={{ animation: "fadeUp 0.6s ease-out 0.48s forwards", opacity: 0 }}>
           <ContentRow
-            eyebrow="Sacred Audiobooks"
-            title="Voices Across Time"
-            subtitle="The texts that shaped seekers before you"
+            eyebrow={t(messages, "dashboard.rows.audiobooks.eyebrow")}
+            title={t(messages, "dashboard.rows.audiobooks.title")}
+            subtitle={t(messages, "dashboard.rows.audiobooks.subtitle")}
             accentColor={PILLARS.audiobooks.accent}
             seeAllHref="/audiobooks"
             items={audiobookItems}
@@ -199,9 +205,9 @@ export default async function DashboardPage() {
 
         <div style={{ animation: "fadeUp 0.6s ease-out 0.56s forwards", opacity: 0 }}>
           <ContentRow
-            eyebrow="Spiritual Guides"
-            title="Deepen Your Understanding"
-            subtitle="Wisdom you can actually use"
+            eyebrow={t(messages, "dashboard.rows.guides.eyebrow")}
+            title={t(messages, "dashboard.rows.guides.title")}
+            subtitle={t(messages, "dashboard.rows.guides.subtitle")}
             accentColor={PILLARS.guides.accent}
             seeAllHref="/guides"
             items={guideItems}

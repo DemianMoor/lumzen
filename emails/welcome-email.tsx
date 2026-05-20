@@ -10,74 +10,68 @@ import {
   Section,
   Text,
 } from "@react-email/components";
+import { HOST_BY_LOCALE, type Locale } from "@/lib/i18n/config";
+import { getMessages, t } from "@/lib/i18n/server";
 
 type WelcomeEmailProps = {
   name?: string;
   emailConsent?: boolean;
   smsConsent?: boolean;
+  locale?: Locale;
 };
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://lumzen.co";
+const FALLBACK_HOST = "https://lumzen.co";
 
 export default function WelcomeEmail({
   name,
   emailConsent = true,
   smsConsent = false,
+  locale = "en",
 }: WelcomeEmailProps) {
-  const greetingName = name?.trim() || "traveler";
+  const messages = getMessages(locale);
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || `https://${HOST_BY_LOCALE[locale]}` || FALLBACK_HOST;
+  const greetingName = name?.trim() || t(messages, "email.welcome.greeting_fallback_name");
 
   return (
-    <Html>
+    <Html lang={locale}>
       <Head />
-      <Preview>Welcome to LumZen — where light meets stillness.</Preview>
+      <Preview>{t(messages, "email.welcome.preview")}</Preview>
       <Body style={body}>
         <Container style={container}>
           <Section style={header}>
-            <Text style={brandMark}>✦ LUMZEN</Text>
+            <Text style={brandMark}>{t(messages, "email.welcome.brand_mark")}</Text>
           </Section>
 
           <Section style={hero}>
             <Heading as="h1" style={heroHeading}>
-              Welcome, {greetingName} ✦
+              {t(messages, "email.welcome.greeting", { name: greetingName })}
             </Heading>
-            <Text style={heroSubhead}>Where light meets stillness.</Text>
+            <Text style={heroSubhead}>{t(messages, "email.welcome.subhead")}</Text>
           </Section>
 
           <Section style={body2}>
-            <Text style={paragraph}>
-              You have joined a free, ad-supported community for spiritual
-              practice. No payment, ever. Just practice.
-            </Text>
+            <Text style={paragraph}>{t(messages, "email.welcome.body_1")}</Text>
 
-            <Text style={paragraph}>
-              Each Sunday morning, one quiet email finds you — a short,
-              useful read on tarot, the cosmos, sound, or the practice of
-              presence. Nothing more.
-            </Text>
+            <Text style={paragraph}>{t(messages, "email.welcome.body_2")}</Text>
 
             {smsConsent && (
-              <Text style={paragraph}>
-                You also opted in to receive occasional SMS dispatches. Reply
-                STOP at any time to opt out.
-              </Text>
+              <Text style={paragraph}>{t(messages, "email.welcome.sms_note")}</Text>
             )}
 
             <Section style={ctaWrap}>
-              <Link href={`${SITE_URL}/auth/signup`} style={cta}>
-                Begin Your Journey ✦
+              <Link href={`${siteUrl}/auth/signup`} style={cta}>
+                {t(messages, "email.welcome.cta")}
               </Link>
             </Section>
 
             <Hr style={hr} />
 
             <Text style={footerSmall}>
-              You are receiving this because you subscribed at {SITE_URL}.
-              {emailConsent
-                ? " Unsubscribe any time from the footer of any email."
-                : ""}
+              {t(messages, "email.welcome.footer_subscribed", { siteUrl })}
+              {emailConsent ? ` ${t(messages, "email.welcome.footer_unsubscribe")}` : ""}
             </Text>
             <Text style={footerSmall}>
-              LumZen · hello@lumzen.co · {SITE_URL}
+              {t(messages, "email.welcome.footer_brand_line", { siteUrl })}
             </Text>
           </Section>
         </Container>

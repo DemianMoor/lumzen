@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServerClient, createSupabaseAdmin } from "@/lib/supabase";
 import { buildClaudeSystemPrompt } from "@/lib/brand-voice";
 import { rateLimit } from "@/lib/rate-limit";
+import { getLocaleFromRequest } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,8 @@ export async function POST(request: Request) {
     );
   }
 
+  const locale = getLocaleFromRequest(request);
+
   const body = (await request.json().catch(() => ({}))) as {
     readingId?: string;
   };
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
   const admin = createSupabaseAdmin();
   const { data: reading, error } = await admin
     .from("tarot_readings")
-    .select("id, user_id, cards, question, spread_type, ai_interpretation")
+    .select("id, user_id, cards, question, spread_type, ai_interpretation, locale")
     .eq("id", body.readingId)
     .maybeSingle();
 
@@ -57,7 +60,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "forbidden" }, { status: 403 });
   }
 
-  if (reading.ai_interpretation) {
+  // Reuse existing interpretation only if it was generated in the same locale.
+  if (reading.ai_interpretation && reading.locale === locale) {
     return NextResponse.json({ interpretation: reading.ai_interpretation });
   }
 
@@ -76,7 +80,7 @@ export async function POST(request: Request) {
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 800,
-    system: buildClaudeSystemPrompt("tarot"),
+    system: buildClaudeSystemPrompt("tarot", locale),
     messages: [{ role: "user", content: userPrompt }],
   });
 
@@ -87,7 +91,7 @@ export async function POST(request: Request) {
 
   await admin
     .from("tarot_readings")
-    .update({ ai_interpretation: interpretation })
+    .update({ ai_interpretation: interpretation, locale })
     .eq("id", reading.id);
 
   return NextResponse.json({ interpretation });

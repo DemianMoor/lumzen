@@ -1,68 +1,58 @@
 import type { Metadata } from "next";
 import { MarketingPage } from "@/components/marketing-page";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "About — LumZen",
-  description:
-    "LumZen is a free, ad-supported sanctuary for spiritual practice — tarot, natal charts, affirmations, meditation, sound healing, and sacred audiobooks.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getCurrentMessages();
+  return {
+    title: t(messages, "marketing.about.meta.title"),
+    description: t(messages, "marketing.about.meta.description"),
+  };
+}
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const { messages } = await getCurrentMessages();
   return (
     <MarketingPage
-      eyebrow="✦ ABOUT LUMZEN"
-      title="A sanctuary built for stillness."
-      intro="LumZen is your daily spiritual practice platform — combining ancient wisdom, celestial guidance, and embodied practice in one luminous space."
+      eyebrow={t(messages, "marketing.about.eyebrow")}
+      title={t(messages, "marketing.about.title")}
+      intro={t(messages, "marketing.about.intro")}
     >
-      <h2>What this is</h2>
+      <h2>{t(messages, "marketing.about.section.what_this_is.heading")}</h2>
       <p>
-        LumZen brings together five long-standing traditions and lets you
-        practice them every day, in one place:
+        {t(messages, "marketing.about.section.what_this_is.body")}
       </p>
       <ul>
         <li>
-          <strong>Spiritual Guides</strong> — long-form essays on chakras,
-          shadow work, moon phases, and sacred geometry.
+          {t(messages, "marketing.about.section.what_this_is.item_guides")}
         </li>
         <li>
-          <strong>Sacred Audiobooks</strong> — public-domain spiritual texts
-          read aloud.
+          {t(messages, "marketing.about.section.what_this_is.item_audiobooks")}
         </li>
         <li>
-          <strong>Affirmation Practice</strong> — mirror work, journaling,
-          breathwork, and daily activities for lasting change.
+          {t(messages, "marketing.about.section.what_this_is.item_affirmations")}
         </li>
         <li>
-          <strong>Meditation &amp; Sound</strong> — nine Solfeggio frequencies,
-          binaural tones, and ambient soundscapes.
+          {t(messages, "marketing.about.section.what_this_is.item_sound")}
         </li>
         <li>
-          <strong>Celestial Tools</strong> — a daily tarot pull, your natal
-          chart, and the cosmos as it actually is.
+          {t(messages, "marketing.about.section.what_this_is.item_celestial")}
         </li>
       </ul>
 
-      <h2>What this is not</h2>
+      <h2>{t(messages, "marketing.about.section.what_this_is_not.heading")}</h2>
       <p>
-        LumZen is not a marketplace, a coaching funnel, or a wellness brand
-        chasing the next trend. The voice is calm. The visual language is
-        cosmic and quiet. The promises are honest — practice may support
-        change, not guarantee outcomes.
+        {t(messages, "marketing.about.section.what_this_is_not.body")}
       </p>
 
-      <h2>How it stays free</h2>
+      <h2>{t(messages, "marketing.about.section.how_it_stays_free.heading")}</h2>
       <p>
-        The community pays nothing. The platform is supported by carefully
-        chosen, on-brand sponsorships — never popups, never tracking pixels
-        that follow you across the internet, never your data sold.
+        {t(messages, "marketing.about.section.how_it_stays_free.body")}
       </p>
 
-      <h2>Who is behind it</h2>
+      <h2>{t(messages, "marketing.about.section.who_is_behind.heading")}</h2>
       <p>
-        LumZen is built by a small editorial team that believes spiritual
-        practice deserves a home as considered as the practice itself. If
-        you have feedback, write to{" "}
-        <a href="mailto:hello@lumzen.co">hello@lumzen.co</a>.
+        {t(messages, "marketing.about.section.who_is_behind.body")}
       </p>
     </MarketingPage>
   );

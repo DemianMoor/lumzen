@@ -3,6 +3,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import { buildClaudeSystemPrompt } from "@/lib/brand-voice";
 import { rateLimit } from "@/lib/rate-limit";
+import { getLocaleFromRequest } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -42,11 +43,12 @@ export async function POST(request: Request) {
     );
   }
 
+  const locale = getLocaleFromRequest(request);
   const client = new Anthropic({ apiKey });
   const message = await client.messages.create({
     model: "claude-sonnet-4-6",
     max_tokens: 600,
-    system: buildClaudeSystemPrompt("affirmation"),
+    system: buildClaudeSystemPrompt("affirmation", locale),
     messages: [
       {
         role: "user",

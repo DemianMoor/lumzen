@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { NatalWheel } from "@/components/natal-wheel";
+import { useT } from "@/lib/i18n/client";
 import type { ComputedChart } from "@/lib/astrology/ephemeris";
 
 type ExistingChart = {
@@ -17,6 +18,7 @@ type ExistingChart = {
 };
 
 export function NatalClient({ existing }: { existing: ExistingChart | null }) {
+  const t = useT();
   const [chart, setChart] = useState<ComputedChart | null>(existing?.chartData ?? null);
   const [meta, setMeta] = useState({
     sunSign: existing?.sunSign ?? null,
@@ -55,7 +57,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
       });
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err.error ?? "chart could not be generated");
+        throw new Error(err.error ?? t("natal.form.generate_failed"));
       }
       const data = (await res.json()) as { chart: ComputedChart; city: string | null };
       setChart(data.chart);
@@ -68,7 +70,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
       setInterpretation(null);
       setShowForm(false);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("natal.form.generic_error"));
     } finally {
       setSubmitting(false);
     }
@@ -93,12 +95,12 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
             <NatalWheel chart={chart} />
           </div>
           <aside className="space-y-4 lg:min-w-[260px]">
-            <SignPill label="Sun" sign={meta.sunSign} color="#c4a35a" />
-            <SignPill label="Moon" sign={meta.moonSign} color="#8b6fc9" />
-            <SignPill label="Rising" sign={meta.risingSign} color="#d4758a" />
+            <SignPill label={t("natal.result.sun_label")} sign={meta.sunSign} color="#c4a35a" placeholder={t("natal.result.unknown_sign_placeholder")} />
+            <SignPill label={t("natal.result.moon_label")} sign={meta.moonSign} color="#8b6fc9" placeholder={t("natal.result.unknown_sign_placeholder")} />
+            <SignPill label={t("natal.result.rising_label")} sign={meta.risingSign} color="#d4758a" placeholder={t("natal.result.unknown_sign_placeholder")} />
             {meta.city && (
               <p className="font-sans text-xs text-[#8f8daa] pt-2">
-                Birth place: {meta.city}
+                {t("natal.result.birth_place_prefix")} {meta.city}
               </p>
             )}
             <button
@@ -107,7 +109,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
               className="mt-4 w-full rounded-full border py-3 px-4 font-sans text-sm text-[#f0eff8] hover:bg-[rgba(196,163,90,0.08)] transition-colors"
               style={{ borderColor: "rgba(196,163,90,0.4)" }}
             >
-              Regenerate
+              {t("natal.result.regenerate")}
             </button>
           </aside>
         </section>
@@ -122,14 +124,13 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
           }}
         >
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-2">
-            Birth data
+            {t("natal.form.section_eyebrow")}
           </p>
           <p className="font-serif italic text-[#8f8daa] mb-6">
-            Your time of birth gives the Rising. Without it the chart still draws, but
-            the ascendant uses noon as a best-guess.
+            {t("natal.form.section_intro")}
           </p>
           <form onSubmit={generate} className="space-y-4">
-            <Field id="name" label="Name (optional)">
+            <Field id="name" label={t("natal.form.name_label")}>
               <input
                 id="name"
                 type="text"
@@ -139,7 +140,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
               />
             </Field>
             <div className="grid sm:grid-cols-2 gap-4">
-              <Field id="birthDate" label="Birth date">
+              <Field id="birthDate" label={t("natal.form.birth_date_label")}>
                 <input
                   id="birthDate"
                   type="date"
@@ -149,7 +150,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
                   className={INPUT}
                 />
               </Field>
-              <Field id="birthTime" label="Birth time (24h)">
+              <Field id="birthTime" label={t("natal.form.birth_time_label")}>
                 <input
                   id="birthTime"
                   type="time"
@@ -159,12 +160,12 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
                 />
               </Field>
             </div>
-            <Field id="birthCity" label="Birth city">
+            <Field id="birthCity" label={t("natal.form.birth_city_label")}>
               <input
                 id="birthCity"
                 type="text"
                 required
-                placeholder="e.g. Kesswil, Switzerland"
+                placeholder={t("natal.form.birth_city_placeholder")}
                 value={birthCity}
                 onChange={(e) => setBirthCity(e.target.value)}
                 className={INPUT}
@@ -182,7 +183,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
               disabled={submitting}
               className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60"
             >
-              {submitting ? "Drawing the chart..." : "Generate my chart ✦"}
+              {submitting ? t("natal.form.submitting") : t("natal.form.submit_cta")}
             </button>
             {existing && (
               <button
@@ -190,7 +191,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
                 onClick={() => setShowForm(false)}
                 className="block mx-auto mt-2 font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a]"
               >
-                Cancel
+                {t("natal.form.cancel")}
               </button>
             )}
           </form>
@@ -206,7 +207,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
           }}
         >
           <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-3">
-            What the chart asks
+            {t("natal.interpretation.eyebrow")}
           </p>
           {interpretation ? (
             <div className="font-serif text-[#f0eff8] leading-relaxed whitespace-pre-wrap">
@@ -215,8 +216,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
           ) : (
             <div>
               <p className="font-serif italic text-[#8f8daa] mb-4">
-                Read your chart with the LumZen guide — Sun, Moon, Rising, and the
-                placements that stand out.
+                {t("natal.interpretation.intro")}
               </p>
               <button
                 type="button"
@@ -224,7 +224,7 @@ export function NatalClient({ existing }: { existing: ExistingChart | null }) {
                 disabled={interpreting}
                 className="px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60"
               >
-                {interpreting ? "Composing..." : "Read my chart ✦"}
+                {interpreting ? t("natal.interpretation.composing") : t("natal.interpretation.read_cta")}
               </button>
             </div>
           )}
@@ -260,10 +260,12 @@ function SignPill({
   label,
   sign,
   color,
+  placeholder,
 }: {
   label: string;
   sign: string | null;
   color: string;
+  placeholder: string;
 }) {
   return (
     <div
@@ -280,7 +282,7 @@ function SignPill({
         {label}
       </p>
       <p className="font-serif italic text-xl text-[#f0eff8]">
-        {sign ? sign.charAt(0).toUpperCase() + sign.slice(1) : "—"}
+        {sign ? sign.charAt(0).toUpperCase() + sign.slice(1) : placeholder}
       </p>
     </div>
   );

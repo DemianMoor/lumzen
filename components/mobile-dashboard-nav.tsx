@@ -17,6 +17,7 @@ import {
   NAV_FOOTER_LINKS,
   isNavActive,
 } from "@/lib/dashboard-nav";
+import { useT } from "@/lib/i18n/client";
 
 /**
  * Mobile-only top bar for signed-in surfaces. Renders below md: where
@@ -29,6 +30,7 @@ export function MobileDashboardNav() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
+  const t = useT();
 
   async function handleSignOut() {
     setSigningOut(true);
@@ -47,12 +49,12 @@ export function MobileDashboardNav() {
         backdropFilter: "blur(20px)",
         borderBottom: "1px solid rgba(196, 163, 90, 0.12)",
       }}
-      aria-label="Primary"
+      aria-label={t("nav.sidebar.aria_label")}
     >
       <Link
         href="/dashboard"
         className="flex items-center gap-2 group"
-        aria-label="LumZen — go to dashboard"
+        aria-label={t("nav.mobile.brand_link_aria")}
       >
         <span className="text-[#c4a35a] text-lg leading-none">✦</span>
         <span className="font-display text-[15px] tracking-[0.14em] text-[#f0eff8] group-hover:text-[#c4a35a] transition-colors">
@@ -64,7 +66,7 @@ export function MobileDashboardNav() {
         <SheetTrigger asChild>
           <button
             type="button"
-            aria-label="Open menu"
+            aria-label={t("nav.mobile.open_menu_aria")}
             className="size-10 rounded-full flex items-center justify-center text-[#f0eff8] hover:text-[#c4a35a] hover:bg-[rgba(196,163,90,0.08)] transition-colors"
           >
             <Menu size={22} />
@@ -96,7 +98,7 @@ export function MobileDashboardNav() {
             <SheetClose asChild>
               <button
                 type="button"
-                aria-label="Close menu"
+                aria-label={t("nav.mobile.close_menu_aria")}
                 className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
               >
                 <X size={20} />
@@ -122,7 +124,7 @@ export function MobileDashboardNav() {
                   <span className="shrink-0 flex items-center justify-center w-6">
                     <Icon size={20} />
                   </span>
-                  <span>{item.label}</span>
+                  <span>{t(item.labelKey)}</span>
                 </Link>
               );
             })}
@@ -148,7 +150,7 @@ export function MobileDashboardNav() {
                     <span className="shrink-0 flex items-center justify-center w-6">
                       <Icon size={18} />
                     </span>
-                    <span>{item.label}</span>
+                    <span>{t(item.labelKey)}</span>
                   </Link>
                 );
               })}
@@ -159,7 +161,7 @@ export function MobileDashboardNav() {
               style={{ borderColor: "rgba(196, 163, 90, 0.10)" }}
             >
               <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-1">
-                The fine print
+                {t("nav.mobile.footer_section_title")}
               </p>
               {NAV_FOOTER_LINKS.map((link) => (
                 <Link
@@ -168,7 +170,7 @@ export function MobileDashboardNav() {
                   onClick={() => setOpen(false)}
                   className="font-sans text-sm py-2 text-[#8f8daa] hover:text-[#f0eff8] transition-colors"
                 >
-                  {link.label}
+                  {t(link.labelKey)}
                 </Link>
               ))}
             </div>
@@ -185,7 +187,7 @@ export function MobileDashboardNav() {
               className="w-full inline-flex items-center justify-center gap-2 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-3 font-sans text-sm text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all disabled:opacity-60"
             >
               <LogOut size={16} />
-              {signingOut ? "Signing out…" : "Sign out"}
+              {signingOut ? t("nav.mobile.sign_out_loading") : t("nav.mobile.sign_out")}
             </button>
           </div>
         </SheetContent>

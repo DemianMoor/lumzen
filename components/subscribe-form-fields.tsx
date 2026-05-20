@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useT } from "@/lib/i18n/client";
 
 export type SubscribeSource = "subscribe_page" | "popup";
 
@@ -33,6 +34,7 @@ export function SubscribeFormFields({
    */
   showNameField?: boolean;
 }) {
+  const t = useT();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -47,20 +49,16 @@ export function SubscribeFormFields({
     e.preventDefault();
     setError(null);
     if (!email.trim()) {
-      setError("We need a valid email address to send you the practice.");
+      setError(t("subscribe.form.error.invalid_email"));
       return;
     }
     if (!consentEmail) {
-      setError(
-        "Please confirm you would like to receive emails by checking the box above.",
-      );
+      setError(t("subscribe.form.error.email_consent_required"));
       return;
     }
     const trimmedPhone = phone.trim();
     if (consentSms && !trimmedPhone) {
-      setError(
-        "Please add your mobile number above so we can send the text reminders.",
-      );
+      setError(t("subscribe.form.error.sms_requires_phone"));
       return;
     }
     setLoading(true);
@@ -80,15 +78,15 @@ export function SubscribeFormFields({
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
         if (res.status === 409) {
-          throw new Error(
-            "This email is already on the list. You're already here ✦",
-          );
+          throw new Error(t("subscribe.form.error.already_subscribed"));
         }
-        throw new Error(data.error || `Subscribe failed (${res.status})`);
+        throw new Error(
+          data.error || t("subscribe.form.error.generic", { status: res.status }),
+        );
       }
       onSuccess({ email: email.trim(), consentSms });
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
+      setError(err instanceof Error ? err.message : t("subscribe.form.error.unknown"));
     } finally {
       setLoading(false);
     }
@@ -101,7 +99,7 @@ export function SubscribeFormFields({
           htmlFor={`${idPrefix}-email`}
           className="block font-sans text-xs text-[#8f8daa] mb-2"
         >
-          Your email
+          {t("subscribe.form.email_label")}
         </label>
         <input
           id={`${idPrefix}-email`}
@@ -110,7 +108,7 @@ export function SubscribeFormFields({
           autoComplete="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="you@example.com"
+          placeholder={t("subscribe.form.email_placeholder")}
           className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
         />
       </div>
@@ -121,7 +119,8 @@ export function SubscribeFormFields({
             htmlFor={`${idPrefix}-name`}
             className="block font-sans text-xs text-[#8f8daa] mb-2"
           >
-            Your name <span className="text-[#4a4866]">(optional)</span>
+            {t("subscribe.form.name_label")}{" "}
+            <span className="text-[#4a4866]">{t("subscribe.form.name_optional")}</span>
           </label>
           <input
             id={`${idPrefix}-name`}
@@ -129,7 +128,7 @@ export function SubscribeFormFields({
             autoComplete="given-name"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Your first name"
+            placeholder={t("subscribe.form.name_placeholder")}
             className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
           />
         </div>
@@ -140,8 +139,8 @@ export function SubscribeFormFields({
           htmlFor={`${idPrefix}-phone`}
           className="block font-sans text-xs text-[#8f8daa] mb-2"
         >
-          Mobile number{" "}
-          <span className="text-[#4a4866]">(optional · US only)</span>
+          {t("subscribe.form.phone_label")}{" "}
+          <span className="text-[#4a4866]">{t("subscribe.form.phone_optional")}</span>
         </label>
         <input
           id={`${idPrefix}-phone`}
@@ -149,7 +148,7 @@ export function SubscribeFormFields({
           autoComplete="tel"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
-          placeholder="+1 (555) 123-4567"
+          placeholder={t("subscribe.form.phone_placeholder")}
           className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
         />
       </div>
@@ -159,7 +158,7 @@ export function SubscribeFormFields({
         style={{ borderColor: "rgba(196,163,90,0.12)" }}
       >
         <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
-          How should we reach you?
+          {t("subscribe.form.consent_heading")}
         </p>
 
         <div className="space-y-4">
@@ -171,9 +170,7 @@ export function SubscribeFormFields({
               className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
             />
             <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
-              I consent to receive marketing and editorial emails from LumZen
-              (operated by DemianSpirits). Frequency varies, typically one
-              email per week. I can unsubscribe any time.
+              {t("subscribe.form.consent_email")}
             </span>
           </label>
 
@@ -185,11 +182,7 @@ export function SubscribeFormFields({
               className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
             />
             <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
-              By providing your phone number and checking this box, you are
-              consenting to receive marketing text messages to that number
-              from LumZen. Message frequency varies. Message and data rates
-              may apply. Text HELP for help. Text STOP to unsubscribe. SMS
-              opt-in data will not be shared or sold with 3rd parties.
+              {t("subscribe.form.consent_sms")}
             </span>
           </label>
         </div>
@@ -206,30 +199,16 @@ export function SubscribeFormFields({
           >
             ▸
           </span>
-          SMS messaging &amp; data policy
+          {t("subscribe.form.sms_policy_summary")}
         </summary>
         <p className="mt-3 font-sans text-[11px] text-[#8f8daa] leading-relaxed">
-          SMS is currently available in the United States only. By providing
-          your phone number, checking the SMS consent box, and clicking the
-          sign-up button, you agree to receive periodic text messages from
-          LumZen — operated by DemianSpirits — at the number you submitted.
-          These may include automated messages sent using an automatic
-          telephone dialing system. Message and data rates may apply.
-          Message frequency varies, typically one message per week. Messages
-          will consist of weekly content digests, occasional content alerts,
-          and account notifications. Consent to receive SMS is not a
-          condition of subscribing to LumZen or accessing any of our
-          content. Text HELP for help. Reply STOP at any time to unsubscribe
-          — you will get one confirmation message and then no further texts.
-          See our{" "}
+          {t("subscribe.form.sms_policy_body")}{" "}
           <Link href="/terms" className="text-[#c4a35a] hover:underline">
-            Terms
+            {t("subscribe.form.sms_policy_link_terms")}
           </Link>{" "}
-          and{" "}
           <Link href="/privacy" className="text-[#c4a35a] hover:underline">
-            Privacy Policy
-          </Link>{" "}
-          for full details.
+            {t("subscribe.form.sms_policy_link_privacy")}
+          </Link>
         </p>
       </details>
 
@@ -245,10 +224,10 @@ export function SubscribeFormFields({
         className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading
-          ? "Joining…"
+          ? t("subscribe.form.submit_loading")
           : source === "popup"
-            ? "Join the Community ✦"
-            : "Subscribe ✦"}
+            ? t("subscribe.form.submit_popup")
+            : t("subscribe.form.submit_page")}
       </button>
     </form>
   );

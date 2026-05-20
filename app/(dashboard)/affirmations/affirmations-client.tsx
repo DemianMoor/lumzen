@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import { ChakraSequence } from "@/components/chakra-sequence";
 import { MirrorWork } from "@/components/mirror-work";
 import { BreatheAffirm } from "@/components/breathe-affirm";
+import { useT } from "@/lib/i18n/client";
 
 type Affirmation = {
   id: string;
@@ -29,6 +30,7 @@ export function AffirmationsClient({
   chakras: Category[];
   affirmations: Affirmation[];
 }) {
+  const t = useT();
   const [activity, setActivity] = useState<Activity>("browse");
   const [selected, setSelected] = useState<string>("identity");
   const [completed, setCompleted] = useState(false);
@@ -69,7 +71,7 @@ export function AffirmationsClient({
       const data = (await res.json()) as { affirmations: string[] };
       setGenerated(data.affirmations);
     } catch (err) {
-      setGenError(err instanceof Error ? err.message : "Generation failed.");
+      setGenError(err instanceof Error ? err.message : t("affirmations.generator.generation_failed"));
     } finally {
       setGenerating(false);
     }
@@ -78,7 +80,7 @@ export function AffirmationsClient({
   if (activity === "chakra_sequence") {
     return (
       <ActivityShell
-        title="Chakra sequence"
+        title={t("affirmations.activity.chakra_sequence.title")}
         onBack={() => {
           setActivity("browse");
           setCompleted(false);
@@ -94,7 +96,7 @@ export function AffirmationsClient({
     const list = browseList.length > 0 ? browseList : affirmations.slice(0, 5);
     return (
       <ActivityShell
-        title="Mirror work"
+        title={t("affirmations.activity.mirror_work.title")}
         onBack={() => {
           setActivity("browse");
           setCompleted(false);
@@ -110,7 +112,7 @@ export function AffirmationsClient({
     const list = browseList.length > 0 ? browseList : affirmations.slice(0, 6);
     return (
       <ActivityShell
-        title="Breathe and affirm"
+        title={t("affirmations.activity.breathing.title")}
         onBack={() => {
           setActivity("browse");
           setCompleted(false);
@@ -127,29 +129,32 @@ export function AffirmationsClient({
       {/* Activities ---------------------------------------------------- */}
       <section className="grid sm:grid-cols-3 gap-4">
         <ActivityCard
-          title="Chakra sequence"
-          description="Seven affirmations, seven Solfeggio tones."
+          title={t("affirmations.activity.chakra_sequence.title")}
+          description={t("affirmations.activity.chakra_sequence.description")}
           accent="#8b6fc9"
           onClick={() => setActivity("chakra_sequence")}
+          eyebrow={t("affirmations.activity.eyebrow")}
         />
         <ActivityCard
-          title="Mirror work"
-          description="Five affirmations, eyes on your own eyes."
+          title={t("affirmations.activity.mirror_work.title")}
+          description={t("affirmations.activity.mirror_work.description")}
           accent="#d4758a"
           onClick={() => setActivity("mirror_work")}
+          eyebrow={t("affirmations.activity.eyebrow")}
         />
         <ActivityCard
-          title="Breathe and affirm"
-          description="Six breaths, six affirmations, paced together."
+          title={t("affirmations.activity.breathing.title")}
+          description={t("affirmations.activity.breathing.description")}
           accent="#6bcc9e"
           onClick={() => setActivity("breathing")}
+          eyebrow={t("affirmations.activity.eyebrow")}
         />
       </section>
 
       {/* Browse by category ------------------------------------------- */}
       <section>
         <h2 className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
-          Browse by category
+          {t("affirmations.browse.heading")}
         </h2>
         <div className="flex flex-wrap gap-2 mb-6">
           {[...categories, ...chakras].map((c) => (
@@ -176,7 +181,7 @@ export function AffirmationsClient({
         <ul className="space-y-2">
           {browseList.length === 0 && (
             <li className="font-serif italic text-[#8f8daa]">
-              The wisdom is waiting. Begin with what calls to you.
+              {t("affirmations.browse.empty_state")}
             </li>
           )}
           {browseList.map((a) => (
@@ -203,17 +208,17 @@ export function AffirmationsClient({
         }}
       >
         <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#6bcc9e] mb-2">
-          Personal affirmations
+          {t("affirmations.generator.eyebrow")}
         </p>
         <p className="font-serif italic text-[#8f8daa] mb-5">
-          Bring an intention. Receive five affirmations written for it.
+          {t("affirmations.generator.intro")}
         </p>
         <div className="flex flex-col sm:flex-row gap-3">
           <input
             type="text"
             value={intention}
             onChange={(e) => setIntention(e.target.value)}
-            placeholder="e.g. trust myself in unfamiliar rooms"
+            placeholder={t("affirmations.generator.placeholder")}
             className="flex-1 bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#6bcc9e]"
           />
           <button
@@ -222,7 +227,7 @@ export function AffirmationsClient({
             disabled={generating || !intention.trim()}
             className="px-6 py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60"
           >
-            {generating ? "Composing..." : "Generate ✦"}
+            {generating ? t("affirmations.generator.composing") : t("affirmations.generator.submit_cta")}
           </button>
         </div>
         {genError && (
@@ -256,11 +261,13 @@ function ActivityCard({
   description,
   accent,
   onClick,
+  eyebrow,
 }: {
   title: string;
   description: string;
   accent: string;
   onClick: () => void;
+  eyebrow: string;
 }) {
   return (
     <button
@@ -277,7 +284,7 @@ function ActivityCard({
         className="font-display text-[10px] tracking-[0.2em] uppercase mb-3"
         style={{ color: accent }}
       >
-        Activity
+        {eyebrow}
       </p>
       <p className="font-serif italic text-xl text-[#f0eff8] mb-2">{title}</p>
       <p className="font-sans text-sm text-[#8f8daa]">{description}</p>
@@ -296,6 +303,7 @@ function ActivityShell({
   children: React.ReactNode;
   completed: boolean;
 }) {
+  const t = useT();
   return (
     <section
       className="rounded-2xl p-8 border"
@@ -313,13 +321,13 @@ function ActivityShell({
           onClick={onBack}
           className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
         >
-          <span aria-hidden="true">←</span> Back
+          {t("affirmations.activity.back")}
         </button>
       </div>
       {children}
       {completed && (
         <p className="mt-6 text-center font-serif italic text-[#6bcc9e]">
-          Practice complete. Your day on the wheel keeps turning.
+          {t("affirmations.activity.complete_message")}
         </p>
       )}
     </section>

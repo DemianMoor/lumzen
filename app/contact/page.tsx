@@ -5,14 +5,18 @@ import {
 } from "@/components/cosmic-background";
 import { SiteHeader, SiteFooter } from "@/components/site-nav";
 import { ContactForm } from "./contact-form";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
-export const metadata: Metadata = {
-  title: "Contact — LumZen",
-  description:
-    "Reach the LumZen editorial team. Feedback, questions, partnership inquiries.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { messages } = await getCurrentMessages();
+  return {
+    title: t(messages, "marketing.contact.meta.title"),
+    description: t(messages, "marketing.contact.meta.description"),
+  };
+}
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const { messages } = await getCurrentMessages();
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
       <StarField />
@@ -24,24 +28,16 @@ export default function ContactPage() {
         <div className="mx-auto max-w-2xl">
           <header className="mb-10 text-center">
             <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-3 text-[#c4a35a]">
-              ✦ CONTACT
+              {t(messages, "marketing.contact.eyebrow")}
             </p>
             <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] leading-tight">
-              Write to us.
+              {t(messages, "marketing.contact.title")}
             </h1>
             <p className="font-sans text-base text-[#8f8daa] mt-6 leading-relaxed">
-              Feedback, broken links, partnership inquiries. Read by a small
-              editorial team. We answer within a few days.
+              {t(messages, "marketing.contact.intro")}
             </p>
             <p className="font-sans text-sm text-[#8f8daa] mt-2">
-              Or email{" "}
-              <a
-                href="mailto:hello@lumzen.co"
-                className="text-[#c4a35a] hover:underline"
-              >
-                hello@lumzen.co
-              </a>{" "}
-              directly.
+              {t(messages, "marketing.contact.email_hint")}
             </p>
           </header>
 

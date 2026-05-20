@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ContentCard, type ContentCardProps } from "@/components/content-card";
+import { useT } from "@/lib/i18n/client";
 
 export type ContentRowItem = Omit<
   ContentCardProps,
@@ -27,6 +28,7 @@ export function ContentRow({
   items,
 }: ContentRowProps) {
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+  const t = useT();
 
   return (
     <section className="relative">
@@ -46,7 +48,7 @@ export function ContentRow({
             href={seeAllHref}
             className="hidden md:inline-block font-sans text-sm text-[#c4a35a] hover:underline shrink-0"
           >
-            See all →
+            {t("content_row.see_all")}
           </Link>
         )}
       </div>

@@ -2,6 +2,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase";
 import { TarotCard } from "@/components/tarot-card";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
@@ -24,6 +25,7 @@ export default async function ReadingPage({
 }) {
   const { id } = await params;
   const supabase = await createSupabaseServerClient();
+  const { messages } = await getCurrentMessages();
 
   const {
     data: { user },
@@ -48,7 +50,7 @@ export default async function ReadingPage({
           href="/tarot"
           className="inline-flex items-center gap-1.5 rounded-full border border-[rgba(196,163,90,0.25)] bg-[rgba(196,163,90,0.06)] px-4 py-2 font-sans text-xs text-[#f0eff8] hover:bg-[rgba(196,163,90,0.14)] hover:border-[rgba(196,163,90,0.45)] hover:text-[#c4a35a] transition-all"
         >
-          <span aria-hidden="true">←</span> Back to tarot
+          {t(messages, "tarot.reading_detail.back_to_tarot")}
         </Link>
 
         <header className="text-center my-8">
@@ -86,7 +88,7 @@ export default async function ReadingPage({
             }}
           >
             <p className="font-display text-[10px] tracking-[0.2em] uppercase text-[#c4a35a] mb-4">
-              Reading
+              {t(messages, "tarot.reading_detail.reading_label")}
             </p>
             <div className="font-serif text-[#f0eff8] leading-relaxed whitespace-pre-wrap">
               {reading.ai_interpretation}

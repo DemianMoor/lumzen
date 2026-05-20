@@ -14,6 +14,7 @@
  */
 
 import { cn } from "@/lib/utils";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 
 export type AdSlotPlacement = "leaderboard" | "in-feed" | "sticky-footer";
 
@@ -26,7 +27,7 @@ const PLACEMENT_DIMENSIONS: Record<
   "sticky-footer": { width: 320, height: 50, mobileOnly: true },
 };
 
-export function AdSlot({
+export async function AdSlot({
   placement,
   className,
 }: {
@@ -35,6 +36,7 @@ export function AdSlot({
 }) {
   const enabled = process.env.NEXT_PUBLIC_ADS_ENABLED === "true";
   const { width, height, mobileOnly } = PLACEMENT_DIMENSIONS[placement];
+  const { messages } = await getCurrentMessages();
 
   const isStickyFooter = placement === "sticky-footer";
   const containerClass = cn(
@@ -52,7 +54,7 @@ export function AdSlot({
         className={containerClass}
         style={{ width, height, minHeight: height }}
         data-ad-placement={placement}
-        aria-label="Sponsored content"
+        aria-label={t(messages, "ad_slot.enabled_aria")}
       />
     );
   }
@@ -68,16 +70,16 @@ export function AdSlot({
         border: "1px dashed rgba(196, 163, 90, 0.30)",
       }}
       role="complementary"
-      aria-label="Sponsored placeholder"
+      aria-label={t(messages, "ad_slot.placeholder_aria")}
     >
       <div className="flex flex-col items-center gap-1">
         <span
           className="font-display text-[10px] tracking-[0.30em] uppercase text-[#c4a35a]"
         >
-          ✦ Sponsored ✦
+          {t(messages, "ad_slot.sponsored_label")}
         </span>
         <span className="font-sans text-[10px] text-[#4a4866]">
-          ad slot reserved · {width}×{height}
+          {t(messages, "ad_slot.reserved_caption", { width, height })}
         </span>
       </div>
     </div>

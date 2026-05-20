@@ -1,4 +1,5 @@
 import { createSupabaseAdmin, createSupabaseServerClient } from "@/lib/supabase";
+import type { Locale } from "@/lib/i18n/config";
 
 export type TarotCard = {
   id: string;
@@ -46,19 +47,34 @@ export const SPREADS = {
 export type SpreadKind = keyof typeof SPREADS;
 
 /**
- * Get the full deck (all 78). Public reference data, served via the public
- * tarot_cards SELECT policy.
+ * Get the full deck (all 78) for the given locale. Falls back to English rows
+ * if the locale has no seeded translations yet. Public reference data, served
+ * via the public tarot_cards SELECT policy.
  */
-export async function getAllCards(): Promise<TarotCard[]> {
+export async function getAllCards(locale: Locale = "en"): Promise<TarotCard[]> {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
     .from("tarot_cards")
     .select("*")
+    .eq("locale", locale)
     .order("type", { ascending: true })
     .order("value", { ascending: true });
 
   if (error) throw error;
-  return (data ?? []) as TarotCard[];
+  if (data && data.length > 0) return data as TarotCard[];
+
+  // Fallback: no rows for this locale yet → use English.
+  if (locale !== "en") {
+    const { data: enData, error: enError } = await supabase
+      .from("tarot_cards")
+      .select("*")
+      .eq("locale", "en")
+      .order("type", { ascending: true })
+      .order("value", { ascending: true });
+    if (enError) throw enError;
+    return (enData ?? []) as TarotCard[];
+  }
+  return [];
 }
 
 /**
@@ -109,6 +125,7 @@ export async function saveReading(params: {
   cards: Array<{ position: string; card: DrawnCard }>;
   question: string | null;
   aiInterpretation: string | null;
+  locale: Locale;
 }): Promise<{ id: string }> {
   const admin = createSupabaseAdmin();
   const { data, error } = await admin
@@ -119,6 +136,7 @@ export async function saveReading(params: {
       cards: params.cards,
       question: params.question,
       ai_interpretation: params.aiInterpretation,
+      locale: params.locale,
     })
     .select("id")
     .single();

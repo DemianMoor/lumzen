@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useT } from "@/lib/i18n/client";
 import {
   IconSacredBook,
   IconChakraSpiral,
@@ -83,6 +84,7 @@ export function ContentCard({
 }: ContentCardProps) {
   const [hovered, setHovered] = useState(false);
   const Icon = ICONS[iconKey];
+  const t = useT();
 
   const isDimmed = dimmed && !hovered;
 
@@ -139,7 +141,7 @@ export function ContentCard({
         <p className="font-mono text-[11px] text-[#4a4866]">{meta}</p>
         <div className="flex items-center justify-end mt-3">
           <span className="font-sans text-xs text-[#c4a35a] group-hover:underline">
-            Begin →
+            {t("content_card.cta")}
           </span>
         </div>
       </div>

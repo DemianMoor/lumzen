@@ -10,10 +10,12 @@ import {
   type DashboardNavItem,
   isNavActive,
 } from "@/lib/dashboard-nav";
+import { useT } from "@/lib/i18n/client";
 
 export function Sidebar() {
   const pathname = usePathname();
   const [expanded, setExpanded] = useState(false);
+  const t = useT();
 
   return (
     <aside
@@ -26,7 +28,7 @@ export function Sidebar() {
       }}
       onMouseEnter={() => setExpanded(true)}
       onMouseLeave={() => setExpanded(false)}
-      aria-label="Primary"
+      aria-label={t("nav.sidebar.aria_label")}
     >
       <div className="flex items-center px-4 h-16 shrink-0">
         <Link
@@ -69,7 +71,7 @@ export function Sidebar() {
       <button
         type="button"
         onClick={() => setExpanded((s) => !s)}
-        aria-label={expanded ? "Collapse sidebar" : "Expand sidebar"}
+        aria-label={expanded ? t("nav.sidebar.collapse_aria") : t("nav.sidebar.expand_aria")}
         className="absolute top-20 -right-3 size-6 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
         style={{
           background: "rgba(6, 6, 15, 0.92)",
@@ -92,6 +94,8 @@ function SidebarLink({
   active: boolean;
 }) {
   const Icon = item.icon;
+  const t = useT();
+  const label = t(item.labelKey);
   return (
     <Link
       href={item.href}
@@ -100,7 +104,7 @@ function SidebarLink({
         background: active ? "rgba(196, 163, 90, 0.08)" : "transparent",
         color: active ? "#c4a35a" : "#8f8daa",
       }}
-      title={item.label}
+      title={label}
     >
       <span className="shrink-0 flex items-center justify-center w-5">
         <Icon size={20} />
@@ -109,7 +113,7 @@ function SidebarLink({
         className="whitespace-nowrap transition-opacity duration-200"
         style={{ opacity: expanded ? 1 : 0 }}
       >
-        {item.label}
+        {label}
       </span>
     </Link>
   );

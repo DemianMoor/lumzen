@@ -3,6 +3,7 @@ import { Resend } from "resend";
 import { render } from "@react-email/render";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import WelcomeEmail from "@/emails/welcome-email";
+import { getLocaleFromRequest, getMessages, t } from "@/lib/i18n/server";
 
 export const runtime = "nodejs";
 
@@ -56,6 +57,7 @@ export async function POST(request: NextRequest) {
     const cleanEmail = email.trim().toLowerCase();
     const cleanPhone = phone?.trim() || null;
     const cleanName = name?.trim() || null;
+    const locale = getLocaleFromRequest(request);
 
     const ip =
       request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ||
@@ -76,6 +78,7 @@ export async function POST(request: NextRequest) {
         user_agent: userAgent,
         source: source || "unknown",
         unsubscribed_at: null,
+        locale,
       },
       { onConflict: "email" },
     );
@@ -107,13 +110,17 @@ export async function POST(request: NextRequest) {
               name: cleanName ?? undefined,
               emailConsent: !!consent_email,
               smsConsent: !!consent_sms,
+              locale,
             }),
           );
+
+          const messages = getMessages(locale);
+          const subject = t(messages, "email.welcome.subject");
 
           const { error: emailError } = await resend.emails.send({
             from: fromAddress,
             to: cleanEmail,
-            subject: "Welcome to LumZen",
+            subject,
             html,
           });
 

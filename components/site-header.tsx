@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Bell, Search, LogOut } from "lucide-react";
 import { useState } from "react";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
+import { useT } from "@/lib/i18n/client";
 
 type SiteHeaderProps = {
   greeting: string;
@@ -25,6 +26,7 @@ export function SiteHeader({
 }: SiteHeaderProps) {
   const router = useRouter();
   const [signingOut, setSigningOut] = useState(false);
+  const t = useT();
   const initial = displayName.charAt(0).toUpperCase() || "✦";
 
   async function handleSignOut() {
@@ -55,21 +57,21 @@ export function SiteHeader({
           <span className="mx-2 text-[#4a4866]">·</span>
           <span>🌙 {moonPhase}</span>
           <span className="mx-2 text-[#4a4866]">·</span>
-          <span>Day {dayStreak} of your practice</span>
+          <span>{t("header.day_streak", { count: dayStreak })}</span>
         </p>
       </div>
 
       <div className="flex items-center gap-2 shrink-0">
         <button
           type="button"
-          aria-label="Search"
+          aria-label={t("header.search_aria")}
           className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] hover:bg-[rgba(196,163,90,0.08)] transition-colors"
         >
           <Search size={16} />
         </button>
         <button
           type="button"
-          aria-label="Notifications"
+          aria-label={t("header.notifications_aria")}
           className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] hover:bg-[rgba(196,163,90,0.08)] transition-colors"
         >
           <Bell size={20} />
@@ -83,7 +85,7 @@ export function SiteHeader({
             color: "#c4a35a",
             letterSpacing: "0.05em",
           }}
-          aria-label="Profile"
+          aria-label={t("header.profile_aria")}
         >
           {initial}
         </Link>
@@ -91,7 +93,7 @@ export function SiteHeader({
           type="button"
           onClick={handleSignOut}
           disabled={signingOut}
-          aria-label="Sign out"
+          aria-label={t("header.sign_out_aria")}
           className="size-9 rounded-full flex items-center justify-center text-[#8f8daa] hover:text-[#c4a35a] hover:bg-[rgba(196,163,90,0.08)] transition-colors disabled:opacity-50"
         >
           <LogOut size={16} />

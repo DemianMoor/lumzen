@@ -1,42 +1,45 @@
 import Link from "next/link";
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { getCurrentLocale, getCurrentMessages, t } from "@/lib/i18n/server";
 
 export const dynamic = "force-dynamic";
 
-const DIFFICULTY_LABELS: Record<string, string> = {
-  beginner: "Beginner",
-  intermediate: "Intermediate",
-  advanced: "Advanced",
-};
-
 export default async function GuidesPage() {
   const supabase = await createSupabaseServerClient();
+  const { messages } = await getCurrentMessages();
+  const locale = await getCurrentLocale();
   const { data: guides } = await supabase
     .from("spiritual_guides")
     .select("id, slug, title, category, description, read_time_minutes, difficulty, is_featured")
+    .eq("locale", locale)
     .eq("is_active", true)
     .order("is_featured", { ascending: false })
     .order("title", { ascending: true });
+
+  const DIFFICULTY_LABELS: Record<string, string> = {
+    beginner: t(messages, "guides.difficulty.beginner"),
+    intermediate: t(messages, "guides.difficulty.intermediate"),
+    advanced: t(messages, "guides.difficulty.advanced"),
+  };
 
   return (
     <main className="relative min-h-[calc(100vh-60px)] px-6 py-12">
       <div className="mx-auto max-w-5xl">
         <header className="text-center mb-12">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-3">
-            ✦ SPIRITUAL GUIDES
+            {t(messages, "guides.page.eyebrow")}
           </p>
           <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] mb-3">
-            Wisdom you can actually use
+            {t(messages, "guides.page.title")}
           </h1>
           <p className="font-serif italic text-lg text-[#8f8daa]">
-            Long-form guides on chakras, shadow, moon phases, sacred geometry, the
-            foundations of practice.
+            {t(messages, "guides.page.subtitle")}
           </p>
         </header>
 
         {!guides || guides.length === 0 ? (
           <p className="text-center font-serif italic text-[#8f8daa]">
-            The wisdom is waiting. Begin with what calls to you.
+            {t(messages, "guides.list.empty_state")}
           </p>
         ) : (
           <ul className="grid sm:grid-cols-2 gap-6">
@@ -62,7 +65,7 @@ export default async function GuidesPage() {
                           color: "#c4a35a",
                         }}
                       >
-                        Featured
+                        {t(messages, "guides.list.featured_badge")}
                       </span>
                     )}
                   </div>
@@ -72,8 +75,8 @@ export default async function GuidesPage() {
                   <p className="font-serif text-[#8f8daa] mb-4">{g.description}</p>
                   <p className="font-sans text-xs text-[#8f8daa]">
                     {g.read_time_minutes
-                      ? `${g.read_time_minutes} min read`
-                      : "Read"}
+                      ? `${g.read_time_minutes} ${t(messages, "guides.list.minutes_read_suffix")}`
+                      : t(messages, "guides.list.read_label")}
                     {g.difficulty
                       ? ` · ${DIFFICULTY_LABELS[g.difficulty] ?? g.difficulty}`
                       : ""}

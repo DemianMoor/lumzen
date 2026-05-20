@@ -1,4 +1,5 @@
 import { createSupabaseServerClient } from "@/lib/supabase";
+import { getCurrentMessages, t } from "@/lib/i18n/server";
 import { NatalClient } from "./natal-client";
 import type { ComputedChart } from "@/lib/astrology/ephemeris";
 
@@ -6,6 +7,7 @@ export const dynamic = "force-dynamic";
 
 export default async function NatalPage() {
   const supabase = await createSupabaseServerClient();
+  const { messages } = await getCurrentMessages();
 
   const { data: chart } = await supabase
     .from("natal_charts")
@@ -17,13 +19,13 @@ export default async function NatalPage() {
       <div className="mx-auto max-w-5xl">
         <header className="text-center mb-12">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase text-[#c4a35a] mb-3">
-            ✦ CELESTIAL TOOLS
+            {t(messages, "natal.page.eyebrow")}
           </p>
           <h1 className="font-serif italic text-4xl md:text-5xl text-[#f0eff8] mb-3">
-            The cosmos has always been speaking
+            {t(messages, "natal.page.title")}
           </h1>
           <p className="font-serif italic text-lg text-[#8f8daa]">
-            Bring your birth data. Receive your chart — patterns, not predictions.
+            {t(messages, "natal.page.subtitle")}
           </p>
         </header>
 

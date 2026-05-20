@@ -5,9 +5,11 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createSupabaseBrowserClient } from "@/lib/supabase";
 import { StarField, NebulaBackground } from "@/components/cosmic-background";
+import { useT } from "@/lib/i18n/client";
 
 export default function SignUpPage() {
   const router = useRouter();
+  const t = useT();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -74,17 +76,17 @@ export default function SignUpPage() {
       >
         <div className="text-center mb-8">
           <p className="font-display text-[11px] tracking-[0.2em] uppercase mb-2 text-[#c4a35a]">
-            ✦ LUMZEN
+            {t("auth.common.brand_eyebrow")}
           </p>
           <h1 className="font-serif italic text-3xl text-[#f0eff8]">
-            Begin your journey <span className="text-[#c4a35a]">✦</span>
+            {t("auth.signup.title")}
           </h1>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="name" className="block font-sans text-xs text-[#8f8daa] mb-2">
-              Name
+              {t("auth.signup.name_label")}
             </label>
             <input
               id="name"
@@ -98,7 +100,7 @@ export default function SignUpPage() {
 
           <div>
             <label htmlFor="email" className="block font-sans text-xs text-[#8f8daa] mb-2">
-              Email
+              {t("auth.signup.email_label")}
             </label>
             <input
               id="email"
@@ -113,7 +115,7 @@ export default function SignUpPage() {
 
           <div>
             <label htmlFor="password" className="block font-sans text-xs text-[#8f8daa] mb-2">
-              Password
+              {t("auth.signup.password_label")}
             </label>
             <input
               id="password"
@@ -143,19 +145,18 @@ export default function SignUpPage() {
             disabled={loading}
             className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            {loading ? "Creating account…" : "Create Account ✦"}
+            {loading ? t("auth.signup.submit_loading") : t("auth.signup.submit")}
           </button>
 
           <p className="font-sans text-xs text-[#8f8daa] text-center mt-4 leading-relaxed">
-            By creating an account, you join a free, ad-supported community.
-            No payment, ever.
+            {t("auth.signup.disclaimer")}
           </p>
         </form>
 
         <div className="mt-6 text-center font-sans text-xs text-[#8f8daa]">
-          Already here?{" "}
+          {t("auth.signup.already_here_prefix")}{" "}
           <Link href="/auth/signin" className="text-[#c4a35a] hover:underline">
-            Sign in
+            {t("auth.signup.sign_in_link")}
           </Link>
         </div>
       </div>
