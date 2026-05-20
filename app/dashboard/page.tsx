@@ -3,7 +3,6 @@ import { createSupabaseServerClient, createSupabaseAdmin } from "@/lib/supabase"
 import { SiteHeader } from "@/components/site-header";
 import { TodaysPracticeCard } from "@/components/todays-practice-card";
 import { ContentRow, type ContentRowItem } from "@/components/content-row";
-import { AdSlot } from "@/components/ad-slot";
 import { PILLARS } from "@/lib/brand-voice";
 import { moonPhaseFor } from "@/lib/moon-phase";
 import { getCurrentMessages, t, type Messages } from "@/lib/i18n/server";
@@ -145,13 +144,6 @@ export default async function DashboardPage() {
           />
         </div>
 
-        <div
-          style={{ animation: "fadeUp 0.6s ease-out 0.08s forwards", opacity: 0 }}
-          className="flex justify-center"
-        >
-          <AdSlot placement="leaderboard" />
-        </div>
-
         <div style={{ animation: "fadeUp 0.6s ease-out 0.16s forwards", opacity: 0 }}>
           <ContentRow
             eyebrow={t(messages, "dashboard.rows.celestial.eyebrow")}
@@ -172,13 +164,6 @@ export default async function DashboardPage() {
             seeAllHref="/affirmations"
             items={affirmationItems}
           />
-        </div>
-
-        <div
-          style={{ animation: "fadeUp 0.6s ease-out 0.32s forwards", opacity: 0 }}
-          className="flex justify-center"
-        >
-          <AdSlot placement="in-feed" />
         </div>
 
         <div style={{ animation: "fadeUp 0.6s ease-out 0.40s forwards", opacity: 0 }}>
@@ -212,10 +197,6 @@ export default async function DashboardPage() {
             seeAllHref="/guides"
             items={guideItems}
           />
-        </div>
-
-        <div className="flex justify-center md:hidden">
-          <AdSlot placement="sticky-footer" />
         </div>
       </main>
     </>
