@@ -49,6 +49,9 @@ export function SubscribePopup() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [email, setEmail] = useState("");
+  // Explicit, unchecked-by-default email consent matches the screenshot
+  // pattern and the carrier-friendly disclosures on /subscribe.
+  const [consentEmail, setConsentEmail] = useState(false);
 
   const firstInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -120,6 +123,12 @@ export function SubscribePopup() {
       setError("We need a valid email address to send you the practice.");
       return;
     }
+    if (!consentEmail) {
+      setError(
+        "Please confirm you would like to receive emails by checking the box above.",
+      );
+      return;
+    }
 
     setIsSubmitting(true);
     try {
@@ -131,7 +140,7 @@ export function SubscribePopup() {
           // The popup is email-only by design — TCPA prohibits bundling
           // SMS consent with another opt-in, so we never collect a phone
           // here. The full /subscribe form is the only SMS surface.
-          consent_email: true,
+          consent_email: consentEmail,
           consent_sms: false,
           source: "popup",
         }),
@@ -243,18 +252,27 @@ export function SubscribePopup() {
                   />
                 </div>
 
-                <p className="font-sans text-[11px] text-[#8f8daa] leading-relaxed">
-                  By subscribing, you agree to receive marketing emails from
-                  LumZen. You can unsubscribe at any time using the link in
-                  any email. See our{" "}
-                  <Link
-                    href="/privacy"
-                    className="text-[#c4a35a] hover:underline"
-                  >
-                    Privacy Policy
-                  </Link>
-                  .
-                </p>
+                <label className="flex items-start gap-3 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={consentEmail}
+                    onChange={(e) => setConsentEmail(e.target.checked)}
+                    className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
+                  />
+                  <span className="font-sans text-[11px] text-[#f0eff8] leading-relaxed">
+                    I consent to receive marketing and editorial emails from
+                    LumZen (operated by DemianSpirits). Frequency varies,
+                    typically one email per week. I can unsubscribe any
+                    time. See our{" "}
+                    <Link
+                      href="/privacy"
+                      className="text-[#c4a35a] hover:underline"
+                    >
+                      Privacy Policy
+                    </Link>
+                    .
+                  </span>
+                </label>
 
                 {error && (
                   <p
@@ -267,7 +285,7 @@ export function SubscribePopup() {
 
                 <button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || !consentEmail}
                   className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   {isSubmitting ? "Joining…" : "Join the Community ✦"}
