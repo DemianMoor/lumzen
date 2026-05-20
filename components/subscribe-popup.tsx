@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { usePopupContext } from "@/lib/popup-context";
+import { SubscribeFormFields } from "@/components/subscribe-form-fields";
 
 const SESSION_SHOWN_KEY = "lz_popup_shown_this_session";
 const SUBSCRIBED_KEY = "lz_subscribed";
@@ -45,15 +45,11 @@ export function SubscribePopup() {
   const pathname = usePathname();
   const { isSuppressed } = usePopupContext();
   const [isOpen, setIsOpen] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState(false);
-  const [email, setEmail] = useState("");
-  // Explicit, unchecked-by-default email consent matches the screenshot
-  // pattern and the carrier-friendly disclosures on /subscribe.
-  const [consentEmail, setConsentEmail] = useState(false);
+  const [success, setSuccess] = useState<{
+    email: string;
+    consentSms: boolean;
+  } | null>(null);
 
-  const firstInputRef = useRef<HTMLInputElement>(null);
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const elapsedRef = useRef(0);
   const startedAtRef = useRef<number | null>(null);
@@ -103,7 +99,6 @@ export function SubscribePopup() {
 
   useEffect(() => {
     if (!isOpen) return;
-    firstInputRef.current?.focus();
     function handleKey(e: KeyboardEvent) {
       if (e.key === "Escape") setIsOpen(false);
     }
@@ -113,57 +108,6 @@ export function SubscribePopup() {
 
   function handleBackdropClick(e: React.MouseEvent) {
     if (e.target === e.currentTarget) setIsOpen(false);
-  }
-
-  async function handleSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    setError(null);
-
-    if (!email.trim()) {
-      setError("We need a valid email address to send you the practice.");
-      return;
-    }
-    if (!consentEmail) {
-      setError(
-        "Please confirm you would like to receive emails by checking the box above.",
-      );
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const res = await fetch("/api/subscribe", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: email.trim(),
-          // The popup is email-only by design — TCPA prohibits bundling
-          // SMS consent with another opt-in, so we never collect a phone
-          // here. The full /subscribe form is the only SMS surface.
-          consent_email: consentEmail,
-          consent_sms: false,
-          source: "popup",
-        }),
-      });
-
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        if (res.status === 409) {
-          throw new Error(
-            "This email is already on the list. You're already here ✦",
-          );
-        }
-        throw new Error(data.error || `Subscribe failed (${res.status})`);
-      }
-
-      setSuccess(true);
-      localStorage.setItem(SUBSCRIBED_KEY, "1");
-      setTimeout(() => setIsOpen(false), 2500);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Something went wrong.");
-    } finally {
-      setIsSubmitting(false);
-    }
   }
 
   if (!isOpen) return null;
@@ -181,7 +125,7 @@ export function SubscribePopup() {
     >
       <div
         onClick={handleBackdropClick}
-        className="flex min-h-full items-center justify-center px-4 py-6 sm:py-10"
+        className="flex min-h-full items-start sm:items-center justify-center px-4 py-6 sm:py-10"
       >
         <div
           className="relative w-full max-w-xl rounded-2xl border p-6 sm:p-8 md:p-10"
@@ -212,95 +156,53 @@ export function SubscribePopup() {
               </h2>
               <p className="font-sans text-sm text-[#8f8daa] mt-4 leading-relaxed">
                 A welcome message has been sent to{" "}
-                <span className="text-[#f0eff8]">{email}</span>. Check your
-                inbox.
+                <span className="text-[#f0eff8]">{success.email}</span>. Check
+                your inbox.
+                {success.consentSms && (
+                  <>
+                    <br />
+                    You will also receive an SMS confirmation shortly — reply{" "}
+                    <span className="font-mono">Y</span> to confirm.
+                  </>
+                )}
               </p>
             </div>
           ) : (
-            <div className="text-center">
-              <p className="text-[#c4a35a] text-3xl leading-none mb-4">✦</p>
-              <h2
-                id="subscribe-popup-title"
-                className="font-serif italic text-2xl md:text-3xl text-[#f0eff8] leading-tight"
-              >
-                Before you wander further…
-              </h2>
-              <p className="font-sans text-sm text-[#8f8daa] mt-3 leading-relaxed">
-                Receive the daily card, weekly reflections, and quiet
-                announcements from us.
-              </p>
-
-              <form
-                onSubmit={handleSubmit}
-                className="mt-6 space-y-4 text-left"
-                noValidate
-              >
-                <div>
-                  <label htmlFor="popup-email" className="sr-only">
-                    Your email
-                  </label>
-                  <input
-                    ref={firstInputRef}
-                    id="popup-email"
-                    type="email"
-                    required
-                    autoComplete="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="Your email"
-                    className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-3 px-4 font-sans text-sm text-[#f0eff8] placeholder:text-[#4a4866] focus:outline-none focus:border-[#c4a35a] focus:ring-1 focus:ring-[#c4a35a] transition-all"
-                  />
-                </div>
-
-                <label className="flex items-start gap-3 cursor-pointer">
-                  <input
-                    type="checkbox"
-                    checked={consentEmail}
-                    onChange={(e) => setConsentEmail(e.target.checked)}
-                    className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
-                  />
-                  <span className="font-sans text-[11px] text-[#f0eff8] leading-relaxed">
-                    I consent to receive marketing and editorial emails from
-                    LumZen (operated by DemianSpirits). Frequency varies,
-                    typically one email per week. I can unsubscribe any
-                    time. See our{" "}
-                    <Link
-                      href="/privacy"
-                      className="text-[#c4a35a] hover:underline"
-                    >
-                      Privacy Policy
-                    </Link>
-                    .
-                  </span>
-                </label>
-
-                {error && (
-                  <p
-                    className="font-sans text-sm text-[#ef4444]"
-                    role="alert"
-                  >
-                    {error}
-                  </p>
-                )}
-
-                <button
-                  type="submit"
-                  disabled={isSubmitting || !consentEmail}
-                  className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
+            <div>
+              <div className="text-center">
+                <p className="text-[#c4a35a] text-3xl leading-none mb-4">✦</p>
+                <h2
+                  id="subscribe-popup-title"
+                  className="font-serif italic text-2xl md:text-3xl text-[#f0eff8] leading-tight"
                 >
-                  {isSubmitting ? "Joining…" : "Join the Community ✦"}
-                </button>
+                  Before you wander further…
+                </h2>
+                <p className="font-sans text-sm text-[#8f8daa] mt-3 leading-relaxed">
+                  Receive the daily card, weekly reflections, and quiet
+                  announcements from us.
+                </p>
+              </div>
 
-                <div className="text-center pt-1">
-                  <button
-                    type="button"
-                    onClick={() => setIsOpen(false)}
-                    className="font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
-                  >
-                    No, thank you
-                  </button>
-                </div>
-              </form>
+              <div className="mt-6">
+                <SubscribeFormFields
+                  source="popup"
+                  onSuccess={(result) => {
+                    setSuccess(result);
+                    localStorage.setItem(SUBSCRIBED_KEY, "1");
+                    setTimeout(() => setIsOpen(false), 3000);
+                  }}
+                />
+              </div>
+
+              <div className="text-center pt-4">
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="font-sans text-xs text-[#8f8daa] hover:text-[#c4a35a] transition-colors"
+                >
+                  No, thank you
+                </button>
+              </div>
             </div>
           )}
         </div>
