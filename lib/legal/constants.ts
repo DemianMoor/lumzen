@@ -28,4 +28,6 @@ export const LEGAL_OPERATOR = {
 export const LEGAL_CONTACTS = {
   privacy: "privacy@lumzen.co",
   general: "hello@lumzen.co",
+  phone: "+1 (540) 739-7462",
+  phoneHref: "tel:+15407397462",
 } as const;

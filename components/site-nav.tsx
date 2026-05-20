@@ -249,6 +249,11 @@ export function SiteFooter() {
                 hello@lumzen.co
               </a>
             </li>
+            <li>
+              <a href="tel:+15407397462" className="hover:text-[#f0eff8] transition-colors">
+                +1 (540) 739-7462
+              </a>
+            </li>
           </ul>
         </div>
       </div>

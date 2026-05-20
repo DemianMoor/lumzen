@@ -65,6 +65,10 @@ export default function PrivacyPage() {
           <strong>General contact:</strong>{" "}
           <a href={`mailto:${LEGAL_CONTACTS.general}`}>{LEGAL_CONTACTS.general}</a>
         </li>
+        <li>
+          <strong>Phone:</strong>{" "}
+          <a href={LEGAL_CONTACTS.phoneHref}>{LEGAL_CONTACTS.phone}</a>
+        </li>
       </ul>
       <p>
         Because LumZen is operated from Canada, personal information you provide will be
@@ -619,6 +623,10 @@ export default function PrivacyPage() {
         <li>
           <strong>Email:</strong>{" "}
           <a href={`mailto:${LEGAL_CONTACTS.privacy}`}>{LEGAL_CONTACTS.privacy}</a>
+        </li>
+        <li>
+          <strong>Phone:</strong>{" "}
+          <a href={LEGAL_CONTACTS.phoneHref}>{LEGAL_CONTACTS.phone}</a>
         </li>
         <li>
           <strong>Subject line for privacy requests:</strong> &ldquo;Privacy Request&rdquo;
