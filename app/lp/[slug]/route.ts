@@ -7,7 +7,7 @@ export const dynamic = "force-dynamic";
 
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL!;
 const STORAGE_PUBLIC_BASE = `${SUPABASE_URL}/storage/v1/object/public/landing-pages`;
-const DEFAULT_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || null;
+const DEFAULT_GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "GTM-WWT573HR";
 
 /**
  * Proxies a landing-page bundle stored in Supabase Storage.
