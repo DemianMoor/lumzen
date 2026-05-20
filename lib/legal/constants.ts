@@ -9,7 +9,7 @@
  */
 
 export const LEGAL_EFFECTIVE_DATE = "May 18, 2026";
-export const LEGAL_LAST_UPDATED = "May 18, 2026";
+export const LEGAL_LAST_UPDATED = "April 18, 2026";
 
 export const LEGAL_OPERATOR = {
   brand: "LumZen",

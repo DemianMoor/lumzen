@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingPage } from "@/components/marketing-page";
 import {
-  LEGAL_EFFECTIVE_DATE,
   LEGAL_LAST_UPDATED,
   LEGAL_OPERATOR,
   LEGAL_CONTACTS,
@@ -23,8 +22,6 @@ export default function PrivacyPage() {
       quiet
     >
       <p className="font-mono text-sm text-[#8f8daa]">
-        <strong>Effective Date:</strong> {LEGAL_EFFECTIVE_DATE}
-        <br />
         <strong>Last Updated:</strong> {LEGAL_LAST_UPDATED}
       </p>
 
@@ -236,48 +233,13 @@ export default function PrivacyPage() {
 
       <h3>B. Service providers (processors)</h3>
       <p>
-        We disclose personal information to vendors that perform services for us. These parties
+        We disclose personal information to vendors that perform services for us — such as
+        hosting, authentication, email delivery, analytics, and AI processing. These parties
         may use personal information only to provide services to us, under contractual
-        protections. Categories include:
+        protections. We do not publicly enumerate individual providers; if you would like a
+        current list, write to{" "}
+        <a href={`mailto:${LEGAL_CONTACTS.privacy}`}>{LEGAL_CONTACTS.privacy}</a>.
       </p>
-      <ul>
-        <li>
-          <strong>Website hosting and infrastructure</strong> — {LEGAL_OPERATOR.websiteHost}
-        </li>
-        <li>
-          <strong>Database and authentication</strong> — {LEGAL_OPERATOR.database}
-        </li>
-        <li>
-          <strong>AI interpretation services</strong> — {LEGAL_OPERATOR.aiProvider}, used to
-          generate natal chart readings, tarot interpretations, and personalized affirmations.
-          When you request these features, the relevant input (birth data, tarot card draw,
-          your question) is sent to Anthropic for processing. Anthropic does not store
-          conversational content for training under their standard API terms.
-        </li>
-        <li>
-          <strong>Email service</strong> — {LEGAL_OPERATOR.emailProvider}, for transactional and
-          marketing emails
-        </li>
-        <li>
-          <strong>SMS delivery</strong> — {LEGAL_OPERATOR.smsProvider}
-        </li>
-        <li>
-          <strong>Analytics</strong> — Google Analytics, Microsoft Clarity, and similar
-          measurement services
-        </li>
-        <li>
-          <strong>Advertising</strong> — ad networks and ad measurement partners (see Section 9)
-        </li>
-        <li>
-          <strong>Audio content delivery</strong> — Freesound (Creative Commons audio
-          streaming), LibriVox (public domain audiobook streaming)
-        </li>
-        <li>
-          <strong>Astrology calculations</strong> — open-source ephemeris libraries running on
-          our servers; no third-party API receives your birth data for chart calculations
-          themselves
-        </li>
-      </ul>
 
       <h3>C. Legal, safety, and business transfers</h3>
       <p>We may disclose information:</p>
