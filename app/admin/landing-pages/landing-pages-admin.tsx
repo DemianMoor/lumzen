@@ -403,12 +403,19 @@ function UploadForm({ onSuccess }: { onSuccess: (slug: string) => void }) {
 
       // 3. Sign every path in ONE batched request (avoids hitting Vercel's
       //    function timeout per-file when bundles have many assets).
+      //    upsert=true so a previous failed attempt that left orphan storage
+      //    objects under this slug doesn't block the retry. The slug is
+      //    brand new from the user's POV; anything in the bucket under it
+      //    is by definition stale.
       const signRes = await fetch(
         `/api/admin/landing-pages/${slug}/files/sign-batch`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ paths: files.map((f) => f.path) }),
+          body: JSON.stringify({
+            paths: files.map((f) => f.path),
+            upsert: true,
+          }),
         },
       );
       const signData = await signRes.json().catch(() => ({}));
@@ -460,6 +467,7 @@ function UploadForm({ onSuccess }: { onSuccess: (slug: string) => void }) {
             .from("landing-pages")
             .uploadToSignedUrl(s.signedPath, s.token, blob, {
               contentType: getMimeType(f.path),
+              upsert: true,
             });
           if (err) {
             uploadError = { path: f.path, message: err.message };

@@ -117,13 +117,32 @@ export async function DELETE(
   const { slug } = await params;
   const supabase = createSupabaseAdmin();
 
-  // Best-effort cleanup of storage objects under this slug.
-  const { data: files } = await supabase.storage.from(BUCKET).list(slug, {
-    limit: 1000,
-  });
-  if (files && files.length > 0) {
-    const paths = files.map((f) => `${slug}/${f.name}`);
-    await supabase.storage.from(BUCKET).remove(paths);
+  // Recursively collect every object under <slug>/ so subfolders
+  // (images/, css/, etc.) are wiped along with top-level files.
+  // Without this, a half-successful upload leaves orphan assets that
+  // collide with the next attempt at the same slug.
+  const allPaths: string[] = [];
+  async function collect(prefix: string): Promise<void> {
+    const full = prefix ? `${slug}/${prefix}` : slug;
+    const { data: items } = await supabase.storage
+      .from(BUCKET)
+      .list(full, { limit: 1000 });
+    for (const item of items ?? []) {
+      const child = prefix ? `${prefix}/${item.name}` : item.name;
+      if (item.metadata) {
+        allPaths.push(`${slug}/${child}`);
+      } else {
+        await collect(child);
+      }
+    }
+  }
+  await collect("");
+  if (allPaths.length > 0) {
+    // Supabase remove() has no documented hard cap but chunk to keep
+    // individual requests reasonable.
+    for (let i = 0; i < allPaths.length; i += 100) {
+      await supabase.storage.from(BUCKET).remove(allPaths.slice(i, i + 100));
+    }
   }
 
   const { error } = await supabase
