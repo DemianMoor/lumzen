@@ -7,7 +7,8 @@ export const runtime = "nodejs";
 export const maxDuration = 60;
 
 const BUCKET = "landing-pages";
-const MAX_BYTES = 25 * 1024 * 1024;
+const MAX_BYTES = 50 * 1024 * 1024;
+const MAX_FILE_COUNT = 500;
 
 function contentTypeFor(name: string): string {
   const ext = name.split(".").pop()?.toLowerCase() ?? "";
@@ -35,6 +36,8 @@ function contentTypeFor(name: string): string {
       return "image/gif";
     case "ico":
       return "image/x-icon";
+    case "avif":
+      return "image/avif";
     case "woff":
       return "font/woff";
     case "woff2":
@@ -43,13 +46,32 @@ function contentTypeFor(name: string): string {
       return "font/ttf";
     case "otf":
       return "font/otf";
+    case "eot":
+      return "application/vnd.ms-fontobject";
+    case "mp4":
+      return "video/mp4";
+    case "webm":
+      return "video/webm";
+    case "mp3":
+      return "audio/mpeg";
+    case "pdf":
+      return "application/pdf";
     case "txt":
       return "text/plain; charset=utf-8";
     case "xml":
       return "application/xml; charset=utf-8";
+    case "map":
+      return "application/json; charset=utf-8";
     default:
       return "application/octet-stream";
   }
+}
+
+function isSafePath(p: string): boolean {
+  if (!p) return false;
+  if (p.includes("..")) return false;
+  if (p.startsWith("/") || p.startsWith("\\")) return false;
+  return true;
 }
 
 export async function POST(
@@ -75,11 +97,23 @@ export async function POST(
 
   const supabase = createSupabaseAdmin();
 
+  const { data: page } = await supabase
+    .from("landing_pages")
+    .select("slug, entry_file")
+    .eq("slug", slug)
+    .maybeSingle();
+  if (!page) {
+    return NextResponse.json(
+      { error: "Landing page not found." },
+      { status: 404 },
+    );
+  }
+
   const zipEntry = formData.get("zip");
   if (zipEntry instanceof File) {
     if (zipEntry.size > MAX_BYTES) {
       return NextResponse.json(
-        { error: "Zip exceeds 25 MB limit." },
+        { error: `Zip exceeds ${MAX_BYTES / 1024 / 1024} MB limit.` },
         { status: 400 },
       );
     }
@@ -91,31 +125,98 @@ export async function POST(
       return NextResponse.json({ error: "Invalid ZIP file." }, { status: 400 });
     }
 
-    const uploadResults: { path: string; error?: string }[] = [];
-    const entries = Object.entries(zip.files);
-    for (const [name, file] of entries) {
+    type Entry = { path: string; data: Buffer };
+    const entries: Entry[] = [];
+    for (const [name, file] of Object.entries(zip.files)) {
       if (file.dir) continue;
-      if (name.includes("..")) continue;
-      const cleanName = name.replace(/^\/+/, "");
-      const content = await file.async("nodebuffer");
-      const path = `${slug}/${cleanName}`;
+      if (name.startsWith("__MACOSX/")) continue;
+      if (name.includes("/.DS_Store") || name.endsWith(".DS_Store")) continue;
+      if (entries.length >= MAX_FILE_COUNT) {
+        return NextResponse.json(
+          { error: `Too many files in zip. Max ${MAX_FILE_COUNT}.` },
+          { status: 400 },
+        );
+      }
+      const cleaned = name.replace(/^\/+/, "");
+      if (!isSafePath(cleaned)) {
+        return NextResponse.json(
+          { error: `Invalid path in zip: "${name}"` },
+          { status: 400 },
+        );
+      }
+      const data = await file.async("nodebuffer");
+      entries.push({ path: cleaned, data });
+    }
+
+    // Strip a common top-level folder (e.g. partner ZIP wraps everything in
+    // "promo-page/"). Otherwise the entry HTML ends up at slug/promo-page/index.html
+    // and the /lp/<slug> proxy can't find it.
+    const topLevels = new Set(entries.map((e) => e.path.split("/")[0]));
+    let strippedPrefix = "";
+    if (
+      topLevels.size === 1 &&
+      entries.length > 0 &&
+      entries.every((e) => e.path.includes("/"))
+    ) {
+      strippedPrefix = [...topLevels][0] + "/";
+      for (const e of entries) {
+        e.path = e.path.substring(strippedPrefix.length);
+      }
+    }
+
+    if (entries.length === 0) {
+      return NextResponse.json(
+        { error: "Zip contained no files." },
+        { status: 400 },
+      );
+    }
+
+    // Detect entry file. Honor the existing entry_file if it matches; otherwise
+    // pick index.html / index.htm / first top-level .html.
+    const existingEntry = (page.entry_file || "index.html").trim();
+    let detectedEntry: string | null = null;
+    if (entries.some((e) => e.path === existingEntry)) {
+      detectedEntry = existingEntry;
+    } else {
+      const idx = entries.find(
+        (e) => e.path === "index.html" || e.path === "index.htm",
+      );
+      if (idx) detectedEntry = idx.path;
+      else {
+        const firstHtml = entries.find((e) => /^[^/]+\.html?$/i.test(e.path));
+        if (firstHtml) detectedEntry = firstHtml.path;
+      }
+    }
+
+    const uploadResults: { path: string; error?: string }[] = [];
+    for (const e of entries) {
       const { error } = await supabase.storage
         .from(BUCKET)
-        .upload(path, content, {
-          contentType: contentTypeFor(cleanName),
+        .upload(`${slug}/${e.path}`, e.data, {
+          contentType: contentTypeFor(e.path),
           upsert: true,
           cacheControl: "300",
         });
-      if (error) {
-        uploadResults.push({ path: cleanName, error: error.message });
-      } else {
-        uploadResults.push({ path: cleanName });
-      }
+      uploadResults.push({ path: e.path, error: error?.message });
     }
+
+    const failed = uploadResults.filter((r) => r.error);
+
+    // Persist detected entry_file when it changed (and exists on disk now).
+    if (detectedEntry && detectedEntry !== existingEntry) {
+      await supabase
+        .from("landing_pages")
+        .update({ entry_file: detectedEntry })
+        .eq("slug", slug);
+    }
+
     return NextResponse.json({
-      success: true,
-      uploaded: uploadResults.filter((r) => !r.error).length,
-      failed: uploadResults.filter((r) => r.error),
+      success: failed.length === 0,
+      uploaded: uploadResults.length - failed.length,
+      failed,
+      stripped_prefix: strippedPrefix || null,
+      entry_file: detectedEntry,
+      entry_changed: Boolean(detectedEntry && detectedEntry !== existingEntry),
     });
   }
 
@@ -123,19 +224,19 @@ export async function POST(
   if (file instanceof File) {
     if (file.size > MAX_BYTES) {
       return NextResponse.json(
-        { error: "File exceeds 25 MB limit." },
+        { error: `File exceeds ${MAX_BYTES / 1024 / 1024} MB limit.` },
         { status: 400 },
       );
     }
     const requestedPath = (formData.get("path")?.toString() || file.name)
       .replace(/^\/+/, "")
-      .replace(/\.\.+/g, "");
-    if (!requestedPath) {
-      return NextResponse.json({ error: "Missing path." }, { status: 400 });
+      .replace(/\\/g, "/");
+    if (!isSafePath(requestedPath)) {
+      return NextResponse.json({ error: "Invalid path." }, { status: 400 });
     }
     const buffer = Buffer.from(await file.arrayBuffer());
-    const path = `${slug}/${requestedPath}`;
-    const { error } = await supabase.storage.from(BUCKET).upload(path, buffer, {
+    const fullPath = `${slug}/${requestedPath}`;
+    const { error } = await supabase.storage.from(BUCKET).upload(fullPath, buffer, {
       contentType: contentTypeFor(requestedPath),
       upsert: true,
       cacheControl: "300",

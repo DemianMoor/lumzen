@@ -43,10 +43,10 @@ export default async function LandingPageDetailPage({
         gtm_id: page.gtm_id,
       }}
       initialFiles={(files ?? [])
-        .filter((f) => !f.name.startsWith("."))
+        .filter((f) => !f.name.startsWith(".") && f.metadata)
         .map((f) => ({
-          name: f.name,
-          size: f.metadata?.size ?? null,
+          path: f.name,
+          size: f.metadata?.size ?? 0,
           updated_at: f.updated_at ?? null,
         }))}
       chrome={{
