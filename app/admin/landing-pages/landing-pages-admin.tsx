@@ -401,44 +401,86 @@ function UploadForm({ onSuccess }: { onSuccess: (slug: string) => void }) {
         return;
       }
 
-      // 3. Browser -> Supabase upload via signed URLs. No Vercel hop.
+      // 3. Sign every path in ONE batched request (avoids hitting Vercel's
+      //    function timeout per-file when bundles have many assets).
+      const signRes = await fetch(
+        `/api/admin/landing-pages/${slug}/files/sign-batch`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ paths: files.map((f) => f.path) }),
+        },
+      );
+      const signData = await signRes.json().catch(() => ({}));
+      if (!signRes.ok) {
+        await fetch(`/api/admin/landing-pages/${slug}`, { method: "DELETE" });
+        setError(
+          `Could not sign upload URLs: ${signData.error || signRes.status}. No partial bundle kept.`,
+        );
+        return;
+      }
+      const signed = signData.signed as Array<{
+        path: string;
+        signedPath?: string;
+        token?: string;
+        error?: string;
+      }>;
+      const signByPath = new Map(signed.map((s) => [s.path, s]));
+      const signFail = signed.find((s) => s.error);
+      if (signFail) {
+        await fetch(`/api/admin/landing-pages/${slug}`, { method: "DELETE" });
+        setError(
+          `Could not sign upload for "${signFail.path}": ${signFail.error}. No partial bundle kept.`,
+        );
+        return;
+      }
+
+      // 4. Upload in parallel with a small concurrency cap so we don't
+      //    swamp the browser's network stack with 100+ in-flight requests.
       setProgress({ done: 0, total: files.length });
       const supabase = createSupabaseBrowserClient();
-      for (let i = 0; i < files.length; i++) {
-        const f = files[i];
+      const CONCURRENCY = 5;
+      let cursor = 0;
+      let done = 0;
+      let uploadError: { path: string; message: string } | null = null;
 
-        const signRes = await fetch(
-          `/api/admin/landing-pages/${slug}/files/sign`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ path: f.path }),
-          },
+      async function worker() {
+        while (true) {
+          if (uploadError) return;
+          const i = cursor++;
+          if (i >= files.length) return;
+          const f = files[i];
+          const s = signByPath.get(f.path);
+          if (!s || !s.signedPath || !s.token) {
+            uploadError = { path: f.path, message: "Missing signed URL." };
+            return;
+          }
+          const blob = new Blob([f.data], { type: getMimeType(f.path) });
+          const { error: err } = await supabase.storage
+            .from("landing-pages")
+            .uploadToSignedUrl(s.signedPath, s.token, blob, {
+              contentType: getMimeType(f.path),
+            });
+          if (err) {
+            uploadError = { path: f.path, message: err.message };
+            return;
+          }
+          done += 1;
+          setProgress({ done, total: files.length });
+        }
+      }
+
+      await Promise.all(
+        Array.from({ length: Math.min(CONCURRENCY, files.length) }, () => worker()),
+      );
+
+      const finalError = uploadError as { path: string; message: string } | null;
+      if (finalError) {
+        await fetch(`/api/admin/landing-pages/${slug}`, { method: "DELETE" });
+        setError(
+          `Upload of "${finalError.path}" failed: ${finalError.message}. No partial bundle kept.`,
         );
-        const signData = await signRes.json().catch(() => ({}));
-        if (!signRes.ok) {
-          await fetch(`/api/admin/landing-pages/${slug}`, { method: "DELETE" });
-          setError(
-            `Could not sign upload for "${f.path}": ${signData.error || signRes.status}. No partial bundle kept.`,
-          );
-          return;
-        }
-
-        const blob = new Blob([f.data], { type: getMimeType(f.path) });
-        const { error: uploadError } = await supabase.storage
-          .from("landing-pages")
-          .uploadToSignedUrl(signData.path, signData.token, blob, {
-            contentType: getMimeType(f.path),
-          });
-        if (uploadError) {
-          await fetch(`/api/admin/landing-pages/${slug}`, { method: "DELETE" });
-          setError(
-            `Upload of "${f.path}" failed: ${uploadError.message}. No partial bundle kept.`,
-          );
-          return;
-        }
-
-        setProgress({ done: i + 1, total: files.length });
+        return;
       }
 
       onSuccess(slug);
