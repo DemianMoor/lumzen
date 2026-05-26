@@ -16,6 +16,7 @@ import { ChromeSettings } from "./chrome-settings";
 type LandingPage = {
   slug: string;
   title: string;
+  description: string | null;
   is_active: boolean;
   entry_file: string;
   gtm_id: string | null;
@@ -123,6 +124,7 @@ export function FileManager({
   const router = useRouter();
 
   const [title, setTitle] = useState(page.title);
+  const [description, setDescription] = useState(page.description ?? "");
   const [entryFile, setEntryFile] = useState(page.entry_file);
   const [gtmId, setGtmId] = useState(page.gtm_id ?? "");
   const [isActive, setIsActive] = useState(page.is_active);
@@ -244,6 +246,7 @@ export function FileManager({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: title.trim(),
+          description: description.trim() || null,
           entry_file: entryFile.trim() || "index.html",
           gtm_id: gtmId.trim() || null,
           is_active: isActive,
@@ -298,6 +301,11 @@ export function FileManager({
             <p className="mt-1 font-mono text-xs text-[#c4a35a]">
               /lp/{page.slug}
             </p>
+            {page.description && (
+              <p className="mt-1 font-sans text-sm text-[#8f8daa]">
+                {page.description}
+              </p>
+            )}
           </div>
           <Link
             href={`/lp/${page.slug}`}
@@ -375,6 +383,19 @@ export function FileManager({
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
+                className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-2.5 px-3 font-sans text-sm text-[#f0eff8] focus:outline-none focus:border-[#c4a35a]"
+              />
+            </label>
+
+            <label className="block">
+              <span className="block font-display text-[10px] tracking-[0.2em] uppercase text-[#8f8daa] mb-2">
+                Description (internal only)
+              </span>
+              <input
+                type="text"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+                placeholder="Campaign ID, partner name, internal note…"
                 className="w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.08)] rounded-lg py-2.5 px-3 font-sans text-sm text-[#f0eff8] focus:outline-none focus:border-[#c4a35a]"
               />
             </label>

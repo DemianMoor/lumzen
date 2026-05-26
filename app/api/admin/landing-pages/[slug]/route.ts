@@ -21,6 +21,9 @@ export async function PATCH(
   const body = await request.json();
   const updates: Record<string, unknown> = {};
   if (typeof body.title === "string") updates.title = body.title.trim();
+  if (typeof body.description === "string" || body.description === null) {
+    updates.description = body.description ? body.description.trim() || null : null;
+  }
   if (typeof body.entry_file === "string") {
     updates.entry_file = body.entry_file.trim() || "index.html";
   }

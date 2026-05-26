@@ -38,6 +38,7 @@ export default async function LandingPageDetailPage({
       page={{
         slug: page.slug,
         title: page.title,
+        description: page.description ?? null,
         is_active: page.is_active,
         entry_file: page.entry_file,
         gtm_id: page.gtm_id,

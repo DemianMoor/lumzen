@@ -331,6 +331,7 @@ export type Database = {
           chrome_revert_at: string | null
           chrome_revert_to: boolean | null
           created_at: string
+          description: string | null
           entry_file: string
           gtm_id: string | null
           id: string
@@ -345,6 +346,7 @@ export type Database = {
           chrome_revert_at?: string | null
           chrome_revert_to?: boolean | null
           created_at?: string
+          description?: string | null
           entry_file?: string
           gtm_id?: string | null
           id?: string
@@ -359,6 +361,7 @@ export type Database = {
           chrome_revert_at?: string | null
           chrome_revert_to?: boolean | null
           created_at?: string
+          description?: string | null
           entry_file?: string
           gtm_id?: string | null
           id?: string

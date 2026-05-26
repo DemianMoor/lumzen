@@ -21,6 +21,7 @@ export async function POST(request: NextRequest) {
   const body = await request.json();
   const slug = cleanSlug((body?.slug ?? "").toString());
   const title = (body?.title ?? "").toString().trim();
+  const description = body?.description ? body.description.toString().trim() || null : null;
   const entryFile = (body?.entry_file ?? "index.html").toString().trim();
   const gtmId = body?.gtm_id ? body.gtm_id.toString().trim() : null;
 
@@ -52,6 +53,7 @@ export async function POST(request: NextRequest) {
     .insert({
       slug,
       title,
+      description,
       entry_file: entryFile,
       gtm_id: gtmId,
       is_active: true,
