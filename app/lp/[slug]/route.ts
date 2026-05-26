@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin } from "@/lib/supabase";
 import { getLocaleFromRequest } from "@/lib/i18n/server";
+import { applyChromeSwap, effectiveChromeState } from "@/lib/landing-page-chrome";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -30,7 +31,9 @@ export async function GET(
   const supabase = createSupabaseAdmin();
   const { data: page } = await supabase
     .from("landing_pages")
-    .select("slug, entry_file, is_active, gtm_id")
+    .select(
+      "slug, entry_file, is_active, gtm_id, use_site_chrome, chrome_revert_to, chrome_revert_at",
+    )
     .eq("slug", slug)
     .eq("locale", locale)
     .eq("is_active", true)
@@ -56,10 +59,24 @@ export async function GET(
 
   html = rewriteAssetPaths(html, slug);
 
+  // Chrome swap runs AFTER asset rewriting (its hrefs are site-root-relative
+  // and shouldn't be rewritten) and BEFORE GTM injection (so the GTM <script>
+  // isn't stripped along with the partner header).
+  const chrome = effectiveChromeState({
+    use_site_chrome: page.use_site_chrome ?? false,
+    chrome_revert_to: page.chrome_revert_to ?? null,
+    chrome_revert_at: page.chrome_revert_at ?? null,
+  });
+  if (chrome.effective) {
+    html = applyChromeSwap(html, locale).html;
+  }
+
   const gtmId = page.gtm_id || DEFAULT_GTM_ID;
   if (gtmId) {
     html = injectGtm(html, gtmId);
   }
+
+  html = injectUtmForwarding(html);
 
   return new NextResponse(html, {
     status: 200,
@@ -118,6 +135,20 @@ function rewriteAssetPaths(html: string, slug: string): string {
   );
 
   return html;
+}
+
+// Forwards every query param on the LP URL (utm_*, sub_id*, gclid, fbclid, etc.)
+// onto every <a href> on the page, plus catches clicks on links injected later.
+// Existing params on the destination URL are preserved (the partner's encoding wins).
+function injectUtmForwarding(html: string): string {
+  const script = `<script>(function(){try{var src=new URLSearchParams(window.location.search);var keys=[];src.forEach(function(_,k){keys.push(k);});if(!keys.length)return;function decorate(href){try{var u=new URL(href,window.location.href);if(u.protocol!=='http:'&&u.protocol!=='https:')return null;var changed=false;for(var i=0;i<keys.length;i++){var k=keys[i];if(!u.searchParams.has(k)){u.searchParams.set(k,src.get(k));changed=true;}}return changed?u.toString():null;}catch(e){return null;}}function rewrite(){var links=document.querySelectorAll('a[href]');for(var i=0;i<links.length;i++){var orig=links[i].getAttribute('href');if(!orig||/^(mailto:|tel:|javascript:|#)/i.test(orig))continue;var next=decorate(orig);if(next)links[i].setAttribute('href',next);}}if(document.readyState==='loading'){document.addEventListener('DOMContentLoaded',rewrite);}else{rewrite();}document.addEventListener('click',function(e){var a=e.target&&e.target.closest?e.target.closest('a[href]'):null;if(!a)return;var orig=a.getAttribute('href');if(!orig||/^(mailto:|tel:|javascript:|#)/i.test(orig))return;var next=decorate(orig);if(next)a.setAttribute('href',next);},true);}catch(e){}})();</script>`;
+
+  const bodyMatch = html.match(/<body[^>]*>/i);
+  if (bodyMatch) {
+    const at = bodyMatch.index! + bodyMatch[0].length;
+    return html.substring(0, at) + script + html.substring(at);
+  }
+  return html + script;
 }
 
 function injectGtm(html: string, gtmId: string): string {
