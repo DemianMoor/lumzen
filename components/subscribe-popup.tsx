@@ -8,7 +8,15 @@ import { useT } from "@/lib/i18n/client";
 
 const SESSION_SHOWN_KEY = "lz_popup_shown_this_session";
 const SUBSCRIBED_KEY = "lz_subscribed";
-const TIMER_DELAY_MS = 5000;
+const HOMEPAGE_DELAY_MS = 10000;
+const ARTICLES_DELAY_MS = 30000;
+const DEFAULT_DELAY_MS = 10000;
+
+function getDelayForPath(pathname: string): number {
+  if (pathname.startsWith("/articles")) return ARTICLES_DELAY_MS;
+  if (pathname === "/") return HOMEPAGE_DELAY_MS;
+  return DEFAULT_DELAY_MS;
+}
 
 // Authenticated surfaces never see the popup — members already joined.
 // Legal/compliance pages don't either; users reading those should not be
@@ -64,10 +72,12 @@ export function SubscribePopup() {
     if (sessionStorage.getItem(SESSION_SHOWN_KEY) === "1") return;
     if (localStorage.getItem(SUBSCRIBED_KEY) === "1") return;
 
+    const delay = getDelayForPath(pathname);
+
     function startTimer() {
       if (timerRef.current) return;
       startedAtRef.current = Date.now();
-      const remaining = TIMER_DELAY_MS - elapsedRef.current;
+      const remaining = delay - elapsedRef.current;
       timerRef.current = setTimeout(() => {
         sessionStorage.setItem(SESSION_SHOWN_KEY, "1");
         setIsOpen(true);
