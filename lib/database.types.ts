@@ -46,6 +46,7 @@ export type Database = {
           created_at: string
           id: string
           is_active: boolean
+          locale: string
           subcategory: string | null
           tags: string[]
           text: string
@@ -56,6 +57,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          locale?: string
           subcategory?: string | null
           tags?: string[]
           text: string
@@ -66,6 +68,7 @@ export type Database = {
           created_at?: string
           id?: string
           is_active?: boolean
+          locale?: string
           subcategory?: string | null
           tags?: string[]
           text?: string
@@ -80,6 +83,7 @@ export type Database = {
           excerpt: string | null
           hero_image_url: string | null
           id: string
+          locale: string
           pillar: string
           published_at: string | null
           scheduled_for: string | null
@@ -97,6 +101,7 @@ export type Database = {
           excerpt?: string | null
           hero_image_url?: string | null
           id?: string
+          locale?: string
           pillar: string
           published_at?: string | null
           scheduled_for?: string | null
@@ -114,6 +119,7 @@ export type Database = {
           excerpt?: string | null
           hero_image_url?: string | null
           id?: string
+          locale?: string
           pillar?: string
           published_at?: string | null
           scheduled_for?: string | null
@@ -322,36 +328,80 @@ export type Database = {
       }
       landing_pages: {
         Row: {
+          chrome_revert_at: string | null
+          chrome_revert_to: boolean | null
           created_at: string
           entry_file: string
           gtm_id: string | null
           id: string
           is_active: boolean
+          locale: string
           slug: string
           title: string
           updated_at: string
+          use_site_chrome: boolean
         }
         Insert: {
+          chrome_revert_at?: string | null
+          chrome_revert_to?: boolean | null
           created_at?: string
           entry_file?: string
           gtm_id?: string | null
           id?: string
           is_active?: boolean
+          locale?: string
           slug: string
           title: string
           updated_at?: string
+          use_site_chrome?: boolean
         }
         Update: {
+          chrome_revert_at?: string | null
+          chrome_revert_to?: boolean | null
           created_at?: string
           entry_file?: string
           gtm_id?: string | null
           id?: string
           is_active?: boolean
+          locale?: string
           slug?: string
           title?: string
           updated_at?: string
+          use_site_chrome?: boolean
         }
         Relationships: []
+      }
+      natal_chart_interpretations: {
+        Row: {
+          ai_interpretation: string
+          chart_id: string
+          generated_at: string
+          id: string
+          locale: string
+        }
+        Insert: {
+          ai_interpretation: string
+          chart_id: string
+          generated_at?: string
+          id?: string
+          locale: string
+        }
+        Update: {
+          ai_interpretation?: string
+          chart_id?: string
+          generated_at?: string
+          id?: string
+          locale?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "natal_chart_interpretations_chart_id_fkey"
+            columns: ["chart_id"]
+            isOneToOne: false
+            referencedRelation: "natal_charts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       natal_charts: {
         Row: {
@@ -446,6 +496,7 @@ export type Database = {
           id: string
           is_active: boolean
           is_featured: boolean
+          locale: string
           read_time_minutes: number | null
           related_chakra: string | null
           slug: string
@@ -464,6 +515,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_featured?: boolean
+          locale?: string
           read_time_minutes?: number | null
           related_chakra?: string | null
           slug: string
@@ -482,6 +534,7 @@ export type Database = {
           id?: string
           is_active?: boolean
           is_featured?: boolean
+          locale?: string
           read_time_minutes?: number | null
           related_chakra?: string | null
           slug?: string
@@ -498,6 +551,7 @@ export type Database = {
           email_consent_at: string | null
           id: string
           ip_address: string | null
+          locale: string
           phone: string | null
           sms_consent_at: string | null
           source: string | null
@@ -510,6 +564,7 @@ export type Database = {
           email_consent_at?: string | null
           id?: string
           ip_address?: string | null
+          locale?: string
           phone?: string | null
           sms_consent_at?: string | null
           source?: string | null
@@ -522,6 +577,7 @@ export type Database = {
           email_consent_at?: string | null
           id?: string
           ip_address?: string | null
+          locale?: string
           phone?: string | null
           sms_consent_at?: string | null
           source?: string | null
@@ -535,6 +591,7 @@ export type Database = {
           description: string | null
           id: string
           image_url: string | null
+          locale: string
           meaning_reversed: string | null
           meaning_upright: string | null
           name: string
@@ -546,6 +603,7 @@ export type Database = {
           description?: string | null
           id: string
           image_url?: string | null
+          locale?: string
           meaning_reversed?: string | null
           meaning_upright?: string | null
           name: string
@@ -557,6 +615,7 @@ export type Database = {
           description?: string | null
           id?: string
           image_url?: string | null
+          locale?: string
           meaning_reversed?: string | null
           meaning_upright?: string | null
           name?: string
@@ -572,6 +631,7 @@ export type Database = {
           cards: Json
           created_at: string
           id: string
+          locale: string
           question: string | null
           spread_type: string
           user_id: string
@@ -581,6 +641,7 @@ export type Database = {
           cards: Json
           created_at?: string
           id?: string
+          locale?: string
           question?: string | null
           spread_type: string
           user_id: string
@@ -590,6 +651,7 @@ export type Database = {
           cards?: Json
           created_at?: string
           id?: string
+          locale?: string
           question?: string | null
           spread_type?: string
           user_id?: string

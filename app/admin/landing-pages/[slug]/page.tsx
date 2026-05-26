@@ -1,6 +1,7 @@
 import { notFound, redirect } from "next/navigation";
 import { getCurrentEditor } from "@/lib/admin-auth";
 import { createSupabaseAdmin } from "@/lib/supabase";
+import { effectiveChromeState } from "@/lib/landing-page-chrome";
 import { FileManager } from "./file-manager";
 
 export const dynamic = "force-dynamic";
@@ -26,6 +27,12 @@ export default async function LandingPageDetailPage({
     .from("landing-pages")
     .list(slug, { limit: 1000, sortBy: { column: "name", order: "asc" } });
 
+  const chromeState = effectiveChromeState({
+    use_site_chrome: page.use_site_chrome ?? false,
+    chrome_revert_to: page.chrome_revert_to ?? null,
+    chrome_revert_at: page.chrome_revert_at ?? null,
+  });
+
   return (
     <FileManager
       page={{
@@ -42,6 +49,14 @@ export default async function LandingPageDetailPage({
           size: f.metadata?.size ?? null,
           updated_at: f.updated_at ?? null,
         }))}
+      chrome={{
+        useSiteChrome: page.use_site_chrome ?? false,
+        effective: chromeState.effective,
+        pendingRevertAtIso: chromeState.pendingRevertAt
+          ? chromeState.pendingRevertAt.toISOString()
+          : null,
+        pendingRevertTo: chromeState.pendingRevertTo,
+      }}
     />
   );
 }

@@ -4,12 +4,21 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
+import { ChromeSettings } from "./chrome-settings";
+
 type LandingPage = {
   slug: string;
   title: string;
   is_active: boolean;
   entry_file: string;
   gtm_id: string | null;
+};
+
+type ChromeProps = {
+  useSiteChrome: boolean;
+  effective: boolean;
+  pendingRevertAtIso: string | null;
+  pendingRevertTo: boolean | null;
 };
 
 type FileItem = {
@@ -21,9 +30,11 @@ type FileItem = {
 export function FileManager({
   page,
   initialFiles,
+  chrome,
 }: {
   page: LandingPage;
   initialFiles: FileItem[];
+  chrome: ChromeProps;
 }) {
   const router = useRouter();
   const [files, setFiles] = useState(initialFiles);
@@ -178,6 +189,16 @@ export function FileManager({
           </Link>
         </div>
       </header>
+
+      <div className="mb-6">
+        <ChromeSettings
+          slug={page.slug}
+          initialUseSiteChrome={chrome.useSiteChrome}
+          initialEffective={chrome.effective}
+          initialPendingRevertAtIso={chrome.pendingRevertAtIso}
+          initialPendingRevertTo={chrome.pendingRevertTo}
+        />
+      </div>
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="lg:col-span-2 space-y-6">
