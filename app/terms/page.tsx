@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { MarketingPage } from "@/components/marketing-page";
 import {
-  LEGAL_EFFECTIVE_DATE,
   LEGAL_LAST_UPDATED,
   LEGAL_OPERATOR,
 } from "@/lib/legal/constants";
@@ -26,8 +25,6 @@ export default async function TermsPage() {
       quiet
     >
       <p className="font-mono text-sm text-[#8f8daa]">
-        <strong>{t(messages, "legal.terms.effective_date_label")}</strong> {LEGAL_EFFECTIVE_DATE}
-        <br />
         <strong>{t(messages, "legal.terms.last_updated_label")}</strong> {LEGAL_LAST_UPDATED}
       </p>
 
