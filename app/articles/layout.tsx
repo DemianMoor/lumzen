@@ -1,7 +1,8 @@
 import { StarField, NebulaBackground } from "@/components/cosmic-background";
 import { SiteHeader, SiteFooter } from "@/components/site-nav";
-import { SiteAnalytics } from "@/components/site-analytics";
 
+// Analytics (GA4 / GTM / Clarity from site_settings) is rendered once, site-wide,
+// in the root app/layout.tsx — not here, to avoid duplicate tags on article pages.
 export default function ArticlesLayout({
   children,
 }: {
@@ -14,8 +15,6 @@ export default function ArticlesLayout({
       <SiteHeader />
       <main className="relative z-10 flex-1">{children}</main>
       <SiteFooter />
-      {/* Per-site analytics from site_settings (GA4 / GTM / Clarity). */}
-      <SiteAnalytics />
     </div>
   );
 }
