@@ -12,31 +12,6 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
-  graphql_public: {
-    Tables: {
-      [_ in never]: never
-    }
-    Views: {
-      [_ in never]: never
-    }
-    Functions: {
-      graphql: {
-        Args: {
-          extensions?: Json
-          operationName?: string
-          query?: string
-          variables?: Json
-        }
-        Returns: Json
-      }
-    }
-    Enums: {
-      [_ in never]: never
-    }
-    CompositeTypes: {
-      [_ in never]: never
-    }
-  }
   public: {
     Tables: {
       affirmations: {
@@ -77,16 +52,22 @@ export type Database = {
       }
       articles: {
         Row: {
-          content: string | null
+          author_id: string | null
+          body: string | null
+          byline: string | null
           created_at: string
-          created_by: string | null
           excerpt: string | null
-          hero_image_url: string | null
           id: string
+          image_alt: string | null
+          image_credit: string | null
+          image_search_terms: string | null
+          image_url: string | null
           locale: string
           pillar: string
           published_at: string | null
           scheduled_for: string | null
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           status: string
           subtitle: string | null
@@ -95,16 +76,22 @@ export type Database = {
           updated_at: string
         }
         Insert: {
-          content?: string | null
+          author_id?: string | null
+          body?: string | null
+          byline?: string | null
           created_at?: string
-          created_by?: string | null
           excerpt?: string | null
-          hero_image_url?: string | null
           id?: string
+          image_alt?: string | null
+          image_credit?: string | null
+          image_search_terms?: string | null
+          image_url?: string | null
           locale?: string
           pillar: string
           published_at?: string | null
           scheduled_for?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           status?: string
           subtitle?: string | null
@@ -113,16 +100,22 @@ export type Database = {
           updated_at?: string
         }
         Update: {
-          content?: string | null
+          author_id?: string | null
+          body?: string | null
+          byline?: string | null
           created_at?: string
-          created_by?: string | null
           excerpt?: string | null
-          hero_image_url?: string | null
           id?: string
+          image_alt?: string | null
+          image_credit?: string | null
+          image_search_terms?: string | null
+          image_url?: string | null
           locale?: string
           pillar?: string
           published_at?: string | null
           scheduled_for?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           status?: string
           subtitle?: string | null
@@ -299,38 +292,12 @@ export type Database = {
         }
         Relationships: []
       }
-      editors: {
-        Row: {
-          created_at: string
-          display_name: string | null
-          email: string
-          id: string
-          role: string
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          display_name?: string | null
-          email: string
-          id?: string
-          role?: string
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          display_name?: string | null
-          email?: string
-          id?: string
-          role?: string
-          user_id?: string | null
-        }
-        Relationships: []
-      }
       landing_pages: {
         Row: {
           chrome_revert_at: string | null
           chrome_revert_to: boolean | null
           created_at: string
+          created_by: string | null
           description: string | null
           entry_file: string
           gtm_id: string | null
@@ -346,6 +313,7 @@ export type Database = {
           chrome_revert_at?: string | null
           chrome_revert_to?: boolean | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           entry_file?: string
           gtm_id?: string | null
@@ -361,6 +329,7 @@ export type Database = {
           chrome_revert_at?: string | null
           chrome_revert_to?: boolean | null
           created_at?: string
+          created_by?: string | null
           description?: string | null
           entry_file?: string
           gtm_id?: string | null
@@ -549,42 +518,60 @@ export type Database = {
       }
       subscribers: {
         Row: {
+          consent_email: boolean
+          consent_sms: boolean
           created_at: string
           email: string
           email_consent_at: string | null
           id: string
           ip_address: string | null
           locale: string
+          name: string | null
           phone: string | null
+          pillars: string[]
           sms_consent_at: string | null
           source: string | null
+          status: string
           unsubscribed_at: string | null
+          updated_at: string
           user_agent: string | null
         }
         Insert: {
+          consent_email?: boolean
+          consent_sms?: boolean
           created_at?: string
           email: string
           email_consent_at?: string | null
           id?: string
           ip_address?: string | null
           locale?: string
+          name?: string | null
           phone?: string | null
+          pillars?: string[]
           sms_consent_at?: string | null
           source?: string | null
+          status?: string
           unsubscribed_at?: string | null
+          updated_at?: string
           user_agent?: string | null
         }
         Update: {
+          consent_email?: boolean
+          consent_sms?: boolean
           created_at?: string
           email?: string
           email_consent_at?: string | null
           id?: string
           ip_address?: string | null
           locale?: string
+          name?: string | null
           phone?: string | null
+          pillars?: string[]
           sms_consent_at?: string | null
           source?: string | null
+          status?: string
           unsubscribed_at?: string | null
+          updated_at?: string
           user_agent?: string | null
         }
         Relationships: []
@@ -955,9 +942,6 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
-  graphql_public: {
-    Enums: {},
-  },
   public: {
     Enums: {},
   },
