@@ -7,6 +7,7 @@ import {
   LEGAL_CONTACTS,
 } from "@/lib/legal/constants";
 import { getCurrentMessages, t } from "@/lib/i18n/server";
+import { fetchLegalPage } from "@/lib/legal";
 
 export async function generateMetadata(): Promise<Metadata> {
   const { messages } = await getCurrentMessages();
@@ -17,7 +18,22 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function PrivacyPage() {
-  const { messages } = await getCurrentMessages();
+  const { locale, messages } = await getCurrentMessages();
+
+  // English is managed in the admin panel; uk/ru stay file-based below.
+  const db = await fetchLegalPage("privacy", locale);
+  if (db) {
+    return (
+      <MarketingPage
+        eyebrow={t(messages, "legal.privacy.eyebrow")}
+        title={db.title}
+        intro={t(messages, "legal.privacy.intro")}
+        quiet
+        bodyHtml={db.body}
+      />
+    );
+  }
+
   return (
     <MarketingPage
       eyebrow={t(messages, "legal.privacy.eyebrow")}

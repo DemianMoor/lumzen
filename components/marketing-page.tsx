@@ -9,6 +9,7 @@ export function MarketingPage({
   title,
   intro,
   quiet,
+  bodyHtml,
   children,
 }: {
   eyebrow: string;
@@ -20,7 +21,13 @@ export function MarketingPage({
    * backdrop stays for brand continuity.
    */
   quiet?: boolean;
-  children: React.ReactNode;
+  /**
+   * Admin-managed HTML body (legal pages, English). When provided it renders in
+   * place of `children`, directly inside .prose-lumzen so element styling and
+   * spacing apply identically.
+   */
+  bodyHtml?: string;
+  children?: React.ReactNode;
 }) {
   return (
     <div className="relative min-h-screen flex flex-col overflow-hidden">
@@ -45,9 +52,16 @@ export function MarketingPage({
             )}
           </header>
 
-          <div className="prose-lumzen space-y-6 font-sans text-[#f0eff8] text-base leading-relaxed">
-            {children}
-          </div>
+          {bodyHtml ? (
+            <div
+              className="prose-lumzen space-y-6 font-sans text-[#f0eff8] text-base leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: bodyHtml }}
+            />
+          ) : (
+            <div className="prose-lumzen space-y-6 font-sans text-[#f0eff8] text-base leading-relaxed">
+              {children}
+            </div>
+          )}
         </article>
       </main>
 
