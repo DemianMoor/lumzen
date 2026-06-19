@@ -99,6 +99,9 @@ export async function POST(request: NextRequest) {
       const fromAddress =
         process.env.RESEND_FROM_ADDRESS ||
         "LumZen <onboarding@resend.dev>";
+      // Replies go to the brand's real inbox — the bare address inside the
+      // from ("hello@lumzen.co"), so a subscriber hitting Reply reaches a human.
+      const replyTo = fromAddress.match(/<([^>]+)>/)?.[1] ?? fromAddress;
 
       if (!resendApiKey) {
         console.error("RESEND_API_KEY is not set. Welcome email not sent.");
@@ -119,6 +122,7 @@ export async function POST(request: NextRequest) {
 
           const { error: emailError } = await resend.emails.send({
             from: fromAddress,
+            replyTo,
             to: cleanEmail,
             subject,
             html,
