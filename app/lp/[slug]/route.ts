@@ -78,14 +78,41 @@ export async function GET(
 
   html = injectUtmForwarding(html);
 
+  // Injected last so the hints land first in <head>, ahead of the asset refs.
+  html = injectResourceHints(html);
+
   return new NextResponse(html, {
     status: 200,
     headers: {
       "Content-Type": "text/html; charset=utf-8",
-      "Cache-Control": "public, max-age=60, stale-while-revalidate=300",
+      // LP content changes rarely. 5 min fresh at the edge, then serve stale
+      // instantly while revalidating in the background — keeps origin hits
+      // (DB + Storage fetch) off the visitor's critical path. Edits propagate
+      // within ~max-age; deactivation within max-age + one revalidation.
+      "Cache-Control": "public, max-age=300, stale-while-revalidate=86400",
       "X-Content-Type-Options": "nosniff",
     },
   });
+}
+
+/**
+ * Opens the connection to Supabase Storage (where every rewritten asset lives)
+ * and warms DNS for GTM before the parser reaches those URLs in the body — so
+ * the cross-origin DNS+TLS handshake overlaps with HTML parsing instead of
+ * blocking the first asset fetch.
+ */
+function injectResourceHints(html: string): string {
+  const storageOrigin = new URL(STORAGE_PUBLIC_BASE).origin;
+  const tags =
+    `<link rel="preconnect" href="${storageOrigin}" crossorigin>` +
+    `<link rel="dns-prefetch" href="//www.googletagmanager.com">`;
+
+  const headMatch = html.match(/<head[^>]*>/i);
+  if (headMatch) {
+    const at = headMatch.index! + headMatch[0].length;
+    return html.substring(0, at) + tags + html.substring(at);
+  }
+  return html;
 }
 
 function rewriteAssetPaths(html: string, slug: string): string {
