@@ -532,6 +532,8 @@ export type Database = {
           sms_consent_at: string | null
           source: string | null
           status: string
+          terms_consent: boolean
+          terms_consent_at: string | null
           unsubscribed_at: string | null
           updated_at: string
           user_agent: string | null
@@ -551,6 +553,8 @@ export type Database = {
           sms_consent_at?: string | null
           source?: string | null
           status?: string
+          terms_consent?: boolean
+          terms_consent_at?: string | null
           unsubscribed_at?: string | null
           updated_at?: string
           user_agent?: string | null
@@ -570,6 +574,8 @@ export type Database = {
           sms_consent_at?: string | null
           source?: string | null
           status?: string
+          terms_consent?: boolean
+          terms_consent_at?: string | null
           unsubscribed_at?: string | null
           updated_at?: string
           user_agent?: string | null

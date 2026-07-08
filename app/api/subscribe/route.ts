@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       name,
       consent_email,
       consent_sms,
+      consent_terms,
       source,
     } = body as {
       email?: string;
@@ -24,6 +25,7 @@ export async function POST(request: NextRequest) {
       name?: string;
       consent_email?: boolean;
       consent_sms?: boolean;
+      consent_terms?: boolean;
       source?: string;
     };
 
@@ -39,6 +41,16 @@ export async function POST(request: NextRequest) {
         {
           error:
             "Please consent to email or SMS so we know how to reach you.",
+        },
+        { status: 400 },
+      );
+    }
+
+    if (!consent_terms) {
+      return NextResponse.json(
+        {
+          error:
+            "Please accept the Terms of Service and Privacy Policy to continue.",
         },
         { status: 400 },
       );
@@ -74,6 +86,8 @@ export async function POST(request: NextRequest) {
         phone: cleanPhone,
         email_consent_at: consent_email ? now : null,
         sms_consent_at: consent_sms ? now : null,
+        terms_consent: !!consent_terms,
+        terms_consent_at: consent_terms ? now : null,
         ip_address: ip,
         user_agent: userAgent,
         source: source || "unknown",

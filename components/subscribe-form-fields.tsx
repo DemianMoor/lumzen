@@ -4,6 +4,40 @@ import Link from "next/link";
 import { useState } from "react";
 import { useT } from "@/lib/i18n/client";
 
+// Maps the bracketed tokens used in the consent copy to their legal pages.
+const CONSENT_LINKS: Record<string, string> = {
+  "Terms of Service": "/terms",
+  "Privacy Policy": "/privacy",
+};
+
+/**
+ * Renders consent copy that embeds `[Terms of Service]` / `[Privacy Policy]`
+ * tokens as inline links. The links open in a new tab so a subscriber can
+ * read the policy without losing their place in the form, and stopPropagation
+ * keeps a link click from toggling the surrounding checkbox `<label>`.
+ */
+function renderConsentText(text: string) {
+  return text.split(/(\[[^\]]+\])/g).map((part, i) => {
+    const match = part.match(/^\[([^\]]+)\]$/);
+    const href = match ? CONSENT_LINKS[match[1]] : undefined;
+    if (match && href) {
+      return (
+        <Link
+          key={i}
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => e.stopPropagation()}
+          className="text-[#c4a35a] hover:underline"
+        >
+          {match[1]}
+        </Link>
+      );
+    }
+    return <span key={i}>{part}</span>;
+  });
+}
+
 export type SubscribeSource = "subscribe_page" | "popup";
 
 export type SubscribeFormSuccess = {
@@ -40,6 +74,7 @@ export function SubscribeFormFields({
   const [phone, setPhone] = useState("");
   const [consentEmail, setConsentEmail] = useState(false);
   const [consentSms, setConsentSms] = useState(false);
+  const [consentTerms, setConsentTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -54,6 +89,10 @@ export function SubscribeFormFields({
     }
     if (!consentEmail) {
       setError(t("subscribe.form.error.email_consent_required"));
+      return;
+    }
+    if (!consentTerms) {
+      setError(t("subscribe.form.error.terms_consent_required"));
       return;
     }
     const trimmedPhone = phone.trim();
@@ -72,6 +111,7 @@ export function SubscribeFormFields({
           phone: consentSms && trimmedPhone ? trimmedPhone : undefined,
           consent_email: consentEmail,
           consent_sms: consentSms,
+          consent_terms: consentTerms,
           source,
         }),
       });
@@ -182,7 +222,19 @@ export function SubscribeFormFields({
               className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
             />
             <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
-              {t("subscribe.form.consent_sms")}
+              {renderConsentText(t("subscribe.form.consent_sms"))}
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentTerms}
+              onChange={(e) => setConsentTerms(e.target.checked)}
+              className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
+            />
+            <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
+              {renderConsentText(t("subscribe.form.consent_terms"))}
             </span>
           </label>
         </div>
@@ -220,7 +272,7 @@ export function SubscribeFormFields({
 
       <button
         type="submit"
-        disabled={loading || !consentEmail}
+        disabled={loading || !consentEmail || !consentTerms}
         className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading
