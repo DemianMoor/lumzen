@@ -702,6 +702,7 @@
   "subscribe.form.consent_email": "Я даю согласие на получение маркетинговых и редакционных писем от LumZen (под управлением DemianSpirits). Частота рассылки варьируется, как правило — одно письмо в неделю. Я могу отписаться в любой момент.",
   "subscribe.form.consent_heading": "Как с вами связаться?",
   "subscribe.form.consent_sms": "I agree to receive recurring automated marketing text messages from LumZen (operated by DemianSpirits) at the number provided. Consent is not a condition of purchase or of using LumZen. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to cancel. See our [Terms of Service] and [Privacy Policy].",
+  "subscribe.form.consent_sms_account": "I agree to receive text messages from LumZen (operated by DemianSpirits) regarding your account and customer services at the number provided. Consent is not a condition of purchase or of using LumZen. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to cancel. See our [Terms of Service] and [Privacy Policy].",
   "subscribe.form.consent_terms": "I accept the [Terms of Service] and [Privacy Policy].",
   "subscribe.form.email_label": "Ваш email",
   "subscribe.form.email_placeholder": "you@example.com",

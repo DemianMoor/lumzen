@@ -702,6 +702,7 @@
   "subscribe.form.consent_email": "I consent to receive marketing and editorial emails from LumZen (operated by DemianSpirits). Frequency varies, typically one email per week. I can unsubscribe any time.",
   "subscribe.form.consent_heading": "How should we reach you?",
   "subscribe.form.consent_sms": "I agree to receive recurring automated marketing text messages from LumZen (operated by DemianSpirits) at the number provided. Consent is not a condition of purchase or of using LumZen. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to cancel. See our [Terms of Service] and [Privacy Policy].",
+  "subscribe.form.consent_sms_account": "I agree to receive text messages from LumZen (operated by DemianSpirits) regarding your account and customer services at the number provided. Consent is not a condition of purchase or of using LumZen. Msg frequency varies. Msg & data rates may apply. Reply HELP for help, STOP to cancel. See our [Terms of Service] and [Privacy Policy].",
   "subscribe.form.consent_terms": "I accept the [Terms of Service] and [Privacy Policy].",
   "subscribe.form.email_label": "Your email",
   "subscribe.form.email_placeholder": "you@example.com",

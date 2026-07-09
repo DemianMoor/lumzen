@@ -74,6 +74,7 @@ export function SubscribeFormFields({
   const [phone, setPhone] = useState("");
   const [consentEmail, setConsentEmail] = useState(false);
   const [consentSms, setConsentSms] = useState(false);
+  const [consentSmsAccount, setConsentSmsAccount] = useState(false);
   const [consentTerms, setConsentTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -96,7 +97,8 @@ export function SubscribeFormFields({
       return;
     }
     const trimmedPhone = phone.trim();
-    if (consentSms && !trimmedPhone) {
+    const wantsSms = consentSms || consentSmsAccount;
+    if (wantsSms && !trimmedPhone) {
       setError(t("subscribe.form.error.sms_requires_phone"));
       return;
     }
@@ -108,9 +110,10 @@ export function SubscribeFormFields({
         body: JSON.stringify({
           name: name.trim() || undefined,
           email: email.trim(),
-          phone: consentSms && trimmedPhone ? trimmedPhone : undefined,
+          phone: wantsSms && trimmedPhone ? trimmedPhone : undefined,
           consent_email: consentEmail,
           consent_sms: consentSms,
+          consent_sms_account: consentSmsAccount,
           consent_terms: consentTerms,
           source,
         }),
@@ -124,7 +127,7 @@ export function SubscribeFormFields({
           data.error || t("subscribe.form.error.generic", { status: res.status }),
         );
       }
-      onSuccess({ email: email.trim(), consentSms });
+      onSuccess({ email: email.trim(), consentSms: wantsSms });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("subscribe.form.error.unknown"));
     } finally {
@@ -223,6 +226,18 @@ export function SubscribeFormFields({
             />
             <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
               {renderConsentText(t("subscribe.form.consent_sms"))}
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentSmsAccount}
+              onChange={(e) => setConsentSmsAccount(e.target.checked)}
+              className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
+            />
+            <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
+              {renderConsentText(t("subscribe.form.consent_sms_account"))}
             </span>
           </label>
 

@@ -17,6 +17,7 @@ export async function POST(request: NextRequest) {
       name,
       consent_email,
       consent_sms,
+      consent_sms_account,
       consent_terms,
       source,
     } = body as {
@@ -25,6 +26,7 @@ export async function POST(request: NextRequest) {
       name?: string;
       consent_email?: boolean;
       consent_sms?: boolean;
+      consent_sms_account?: boolean;
       consent_terms?: boolean;
       source?: string;
     };
@@ -36,7 +38,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!consent_email && !consent_sms) {
+    if (!consent_email && !consent_sms && !consent_sms_account) {
       return NextResponse.json(
         {
           error:
@@ -56,7 +58,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (consent_sms && (!phone || phone.trim().length === 0)) {
+    if ((consent_sms || consent_sms_account) && (!phone || phone.trim().length === 0)) {
       return NextResponse.json(
         {
           error:
@@ -86,6 +88,8 @@ export async function POST(request: NextRequest) {
         phone: cleanPhone,
         email_consent_at: consent_email ? now : null,
         sms_consent_at: consent_sms ? now : null,
+        sms_account_consent: !!consent_sms_account,
+        sms_account_consent_at: consent_sms_account ? now : null,
         terms_consent: !!consent_terms,
         terms_consent_at: consent_terms ? now : null,
         ip_address: ip,

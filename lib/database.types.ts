@@ -529,6 +529,8 @@ export type Database = {
           name: string | null
           phone: string | null
           pillars: string[]
+          sms_account_consent: boolean
+          sms_account_consent_at: string | null
           sms_consent_at: string | null
           source: string | null
           status: string
@@ -550,6 +552,8 @@ export type Database = {
           name?: string | null
           phone?: string | null
           pillars?: string[]
+          sms_account_consent?: boolean
+          sms_account_consent_at?: string | null
           sms_consent_at?: string | null
           source?: string | null
           status?: string
@@ -571,6 +575,8 @@ export type Database = {
           name?: string | null
           phone?: string | null
           pillars?: string[]
+          sms_account_consent?: boolean
+          sms_account_consent_at?: string | null
           sms_consent_at?: string | null
           source?: string | null
           status?: string
