@@ -209,6 +209,7 @@ export default async function PrivacyPage() {
         <li>{t(messages, "legal.privacy.section.7.a.item_no_sale")}</li>
         <li>{t(messages, "legal.privacy.section.7.a.item_no_share_optin")}</li>
       </ul>
+      <p>{t(messages, "legal.privacy.section.7.a.verbatim")}</p>
 
       <h3>{t(messages, "legal.privacy.section.7.b.heading")}</h3>
       <p>

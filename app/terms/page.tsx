@@ -188,6 +188,21 @@ export default async function TermsPage() {
         <Link href="/privacy">{t(messages, "legal.terms.section.8.see_also")}</Link>
       </p>
 
+      <h2 id="section-8a">{t(messages, "legal.terms.section.8a.heading")}</h2>
+      <p>{t(messages, "legal.terms.section.8a.enroll")}</p>
+      <p>{t(messages, "legal.terms.section.8a.frequency")}</p>
+      {/* TODO: replace "our SMS number" in section.8a.stop and .number_change
+          with the SimpleTexting-assigned number once it is provisioned. */}
+      <p>{t(messages, "legal.terms.section.8a.stop")}</p>
+      <p>{t(messages, "legal.terms.section.8a.help")}</p>
+      <p>{t(messages, "legal.terms.section.8a.carriers")}</p>
+      <p>{t(messages, "legal.terms.section.8a.carrier_liability")}</p>
+      <p>{t(messages, "legal.terms.section.8a.number_change")}</p>
+      <p>{t(messages, "legal.terms.section.8a.data")}</p>
+      <p>{t(messages, "legal.terms.section.8a.changes")}</p>
+      <h3>{t(messages, "legal.terms.section.8a.faq_q")}</h3>
+      <p>{t(messages, "legal.terms.section.8a.faq_a")}</p>
+
       <h2 id="section-9">{t(messages, "legal.terms.section.9.heading")}</h2>
       <p>
         {t(messages, "legal.terms.section.9.body")}
