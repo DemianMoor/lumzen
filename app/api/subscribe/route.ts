@@ -69,7 +69,13 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    const cleanPhone = phone?.trim() || null;
+    // Persist the phone number only when the subscriber gave an SMS consent
+    // basis (marketing or account). A number submitted without either box
+    // checked must never be stored, so it can never be swept into the
+    // promotional SimpleTexting sync — that sync must gate on
+    // sms_consent_at IS NOT NULL, never on phone-presence.
+    const smsConsented = !!(consent_sms || consent_sms_account);
+    const cleanPhone = smsConsented ? phone?.trim() || null : null;
     const cleanName = name?.trim() || null;
     const locale = getLocaleFromRequest(request);
 
