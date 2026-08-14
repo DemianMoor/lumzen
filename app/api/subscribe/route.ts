@@ -16,18 +16,14 @@ export async function POST(request: NextRequest) {
       phone,
       name,
       consent_email,
-      consent_sms,
       consent_sms_account,
-      consent_terms,
       source,
     } = body as {
       email?: string;
       phone?: string;
       name?: string;
       consent_email?: boolean;
-      consent_sms?: boolean;
       consent_sms_account?: boolean;
-      consent_terms?: boolean;
       source?: string;
     };
 
@@ -38,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!consent_email && !consent_sms && !consent_sms_account) {
+    if (!consent_email && !consent_sms_account) {
       return NextResponse.json(
         {
           error:
@@ -48,17 +44,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    if (!consent_terms) {
-      return NextResponse.json(
-        {
-          error:
-            "Please accept the Terms of Service and Privacy Policy to continue.",
-        },
-        { status: 400 },
-      );
-    }
-
-    if ((consent_sms || consent_sms_account) && (!phone || phone.trim().length === 0)) {
+    if (consent_sms_account && (!phone || phone.trim().length === 0)) {
       return NextResponse.json(
         {
           error:
@@ -69,12 +55,14 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanEmail = email.trim().toLowerCase();
-    // Persist the phone number only when the subscriber gave an SMS consent
-    // basis (marketing or account). A number submitted without either box
-    // checked must never be stored, so it can never be swept into the
-    // promotional SimpleTexting sync — that sync must gate on
-    // sms_consent_at IS NOT NULL, never on phone-presence.
-    const smsConsented = !!(consent_sms || consent_sms_account);
+    // Persist the phone number only when the subscriber gave the account /
+    // service SMS consent. A number submitted without that box checked must
+    // never be stored, so it can never be swept into the promotional
+    // SimpleTexting sync — that sync must gate on sms_consent_at IS NOT NULL,
+    // never on phone-presence. The form no longer collects marketing SMS
+    // consent, so sms_consent_at stays null for every new subscriber and the
+    // promotional sync correctly skips them.
+    const smsConsented = !!consent_sms_account;
     const cleanPhone = smsConsented ? phone?.trim() || null : null;
     const cleanName = name?.trim() || null;
     const locale = getLocaleFromRequest(request);
@@ -93,11 +81,12 @@ export async function POST(request: NextRequest) {
         email: cleanEmail,
         phone: cleanPhone,
         email_consent_at: consent_email ? now : null,
-        sms_consent_at: consent_sms ? now : null,
         sms_account_consent: !!consent_sms_account,
         sms_account_consent_at: consent_sms_account ? now : null,
-        terms_consent: !!consent_terms,
-        terms_consent_at: consent_terms ? now : null,
+        // sms_consent_at / terms_consent / terms_consent_at are deliberately
+        // absent: those checkboxes were retired, and omitting the columns from
+        // the upsert leaves any historical value intact when an existing
+        // subscriber re-submits (ON CONFLICT only touches supplied columns).
         ip_address: ip,
         user_agent: userAgent,
         source: source || "unknown",
@@ -136,7 +125,7 @@ export async function POST(request: NextRequest) {
             WelcomeEmail({
               name: cleanName ?? undefined,
               emailConsent: !!consent_email,
-              smsConsent: !!consent_sms,
+              smsConsent: !!consent_sms_account,
               locale,
             }),
           );

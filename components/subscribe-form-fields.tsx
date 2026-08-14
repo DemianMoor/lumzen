@@ -54,6 +54,11 @@ export type SubscribeFormSuccess = {
  * The host (page or popup) owns the success UI and any side effects
  * (auto-closing the modal, setting localStorage, etc.) — this
  * component just POSTs to /api/subscribe and reports back.
+ *
+ * Consent collected here is email (required) plus the optional account /
+ * service SMS opt-in. The former marketing-SMS and Terms-acceptance
+ * checkboxes were retired; their `subscribers` columns are left in place
+ * so historical consent records stay readable.
  */
 export function SubscribeFormFields({
   source,
@@ -73,9 +78,7 @@ export function SubscribeFormFields({
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [consentEmail, setConsentEmail] = useState(false);
-  const [consentSms, setConsentSms] = useState(false);
   const [consentSmsAccount, setConsentSmsAccount] = useState(false);
-  const [consentTerms, setConsentTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -92,12 +95,8 @@ export function SubscribeFormFields({
       setError(t("subscribe.form.error.email_consent_required"));
       return;
     }
-    if (!consentTerms) {
-      setError(t("subscribe.form.error.terms_consent_required"));
-      return;
-    }
     const trimmedPhone = phone.trim();
-    const wantsSms = consentSms || consentSmsAccount;
+    const wantsSms = consentSmsAccount;
     if (wantsSms && !trimmedPhone) {
       setError(t("subscribe.form.error.sms_requires_phone"));
       return;
@@ -112,9 +111,7 @@ export function SubscribeFormFields({
           email: email.trim(),
           phone: wantsSms && trimmedPhone ? trimmedPhone : undefined,
           consent_email: consentEmail,
-          consent_sms: consentSms,
           consent_sms_account: consentSmsAccount,
-          consent_terms: consentTerms,
           source,
         }),
       });
@@ -220,36 +217,12 @@ export function SubscribeFormFields({
           <label className="flex items-start gap-3 cursor-pointer">
             <input
               type="checkbox"
-              checked={consentSms}
-              onChange={(e) => setConsentSms(e.target.checked)}
-              className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
-            />
-            <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
-              {renderConsentText(t("subscribe.form.consent_sms"))}
-            </span>
-          </label>
-
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
               checked={consentSmsAccount}
               onChange={(e) => setConsentSmsAccount(e.target.checked)}
               className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
             />
             <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
               {renderConsentText(t("subscribe.form.consent_sms_account"))}
-            </span>
-          </label>
-
-          <label className="flex items-start gap-3 cursor-pointer">
-            <input
-              type="checkbox"
-              checked={consentTerms}
-              onChange={(e) => setConsentTerms(e.target.checked)}
-              className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
-            />
-            <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
-              {renderConsentText(t("subscribe.form.consent_terms"))}
             </span>
           </label>
         </div>
@@ -287,7 +260,7 @@ export function SubscribeFormFields({
 
       <button
         type="submit"
-        disabled={loading || !consentEmail || !consentTerms}
+        disabled={loading || !consentEmail}
         className="w-full py-3 rounded-full bg-[#c4a35a] text-[#06060f] font-sans text-sm font-medium hover:brightness-110 transition-all disabled:opacity-60 disabled:cursor-not-allowed"
       >
         {loading
