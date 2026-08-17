@@ -55,10 +55,12 @@ export type SubscribeFormSuccess = {
  * (auto-closing the modal, setting localStorage, etc.) — this
  * component just POSTs to /api/subscribe and reports back.
  *
- * Consent collected here is email (required) plus the optional account /
- * service SMS opt-in. The former marketing-SMS and Terms-acceptance
- * checkboxes were retired; their `subscribers` columns are left in place
- * so historical consent records stay readable.
+ * Consent collected here is email (required) plus two optional SMS opt-ins,
+ * kept separate because they are separate legal bases: account/service
+ * notifications and marketing/promotional messages. Only the marketing one
+ * feeds the promotional SimpleTexting sync. The Terms-acceptance checkbox
+ * was retired; its `subscribers` columns are left in place so historical
+ * consent records stay readable.
  */
 export function SubscribeFormFields({
   source,
@@ -79,6 +81,7 @@ export function SubscribeFormFields({
   const [phone, setPhone] = useState("");
   const [consentEmail, setConsentEmail] = useState(false);
   const [consentSmsAccount, setConsentSmsAccount] = useState(false);
+  const [consentSms, setConsentSms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -96,7 +99,8 @@ export function SubscribeFormFields({
       return;
     }
     const trimmedPhone = phone.trim();
-    const wantsSms = consentSmsAccount;
+    // Either SMS consent is a promise to text the number, so both require one.
+    const wantsSms = consentSmsAccount || consentSms;
     if (wantsSms && !trimmedPhone) {
       setError(t("subscribe.form.error.sms_requires_phone"));
       return;
@@ -112,6 +116,7 @@ export function SubscribeFormFields({
           phone: wantsSms && trimmedPhone ? trimmedPhone : undefined,
           consent_email: consentEmail,
           consent_sms_account: consentSmsAccount,
+          consent_sms: consentSms,
           source,
         }),
       });
@@ -223,6 +228,18 @@ export function SubscribeFormFields({
             />
             <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
               {renderConsentText(t("subscribe.form.consent_sms_account"))}
+            </span>
+          </label>
+
+          <label className="flex items-start gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={consentSms}
+              onChange={(e) => setConsentSms(e.target.checked)}
+              className="mt-1 h-4 w-4 flex-shrink-0 accent-[#c4a35a]"
+            />
+            <span className="font-sans text-xs text-[#f0eff8] leading-relaxed">
+              {renderConsentText(t("subscribe.form.consent_sms"))}
             </span>
           </label>
         </div>

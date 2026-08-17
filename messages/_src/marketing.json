@@ -105,7 +105,7 @@
   "subscribe.form.phone_placeholder": "+1 (555) 123-4567",
   "subscribe.form.consent_heading": "How should we reach you?",
   "subscribe.form.consent_email": "I consent to receive marketing and editorial emails from LumZen (operated by DemianSpirits). Frequency varies, typically one email per week. I can unsubscribe any time.",
-  "subscribe.form.consent_sms": "By checking this box, I agree to receive recurring promotional and content update messages (new meditations, affirmations, and special offers) from LumZen sent via an autodialer, and this agreement isn't a condition of any purchase. I also agree to the [Terms of Service] and [Privacy Policy]. 4 Msgs/Month. Msg & Data rates may apply. Text STOP to opt out anytime. Text HELP for more information.",
+  "subscribe.form.consent_sms": "I consent to receive marketing communications and promotions to the phone number provided.",
   "subscribe.form.consent_sms_account": "I give my express consent to receive recurring automated service updates and account notifications texts to the phone number from LumZen. Message and data rates may apply. Msg frequency varies. I understand I can opt-out by replying 'STOP' to any message, or get more info by replying 'HELP.' Consent is not required for purchasing products or services. My number will not be shared with third parties or affiliates. View our [Terms of Service] and [Privacy Policy].",
   "subscribe.form.consent_terms": "I accept the [Terms of Service] and [Privacy Policy].",
   "subscribe.form.sms_policy_summary": "SMS messaging & data policy",
