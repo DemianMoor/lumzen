@@ -66,3 +66,35 @@ export function createSupabaseAdmin() {
     },
   });
 }
+
+/**
+ * Serve-time tracking-URL rewrite config for landing pages, from this brand's
+ * own site_settings (see lib/tracking-rewrite). The central admin writes these;
+ * the public site reads them — same pattern as the analytics IDs.
+ *
+ * Never throws: any failure returns nulls, which turns the rewriter off and
+ * serves landing pages exactly as uploaded.
+ */
+export async function getTrackingConfig(): Promise<{
+  domain: string | null;
+  source: string | null;
+}> {
+  try {
+    const supabase = createSupabaseAdmin();
+    const { data } = await supabase
+      .from("site_settings")
+      .select("key, value")
+      .in("key", ["tracking_domain", "tracking_source"]);
+
+    // `value` is jsonb, so supabase-js hands back an already-decoded JS value.
+    const get = (key: string): string | null => {
+      const raw = data?.find((row) => row.key === key)?.value;
+      if (raw === null || raw === undefined) return null;
+      return (typeof raw === "string" ? raw : String(raw)) || null;
+    };
+
+    return { domain: get("tracking_domain"), source: get("tracking_source") };
+  } catch {
+    return { domain: null, source: null };
+  }
+}

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createSupabaseAdmin } from "@/lib/supabase";
+import { createSupabaseAdmin, getTrackingConfig } from "@/lib/supabase";
 import { getLocaleFromRequest } from "@/lib/i18n/server";
 import { applyChromeSwap, effectiveChromeState } from "@/lib/landing-page-chrome";
+import { rewriteTrackingUrls } from "@/lib/tracking-rewrite";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,6 +78,12 @@ export async function GET(
   }
 
   html = injectUtmForwarding(html);
+
+  // Points the partner-supplied Keitaro click URLs at this brand's tracking
+  // domain and tags campaign clicks with its traffic source. Runs last so it
+  // covers anything the injectors added. With tracking_domain unset this is a
+  // no-op and the output is byte-identical.
+  html = rewriteTrackingUrls(html, await getTrackingConfig());
 
   // Injected last so the hints land first in <head>, ahead of the asset refs.
   html = injectResourceHints(html);
