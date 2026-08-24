@@ -50,8 +50,14 @@ const VALID_SOURCE = /^[A-Za-z0-9_-]+$/;
 /**
  * "https://go.gdkn.org/" and "go.gdkn.org" both normalize to "go.gdkn.org".
  * Returns null for absent, blank, or malformed values.
+ *
+ * Exported so callers can gate on the same answer the rewriter itself will reach.
+ * The Keitaro visit script is stored with the partner's own tracking host and is
+ * only made brand-correct by the rewrite below, so injecting it while the rewrite
+ * is off would send this brand's visits to the partner's tracker. Gating the
+ * injection on this function makes that impossible to drift into.
  */
-function normalizeHost(raw: string | null): string | null {
+export function resolveTrackingHost(raw: string | null): string | null {
   const host = (raw ?? "")
     .trim()
     .replace(/^https?:\/\//i, "")
@@ -60,7 +66,7 @@ function normalizeHost(raw: string | null): string | null {
 }
 
 export function rewriteTrackingUrls(html: string, cfg: TrackingConfig): string {
-  const host = normalizeHost(cfg.domain);
+  const host = resolveTrackingHost(cfg.domain);
   if (!host) return html;
 
   const raw = (cfg.source ?? "").trim();

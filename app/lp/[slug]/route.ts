@@ -2,7 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { createSupabaseAdmin, getTrackingConfig } from "@/lib/supabase";
 import { getLocaleFromRequest } from "@/lib/i18n/server";
 import { applyChromeSwap, effectiveChromeState } from "@/lib/landing-page-chrome";
-import { rewriteTrackingUrls } from "@/lib/tracking-rewrite";
+import { rewriteTrackingUrls, resolveTrackingHost } from "@/lib/tracking-rewrite";
+import { injectKeitaro } from "@/lib/keitaro-inject";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -77,13 +78,26 @@ export async function GET(
     html = injectGtm(html, gtmId);
   }
 
+  const tracking = await getTrackingConfig();
+
+  // Registers a Keitaro visit on every load, so an LP that is never clicked
+  // through still reports. Gated on the rewrite being live as well as on the
+  // script being present: the stored script carries whichever tracking host
+  // Keitaro issued it under, and only the rewrite below repoints it at this
+  // brand — injecting it with the rewrite off would credit the wrong tracker.
+  if (tracking.script && resolveTrackingHost(tracking.domain)) {
+    html = injectKeitaro(html, tracking.script);
+  }
+
   html = injectUtmForwarding(html);
 
   // Points the partner-supplied Keitaro click URLs at this brand's tracking
   // domain and tags campaign clicks with its traffic source. Runs last so it
-  // covers anything the injectors added. With tracking_domain unset this is a
-  // no-op and the output is byte-identical.
-  html = rewriteTrackingUrls(html, await getTrackingConfig());
+  // covers anything the injectors added — including the visit script's own
+  // R_PATH / P_PATH / k.min.js src / <noscript> pixel, which is why the injector
+  // above leaves those URLs exactly as stored. With tracking_domain unset this
+  // is a no-op and the output is byte-identical.
+  html = rewriteTrackingUrls(html, tracking);
 
   // Injected last so the hints land first in <head>, ahead of the asset refs.
   html = injectResourceHints(html);
