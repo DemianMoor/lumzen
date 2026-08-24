@@ -68,23 +68,33 @@ export function createSupabaseAdmin() {
 }
 
 /**
- * Serve-time tracking-URL rewrite config for landing pages, from this brand's
- * own site_settings (see lib/tracking-rewrite). The central admin writes these;
- * the public site reads them — same pattern as the analytics IDs.
+ * Serve-time tracking config for landing pages, from this brand's own
+ * site_settings. The central admin writes these; the public site reads them —
+ * same pattern as the analytics IDs.
  *
- * Never throws: any failure returns nulls, which turns the rewriter off and
- * serves landing pages exactly as uploaded.
+ * `domain` / `source` drive the tracking-URL rewrite (lib/tracking-rewrite).
+ * `script` is the operator-pasted Keitaro visit script (lib/keitaro-inject); it
+ * is stored raw, with whatever tracking host Keitaro issued it under, and the
+ * rewrite is what makes it brand-correct.
+ *
+ * Never throws: any failure returns nulls, which turns both the rewriter and the
+ * visit-script injection off and serves landing pages exactly as uploaded.
  */
 export async function getTrackingConfig(): Promise<{
   domain: string | null;
   source: string | null;
+  script: string | null;
 }> {
   try {
     const supabase = createSupabaseAdmin();
     const { data } = await supabase
       .from("site_settings")
       .select("key, value")
-      .in("key", ["tracking_domain", "tracking_source"]);
+      .in("key", [
+        "tracking_domain",
+        "tracking_source",
+        "keitaro_tracking_script",
+      ]);
 
     // `value` is jsonb, so supabase-js hands back an already-decoded JS value.
     const get = (key: string): string | null => {
@@ -93,8 +103,12 @@ export async function getTrackingConfig(): Promise<{
       return (typeof raw === "string" ? raw : String(raw)) || null;
     };
 
-    return { domain: get("tracking_domain"), source: get("tracking_source") };
+    return {
+      domain: get("tracking_domain"),
+      source: get("tracking_source"),
+      script: get("keitaro_tracking_script"),
+    };
   } catch {
-    return { domain: null, source: null };
+    return { domain: null, source: null, script: null };
   }
 }
