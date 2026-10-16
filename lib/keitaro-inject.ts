@@ -23,10 +23,9 @@
  * value can never break the page.
  *
  * The script's own URLs (R_PATH, P_PATH, the k.min.js src, the <noscript> pixel)
- * are left exactly as stored. lib/tracking-rewrite points them at this brand's
- * tracking domain in the same pass that rewrites the stored CTA anchors, which is
- * why the caller must run the rewriter AFTER this injector — see the chain-order
- * note in app/lp/[slug]/route.ts.
+ * are served exactly as stored: the stored script carries this brand's own
+ * tracker host, and lib/tracking-rewrite skips this <template id="keitaro-direct">
+ * block.
  */
 
 /**
