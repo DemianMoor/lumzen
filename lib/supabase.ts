@@ -72,7 +72,7 @@ export function createSupabaseAdmin() {
  * site_settings. The central admin writes these; the public site reads them —
  * same pattern as the analytics IDs.
  *
- * `domain` / `source` drive the tracking-URL rewrite (lib/tracking-rewrite).
+ * `domain` / `source` drive the tracking-URL rewrite (lib/subid-guarantee/core.ts).
  * `script` is the operator-pasted Keitaro visit script (lib/keitaro-inject); it
  * is stored raw, with whatever tracking host Keitaro issued it under, and the
  * rewrite is what makes it brand-correct.

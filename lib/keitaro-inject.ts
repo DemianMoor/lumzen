@@ -24,7 +24,7 @@
  *
  * The script's own URLs (R_PATH, P_PATH, the k.min.js src, the <noscript> pixel)
  * are served exactly as stored: the stored script carries this brand's own
- * tracker host, and lib/tracking-rewrite skips this <template id="keitaro-direct">
+ * tracker host, and lib/subid-guarantee/core.ts host-swaps only this <template id="keitaro-direct">
  * block.
  */
 
