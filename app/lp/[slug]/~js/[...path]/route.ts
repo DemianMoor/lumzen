@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getTrackingConfig } from "@/lib/supabase";
+import { createSupabaseAdmin, getTrackingConfig } from "@/lib/supabase";
+import { storageEtag, versionedUrl } from "@/lib/lp-storage-version/core";
 import {
   isPassthroughPath,
   pickSubIds,
@@ -30,10 +31,17 @@ export async function GET(
     return new NextResponse("Not Found", { status: 404 });
   }
 
+  // The file's ETag makes a fresh save a CDN miss (lib/lp-storage-version);
+  // null fetches the plain address, as before. Looked up alongside the settings.
+  const [etag, tracking] = await Promise.all([
+    storageEtag(createSupabaseAdmin(), slug, path.join("/")),
+    getTrackingConfig(),
+  ]);
+
   let js: string;
   try {
     const res = await fetch(
-      `${STORAGE_PUBLIC_BASE}/${slug}/${path.map(encodeURIComponent).join("/")}`,
+      versionedUrl(`${STORAGE_PUBLIC_BASE}/${slug}/${path.map(encodeURIComponent).join("/")}`, etag),
       { cache: "no-store" },
     );
     if (!res.ok) {
@@ -44,7 +52,6 @@ export async function GET(
     return new NextResponse("Failed to load script", { status: 502 });
   }
 
-  const tracking = await getTrackingConfig();
   js = rewriteTrackingUrls(js, {
     domain: tracking.domain,
     source: tracking.source,
