@@ -10,6 +10,7 @@ import {
   routeScriptsThroughPassthrough,
 } from "@/lib/subid-guarantee/core";
 import { injectKeitaro } from "@/lib/keitaro-inject";
+import { injectPersonalization } from "@/lib/url-personalization/core";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -108,6 +109,11 @@ export async function GET(
   }
 
   html = injectUtmForwarding(html);
+
+  // Fills the page's data-fill markers from ?zip=&st= (lib/url-personalization).
+  // Only when the brand's switch is on; off returns the HTML untouched. Before the
+  // rewriter so tracking still runs last; the script holds no URL for it to change.
+  html = injectPersonalization(html, tracking.urlPersonalization);
 
   // Runs last so it covers every injected block. Points every known tracker host
   // (lib/subid-guarantee/core.ts) at this brand's tracking domain and tags
