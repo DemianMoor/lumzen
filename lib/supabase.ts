@@ -1,5 +1,6 @@
 import { createBrowserClient, createServerClient } from "@supabase/ssr";
 import { createClient } from "@supabase/supabase-js";
+import { personalizationEnabled, URL_PERSONALIZATION_KEY } from "@/lib/url-personalization/core";
 
 /**
  * For Client Components (browser-side).
@@ -84,6 +85,7 @@ export async function getTrackingConfig(): Promise<{
   domain: string | null;
   source: string | null;
   script: string | null;
+  urlPersonalization: boolean;
 }> {
   try {
     const supabase = createSupabaseAdmin();
@@ -94,6 +96,7 @@ export async function getTrackingConfig(): Promise<{
         "tracking_domain",
         "tracking_source",
         "keitaro_tracking_script",
+        URL_PERSONALIZATION_KEY,
       ]);
 
     // `value` is jsonb, so supabase-js hands back an already-decoded JS value.
@@ -107,8 +110,10 @@ export async function getTrackingConfig(): Promise<{
       domain: get("tracking_domain"),
       source: get("tracking_source"),
       script: get("keitaro_tracking_script"),
+      // URL personalization (lib/url-personalization/core.ts): off unless explicitly "true".
+      urlPersonalization: personalizationEnabled(get(URL_PERSONALIZATION_KEY)),
     };
   } catch {
-    return { domain: null, source: null, script: null };
+    return { domain: null, source: null, script: null, urlPersonalization: false };
   }
 }
